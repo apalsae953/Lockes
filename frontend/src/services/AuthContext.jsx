@@ -5,8 +5,7 @@ const AuthContext = createContext();
 
 // Configuración base de Axios
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000', // URL del backend configurada por variable de entorno
-    withCredentials: true,
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000', withCredentials: true,
     withXSRFToken: true, // Crucial para versiones modernas de Axios + Sanctum
     xsrfCookieName: 'XSRF-TOKEN',
     xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -64,7 +63,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     const loginWithGoogle = () => {
-        window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/auth/google`;
+        // Redirige al backend en Render
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        window.location.href = `${backendUrl}/auth/google`;
     };
 
     return (
