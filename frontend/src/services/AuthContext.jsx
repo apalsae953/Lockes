@@ -63,9 +63,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const loginWithGoogle = () => {
-        // Redirige al backend en Render
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        window.location.href = `${backendUrl}/auth/google`;
+        // Obtenemos la URL base (sin el prefijo /api si lo tuviera)
+        const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const baseUrl = rawUrl.endsWith('/api') ? rawUrl.slice(0, -4) : rawUrl;
+        
+        window.location.href = `${baseUrl}/auth/google`;
     };
 
     return (
