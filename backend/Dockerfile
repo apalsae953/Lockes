@@ -51,4 +51,4 @@ EXPOSE 80
 
 # 12. COMANDO DE ARRANQUE: Ejecuta migraciones y enciende el servidor
 # Al ponerlo aquí, no necesitas poner nada en el panel de Render
-CMD sh -c "php artisan migrate --force && apache2-foreground"
+CMD sh -c "php artisan route:clear && php artisan config:clear && php artisan migrate --force && apache2-foreground"
