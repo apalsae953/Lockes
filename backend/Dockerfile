@@ -1,8 +1,7 @@
-# Usamos PHP 8.2 con Apache como base
+# Usamos PHP 8.4 (la versión que tus librerías necesitan)
 FROM php:8.4-apache
 
-# Instalamos dependencias del sistema y extensiones de PHP necesarias para Laravel
-# Se incluye libpq-dev para PostgreSQL (Supabase) y libzip-dev para la extensión zip
+# Instalamos dependencias del sistema
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -15,31 +14,29 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd filter zip
 
-# Activamos el módulo rewrite de Apache (vital para las rutas de Laravel)
+# Activamos el módulo rewrite de Apache
 RUN a2enmod rewrite
 
-# Instalamos Composer desde la imagen oficial
+# Instalamos Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establecemos el directorio de trabajo
+# Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiamos los archivos del backend al contenedor
+# Copiamos archivos
 COPY . .
 
-# Instalamos las dependencias de Laravel optimizando para producción
+# Instalamos dependencias
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Configuramos los permisos de las carpetas de Laravel para Apache
+# Permisos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Cambiamos el DocumentRoot de Apache para que apunte a la carpeta 'public' de Laravel
+# Configuración de Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# CONFIGURACIÓN CRÍTICA: Permitir que el archivo .htaccess de Laravel controle las rutas
-# Esto evita el error 404 en rutas como /auth/google
 RUN echo '<Directory /var/www/html/public/>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
@@ -47,8 +44,8 @@ RUN echo '<Directory /var/www/html/public/>\n\
 </Directory>' > /etc/apache2/conf-available/laravel.conf \
     && a2enconf laravel
 
-# Exponemos el puerto 80
 EXPOSE 80
 
-# Comando para arrancar Apache
-CMD ["apache2-foreground"]
+# COMANDO DE ARRANQUE CORREGIDO:
+# Primero migra las tablas a Supabase y luego enciende el servidor
+CMD sh -c "php artisan migrate --force && apache2-foreground"
