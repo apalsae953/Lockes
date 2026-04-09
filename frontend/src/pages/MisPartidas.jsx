@@ -3,40 +3,65 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PlusCircle, Gamepad2, PlaySquare, X, Trash2 } from 'lucide-react';
 import { PRESET_ROUTES } from '../constants/gameData';
 import { PRESET_VARIANTS } from '../constants/rulesData';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/AuthContext';
 
 const JUEGOS = [
-  { id: 'kanto', name: 'Kanto (Rojo/Azul/Amarillo/Fuego)' },
+  { id: 'kanto', name: 'Kanto (Rojo/Azul/Verde/Amarillo)' },
   { id: 'johto', name: 'Johto (Oro/Plata/Cristal/HGSS)' },
   { id: 'hoenn', name: 'Hoenn (Rubí/Zafiro/Esmeralda)' },
   { id: 'sinnoh', name: 'Sinnoh (Diamante/Perla/Platino)' },
-  { id: 'custom', name: 'Juego Fan / Aleatorio' }
+  { id: 'custom', name: 'Fan Game' }
 ];
 
 export default function MisPartidas() {
   const [partidas, setPartidas] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // Create Modal State
-  const [newName, setNewName] = useState('Mi Nuzlocke Épico');
+  // Estado del Modal de Creación
+  const [newName, setNewName] = useState('Mi Nuzlocke');
   const [selectedRegion, setSelectedRegion] = useState('kanto');
   const [vidasIlimitadas, setVidasIlimitadas] = useState(true);
   const [vidas, setVidas] = useState(10);
-  
+
   const [extraRules, setExtraRules] = useState([]);
   const [ruleSelect, setRuleSelect] = useState('');
-  
-  // Custom rules from DB
+
+  // Reglas personalizadas de la base de datos (localStorage)
   const [availableCustomRules, setAvailableCustomRules] = useState([]);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('lockeRuns') || '[]');
-      setPartidas(saved);
-    } catch {
-      setPartidas([]);
-    }
-  }, []);
+    const fetchPartidas = async () => {
+      if (user) {
+        try {
+          const response = await api.get('/api/runs');
+          // Mapear de snake_case a camelCase para compatibilidad con el resto del front
+          const mapped = response.data.map(p => ({
+            ...p,
+            vidasMax: p.vidas_max,
+            vidasActuales: p.vidas_actuales,
+            extraRules: p.extra_rules,
+            game: p.game_name
+          }));
+          setPartidas(mapped);
+        } catch (error) {
+          console.error("Error cargando partidas de la API", error);
+        }
+      } else {
+        try {
+          const saved = JSON.parse(localStorage.getItem('lockeRuns') || '[]');
+          setPartidas(saved);
+        } catch {
+          setPartidas([]);
+        }
+      }
+    };
+    fetchPartidas();
+  }, [user]);
 
   const initCreation = () => {
     try {
@@ -45,37 +70,53 @@ export default function MisPartidas() {
     } catch {
       setAvailableCustomRules([]);
     }
-    setRuleSelect(PRESET_VARIANTS[0]?.name || '');
+    setRuleSelect('seleccionar');
     setExtraRules([]);
     setVidasIlimitadas(true);
     setVidas(10);
-    setNewName('Mi Nuzlocke Épico');
+    setNewName('Mi Nuzlocke');
     setSelectedRegion('kanto');
     setShowModal(true);
   };
 
   const removePartida = (id) => {
-    const updated = partidas.filter(p => p.id !== id);
-    setPartidas(updated);
-    localStorage.setItem('lockeRuns', JSON.stringify(updated));
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (user && !isNaN(deletingId)) {
+      try {
+        await api.delete(`/api/runs/${deletingId}`);
+        setPartidas(partidas.filter(p => p.id !== deletingId));
+      } catch (error) {
+        console.error("Error borrando partida", error);
+      }
+    } else {
+      const updated = partidas.filter(p => p.id !== deletingId);
+      setPartidas(updated);
+      localStorage.setItem('lockeRuns', JSON.stringify(updated));
+    }
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   const handleAddRule = (e) => {
     e.preventDefault();
-    if (!ruleSelect) return;
+    if (!ruleSelect || ruleSelect === 'seleccionar') return;
     if (!extraRules.includes(ruleSelect)) {
       setExtraRules([...extraRules, ruleSelect]);
     }
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newName.trim() || !selectedRegion) return;
 
     let locations = [];
     if (selectedRegion !== 'custom') {
       locations = PRESET_ROUTES[selectedRegion] || [];
     }
-    
+
     if (locations.length === 0) {
       locations = ['Pokémon Inicial'];
     }
@@ -90,25 +131,54 @@ export default function MisPartidas() {
     }));
 
     const maxVidasVal = vidasIlimitadas ? null : (parseInt(vidas, 10) || 1);
+    const gameName = JUEGOS.find(j => j.id === selectedRegion)?.name || 'Desconocido';
 
-    const newPartida = {
-      id: Date.now().toString(),
-      name: newName,
-      gameId: selectedRegion, // Needed to resolve bosses
-      game: JUEGOS.find(j => j.id === selectedRegion)?.name || 'Desconocido',
-      vidasMax: maxVidasVal,
-      vidasActuales: maxVidasVal,
-      extraRules: [...extraRules],
-      encounters
-    };
+    if (user) {
+      try {
+        const response = await api.post('/api/runs', {
+          name: newName,
+          game_id: selectedRegion,
+          game_name: gameName,
+          vidas_max: maxVidasVal,
+          vidas_actuales: maxVidasVal,
+          extra_rules: extraRules,
+          encounters: encounters
+        });
 
-    const updated = [...partidas, newPartida];
-    localStorage.setItem('lockeRuns', JSON.stringify(updated));
-    setPartidas(updated);
-    setShowModal(false);
-    
-    navigate(`/tracker/${newPartida.id}`);
+        const created = {
+          ...response.data,
+          vidasMax: response.data.vidas_max,
+          vidasActuales: response.data.vidas_actuales,
+          extraRules: response.data.extra_rules,
+          game: response.data.game_name
+        };
+
+        setPartidas([created, ...partidas]);
+        setShowModal(false);
+        navigate(`/tracker/${created.id}`);
+      } catch (error) {
+        console.error("Error creando partida en API", error);
+      }
+    } else {
+      const newPartida = {
+        id: Date.now().toString(),
+        name: newName,
+        gameId: selectedRegion,
+        game: gameName,
+        vidasMax: maxVidasVal,
+        vidasActuales: maxVidasVal,
+        extraRules: [...extraRules],
+        encounters
+      };
+
+      const updated = [...partidas, newPartida];
+      localStorage.setItem('lockeRuns', JSON.stringify(updated));
+      setPartidas(updated);
+      setShowModal(false);
+      navigate(`/tracker/${newPartida.id}`);
+    }
   };
+
 
   return (
     <div className="container" style={{ paddingBottom: '4rem', paddingTop: '2rem' }}>
@@ -120,6 +190,24 @@ export default function MisPartidas() {
           <PlusCircle size={20} /> Crear Partida
         </button>
       </div>
+
+      {!user && (
+        <div className="glass" style={{
+          marginBottom: '2rem',
+          padding: '1rem 1.5rem',
+          borderLeft: '4px solid #facc15',
+          background: 'rgba(250, 204, 21, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          borderRadius: '8px'
+        }}>
+          <div style={{ backgroundColor: '#facc15', color: '#000', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', flexShrink: 0 }}>!</div>
+          <p style={{ margin: 0, color: '#fef08a', fontSize: '0.95rem' }}>
+            <strong>Atención Entrenador:</strong> Estás usando el almacenamiento local. <Link to="/login" style={{ color: '#facc15', fontWeight: 'bold', textDecoration: 'underline' }}>Inicia sesión</Link> para guardar tus partidas en la nube y no perderlas.
+          </p>
+        </div>
+      )}
 
       {partidas.length === 0 ? (
         <div className="card glass" style={{ textAlign: 'center', padding: '4rem' }}>
@@ -143,7 +231,7 @@ export default function MisPartidas() {
               <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
                 Capturas: {partida.encounters?.filter(e => e.pokemon).length || 0}
               </p>
-              
+
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <Link to={`/tracker/${partida.id}`} className="btn btn-primary" style={{ flex: 1 }}>
                   <PlaySquare size={18} /> Jugar
@@ -157,7 +245,7 @@ export default function MisPartidas() {
         </div>
       )}
 
-      {/* CREATE GAME MODAL */}
+      {/* MODAL DE CREACIÓN DE PARTIDA */}
       {showModal && (
         <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setShowModal(false)}>
           <div className="modal-content glass" style={{ flexDirection: 'column', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -165,7 +253,7 @@ export default function MisPartidas() {
               <h2>Crear Partida</h2>
               <button className="modal-close" style={{ position: 'relative', top: 0, right: 0 }} onClick={() => setShowModal(false)}><X size={24} /></button>
             </div>
-            
+
             <div style={{ padding: '2rem' }}>
               <div className="form-group">
                 <label className="form-label">Nombre de tu Locke</label>
@@ -189,11 +277,11 @@ export default function MisPartidas() {
                       Ilimitadas
                     </label>
                   </label>
-                  <input 
-                    type="number" 
-                    className="input" 
-                    min="1" max="99" 
-                    value={vidasIlimitadas ? '' : vidas} 
+                  <input
+                    type="number"
+                    className="input"
+                    min="1" max="99"
+                    value={vidasIlimitadas ? '' : vidas}
                     onChange={e => setVidas(e.target.value)}
                     disabled={vidasIlimitadas}
                     placeholder={vidasIlimitadas ? '∞' : '10'}
@@ -204,23 +292,24 @@ export default function MisPartidas() {
 
               <div className="form-group">
                 <label className="form-label">Tus Normas (Elegidas selectivamente)</label>
-                
+
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                  {/* Basic Universal ones are implicit, we don't need to clog the UI here, or we can just say they apply. */}
+                  {/* Las reglas universales son implícitas, no hace falta saturar la UI. */}
                   <span style={{ padding: '0.4rem 0.8rem', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', fontSize: '0.85rem' }}>Muerte Permanente + Captura Limitada + Motes</span>
-                  
+
                   {extraRules.map((rule, idx) => (
                     <span key={idx} style={{ padding: '0.4rem 0.8rem', background: 'rgba(0,0,0,0.4)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--accent)' }}>
                       {rule}
                       <button type="button" onClick={(e) => { e.preventDefault(); setExtraRules(extraRules.filter((_, i) => i !== idx)); }} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                        <X size={14}/>
+                        <X size={14} />
                       </button>
                     </span>
                   ))}
                 </div>
-                
+
                 <form style={{ display: 'flex', gap: '0.5rem' }} onSubmit={handleAddRule}>
                   <select className="input" value={ruleSelect} onChange={e => setRuleSelect(e.target.value)}>
+                    <option value="seleccionar">Seleccionar...</option>
                     <optgroup label="Variantes Oficiales">
                       {PRESET_VARIANTS.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
                     </optgroup>
@@ -237,6 +326,28 @@ export default function MisPartidas() {
               <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancelar</button>
               <button className="btn btn-primary" onClick={handleCreate}>
                 Iniciar Aventura
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL DE CONFIRMACIÓN DE BORRADO */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setShowDeleteModal(false)}>
+          <div className="modal-content glass" style={{ flexDirection: 'column', maxWidth: '400px', textAlign: 'center', padding: '2rem' }}>
+            <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
+              <Trash2 size={64} style={{ margin: '0 auto' }} />
+            </div>
+            <h2 style={{ marginBottom: '1rem' }}>¿Borrar Partida?</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: '1.5' }}>
+              Esta acción no se puede deshacer. Se perderán todos los datos de capturas y progreso de este Nuzlocke.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>
+                Cancelar
+              </button>
+              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: 'var(--primary)', color: 'black' }} onClick={confirmDelete}>
+                Sí, Borrar
               </button>
             </div>
           </div>

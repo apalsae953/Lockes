@@ -6,6 +6,9 @@ import MisPartidas from './pages/MisPartidas';
 import PartidaTracker from './pages/PartidaTracker';
 import TablaTipos from './pages/TablaTipos';
 import MisReglas from './pages/MisReglas';
+import Login from './pages/Login';
+import LoginSuccess from './pages/LoginSuccess';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -13,6 +16,9 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login-success" element={<LoginSuccess />} />
+        <Route path="/perfil" element={<Profile />} />
         <Route path="/pokedex" element={<Pokedex />} />
         <Route path="/tipos" element={<TablaTipos />} />
         <Route path="/mis-reglas" element={<MisReglas />} />
@@ -20,6 +26,7 @@ function App() {
         <Route path="/tracker/:id" element={<PartidaTracker />} />
       </Routes>
     </Router>
+
   );
 }
 

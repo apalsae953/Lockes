@@ -5,7 +5,8 @@ import { getAllPokemonNames, getPokemonByType } from '../services/pokeApi';
 import PokemonModal from '../components/PokemonModal';
 
 const REGIONS = [
-  { name: 'Todas las Regiones', min: 1, max: 9999 },
+  { name: 'Cualquiera', min: 1, max: 30000 },
+  { name: 'Formas Regionales', min: 10001, max: 30000 },
   { name: 'Kanto (Gen 1)', min: 1, max: 151 },
   { name: 'Johto (Gen 2)', min: 152, max: 251 },
   { name: 'Hoenn (Gen 3)', min: 252, max: 386 },
@@ -17,8 +18,9 @@ const REGIONS = [
   { name: 'Paldea (Gen 9)', min: 906, max: 1025 }
 ];
 
+
 const TYPES = [
-  { id: '', name: 'Todos los tipos' },
+  { id: '', name: 'Tipo 1' },
   { id: 'normal', name: 'Normal' }, { id: 'fire', name: 'Fuego' },
   { id: 'water', name: 'Agua' }, { id: 'electric', name: 'Eléctrico' },
   { id: 'grass', name: 'Planta' }, { id: 'ice', name: 'Hielo' },
@@ -30,12 +32,14 @@ const TYPES = [
   { id: 'steel', name: 'Acero' }, { id: 'fairy', name: 'Hada' }
 ];
 
+const pokemonDetailsCache = {};
+
 export default function Pokedex() {
   const [masterList, setMasterList] = useState([]);
   const [typeCache, setTypeCache] = useState({});
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // Filters State
+  // Estado de Filtros
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedRegion, setSelectedRegion] = useState(REGIONS[0]);
@@ -43,14 +47,29 @@ export default function Pokedex() {
   const [selectedSecondaryType, setSelectedSecondaryType] = useState('');
   const [sortOrder, setSortOrder] = useState('asc'); // asc / desc
 
-  // Pagination & Display State
+  // Estado de Paginación y Visualización
   const [filteredList, setFilteredList] = useState([]);
   const [displayedPokemon, setDisplayedPokemon] = useState([]);
   const [page, setPage] = useState(0);
+  const [inputPage, setInputPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
 
-  // Debounce search input
+  useEffect(() => {
+    setInputPage(page + 1);
+  }, [page]);
+
+  const handlePageSubmit = () => {
+    let val = parseInt(inputPage);
+    const maxPages = Math.ceil(filteredList.length / 20) || 1;
+    if (!isNaN(val)) {
+      setPage(Math.max(0, Math.min(val - 1, maxPages - 1)));
+    } else {
+      setInputPage(page + 1);
+    }
+  };
+
+  // Debounce para la entrada de búsqueda (evita peticiones excesivas)
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -58,7 +77,7 @@ export default function Pokedex() {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  // Initial Fetch of all names
+  // Carga inicial de todos los nombres (lista maestra)
   useEffect(() => {
     let active = true;
     const initApp = async () => {
@@ -72,7 +91,7 @@ export default function Pokedex() {
     return () => { active = false; };
   }, []);
 
-  // Fetch from Type endpoint if not cached
+  // Obtener datos del endpoint de Tipos si no están en caché
   useEffect(() => {
     let active = true;
     const fetchTypes = async () => {
@@ -99,7 +118,7 @@ export default function Pokedex() {
     return () => { active = false; };
   }, [selectedType, selectedSecondaryType, typeCache]);
 
-  // Main Filtering Logic
+  // Lógica principal de filtrado y búsqueda
   useEffect(() => {
     if (isInitializing) return;
     if (selectedType && !typeCache[selectedType]) return;
@@ -108,9 +127,10 @@ export default function Pokedex() {
     let result = [...masterList];
 
     // 1. Filtrar Región
-    if (selectedRegion.name !== 'Cualquier Region') {
-      result = result.filter(p => p.id >= selectedRegion.min && p.id <= selectedRegion.max);
+    if (selectedRegion.name !== 'Cualquiera') {
+      result = result.filter(p => p.dexId >= selectedRegion.min && p.dexId <= selectedRegion.max);
     }
+
 
     // 2. Filtrar Tipo Primario
     if (selectedType && typeCache[selectedType]) {
@@ -146,14 +166,20 @@ export default function Pokedex() {
       });
     }
 
-    // 4. Orden
-    result.sort((a, b) => sortOrder === 'asc' ? a.id - b.id : b.id - a.id);
+    // 4. Ordenación final: Agrupamos por dexId (Número nacional)
+    result.sort((a, b) => {
+      if (a.dexId !== b.dexId) {
+        return sortOrder === 'asc' ? a.dexId - b.dexId : b.dexId - a.dexId;
+      }
+      // Si tienen el mismo dexId, el base (ID más bajo) va primero
+      return a.id - b.id;
+    });
 
     setFilteredList(result);
     setPage(0);
   }, [masterList, debouncedSearch, selectedRegion, selectedType, selectedSecondaryType, sortOrder, typeCache, isInitializing]);
 
-  // Render Page
+  // Renderizado de la página actual (carga de detalles con CACHÉ)
   useEffect(() => {
     let active = true;
     const loadCurrentPage = async () => {
@@ -168,9 +194,16 @@ export default function Pokedex() {
 
       try {
         const promises = slice.map(async (p) => {
+          // Si ya lo tenemos en caché, lo devolvemos directamente
+          if (pokemonDetailsCache[p.id]) return pokemonDetailsCache[p.id];
+          
           const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${p.id}`);
-          return res.data;
+          const data = res.data;
+          // Guardamos en caché para la próxima vez
+          pokemonDetailsCache[p.id] = data;
+          return data;
         });
+        
         const details = await Promise.all(promises);
         if (active) setDisplayedPokemon(details);
       } catch (err) {
@@ -185,7 +218,7 @@ export default function Pokedex() {
     return () => { active = false; };
   }, [filteredList, page, isInitializing]);
 
-  // Handle dropdown for Region
+  // Manejador del cambio de Región en el desplegable
   const handleRegionChange = (e) => {
     const reg = REGIONS.find(r => r.name === e.target.value);
     if (reg) setSelectedRegion(reg);
@@ -194,7 +227,7 @@ export default function Pokedex() {
   return (
     <div className="container" style={{ paddingBottom: '4rem' }}>
 
-      <div className="card glass" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'rgba(15, 17, 26, 0.9)' }}>
+      <div className="card glass" style={{ marginBottom: '1.25rem', padding: '1.25rem', background: 'rgba(15, 17, 26, 0.9)' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--accent)' }}>
           <Filter size={20} /> Filtros de Búsqueda
         </h3>
@@ -237,7 +270,7 @@ export default function Pokedex() {
           <div>
             <label className="form-label">Tipo 2</label>
             <select className="input" value={selectedSecondaryType} onChange={(e) => setSelectedSecondaryType(e.target.value)} style={{ cursor: 'pointer' }}>
-              <option value="">Cualquiera</option>
+              <option value="">Tipo 2</option>
               {TYPES.slice(1).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </div>
@@ -245,9 +278,10 @@ export default function Pokedex() {
           <div>
             <label className="form-label">Ordenación</label>
             <select className="input" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ cursor: 'pointer' }}>
-              <option value="asc">001 a 1025 (Asc)</option>
-              <option value="desc">1025 a 001 (Desc)</option>
+              <option value="asc">Número (Asc)</option>
+              <option value="desc">Número (Desc)</option>
             </select>
+
           </div>
         </div>
       </div>
@@ -258,19 +292,20 @@ export default function Pokedex() {
         </div>
       )}
 
-      {/* Resultados vacios */}
+      {/* Mensaje de resultados vacíos */}
       {!isLoading && displayedPokemon.length === 0 && !isInitializing && (
         <div className="glass" style={{ padding: '4rem', textAlign: 'center' }}>
-          <h2 style={{ color: 'var(--text-muted)' }}>Misterio...</h2>
+          <h2 style={{ color: 'var(--text-muted)' }}>No aparecio nada</h2>
           <p>No parece existir ningún Pokémon con la combinación actual de filtros.</p>
         </div>
       )}
 
       {!isLoading && displayedPokemon.length > 0 && (
         <>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', color: 'var(--text-muted)' }}>
-            <strong>{filteredList.length}</strong> &nbsp;Pokémon encontrados
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            <span>{filteredList.length} Resultados | Total de Pokédex: <strong>1025</strong></span>
           </div>
+
 
           <div className="pokedex-grid">
             {displayedPokemon.map(pokemon => (
@@ -279,8 +314,9 @@ export default function Pokedex() {
                 className={`pokemon-card bg-type-${pokemon.types[0].type.name}`}
                 onClick={() => setSelectedPokemon({
                   id: pokemon.id,
-                  spriteId: pokemon.id.toString().padStart(3, '0'),
-                  name: pokemon.name.replace('-', ' '),
+                  spriteId: pokemon.species.url.split('/').filter(Boolean).pop().padStart(3, '0'),
+                  name: pokemon.name.replace(/-/g, ' '),
+
                   image: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
                   types: pokemon.types.map(t => t.type.name),
                   stats: pokemon.stats.map(s => ({ name: s.stat.name, value: s.base_stat }))
@@ -289,7 +325,7 @@ export default function Pokedex() {
                   background: `linear-gradient(135deg, var(--type-${pokemon.types[0].type.name}) 0%, var(--bg-dark) 100%)`
                 }}
               >
-                <div className="pokemon-id">#{pokemon.id.toString().padStart(3, '0')}</div>
+                <div className="pokemon-id">#{pokemon.species.url.split('/').filter(Boolean).pop().padStart(3, '0')}</div>
                 <img
                   src={pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default}
                   alt={pokemon.name}
@@ -297,7 +333,8 @@ export default function Pokedex() {
                   loading="lazy"
                 />
                 <div className="pokemon-info glass" style={{ background: 'rgba(0,0,0,0.4)', borderRadius: '0' }}>
-                  <h3>{pokemon.name.replace('-', ' ')}</h3>
+                  <h3 style={{ textTransform: 'capitalize' }}>{pokemon.name.replace(/-/g, ' ')}</h3>
+
                   <div className="types-container">
                     {pokemon.types.map(t => {
                       const T_ES = {
@@ -328,9 +365,24 @@ export default function Pokedex() {
             >
               <ChevronLeft size={20} /> Ant
             </button>
-            <span style={{ fontWeight: 'bold' }}>
-              Página {page + 1} de {Math.ceil(filteredList.length / 20) || 1}
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
+              <span>Página</span>
+              <input
+                type="number"
+                min="1"
+                max={Math.ceil(filteredList.length / 20) || 1}
+                value={inputPage}
+                onChange={(e) => setInputPage(e.target.value)}
+                onBlur={handlePageSubmit}
+                onKeyDown={(e) => e.key === 'Enter' && handlePageSubmit()}
+                className="input"
+                style={{ width: '70px', textAlign: 'center', padding: '0.5rem' }}
+              />
+              <span>de {Math.ceil(filteredList.length / 20) || 1}</span>
+            </div>
+
+
             <button
               className="btn btn-outline"
               onClick={() => setPage(p => p + 1)}

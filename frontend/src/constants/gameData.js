@@ -1,35 +1,45 @@
 export const PRESET_ROUTES = {
   kanto: [
-    'Pokémon Inicial', 'Ruta 1', 'Ruta 22', 'Ruta 2', 'Bosque Verde', 
-    'Ciudad Plateada', 'Ruta 3', 'Monte Moon', 'Ruta 4', 'Ciudad Celeste', 
-    'Ruta 24', 'Ruta 25', 'Ruta 5', 'Ruta 6', 'Ciudad Carmín', 
-    'Ruta 11', 'Cueva Diglett', 'Ruta 9', 'Ruta 10', 'Túnel Roca',
-    'Pueblo Lavanda', 'Ruta 8', 'Ruta 7', 'Guarida Rocket',
-    'Torre Pokémon', 'Ruta 12', 'Ruta 16', 'Ruta 17', 'Ruta 18',
-    'Zona Safari', 'Ruta 19', 'Ruta 20', 'Islas Espuma', 'Mansión Pokémon'
+    'Pokémon Inicial',
+    'Ruta 1', 'Ruta 2', 'Ruta 3', 'Ruta 4', 'Ruta 5', 'Ruta 6', 'Ruta 7', 'Ruta 8', 'Ruta 9', 'Ruta 10',
+    'Ruta 11', 'Ruta 12', 'Ruta 13', 'Ruta 14', 'Ruta 15', 'Ruta 16', 'Ruta 17', 'Ruta 18', 'Ruta 19', 'Ruta 20',
+    'Ruta 21', 'Ruta 22', 'Ruta 23', 'Ruta 24', 'Ruta 25', 'Ruta 26', 'Ruta 27', 'Ruta 28',
+    'Pueblo Paleta', 'Ciudad Verde', 'Ciudad Plateada', 'Ciudad Celeste', 'Ciudad Carmín', 'Ciudad Azafrán', 'Ciudad Azulona', 'Ciudad Fucsia', 'Pueblo Lavanda', 'Isla Canela',
+    'Cueva Diglett', 'Monte Moon', 'Cueva Celeste (Mazmorra Rara)', 'Túnel Roca', 'Calle Victoria', 'Cataratas Tohjo',
+    'Bosque Verde', 'Islas Espuma',
+    'Central de Energía', 'Torre Pokémon', 'Mansión Pokémon', 'Zona Safari', 'Vía Subterránea', 'S.S. Anne', 'Meseta Añil'
   ],
   johto: [
-    'Pokémon Inicial', 'Ruta 29', 'Ruta 46', 'Ruta 30', 'Ruta 31',
-    'Cueva Oscura', 'Torre Bellsprout', 'Ruta 32', 'Ruinas Alfa', 'Cueva Unión',
-    'Ruta 33', 'Pozo Slowpoke', 'Encinar', 'Ruta 34', 'Ruta 35',
-    'Parque Nacional', 'Ruta 36', 'Ruta 37', 'Torre Quemada', 'Ruta 38',
-    'Ruta 39', 'Ruta 40', 'Ruta 41', 'Islas Remolino', 'Monte Mortero',
-    'Ruta 42', 'Ruta 43', 'Lago de la Furia', 'Ruta 44', 'Ruta 45', 'Cueva Helada'
+    'Pokémon Inicial',
+    'Ruta 27', 'Ruta 28', 'Ruta 29', 'Ruta 30', 'Ruta 31', 'Ruta 32', 'Ruta 33', 'Ruta 34', 'Ruta 35', 'Ruta 36', 'Ruta 37', 'Ruta 38', 'Ruta 39', 'Ruta 40', 'Ruta 41', 'Ruta 42', 'Ruta 43', 'Ruta 44', 'Ruta 45', 'Ruta 46', 'Ruta 47', 'Ruta 48',
+    'Pueblo Primavera', 'Ciudad Cerezo', 'Ciudad Malva', 'Pueblo Azalea', 'Ciudad Trigal', 'Ciudad Iris', 'Ciudad Olivo', 'Ciudad Orquídea', 'Pueblo Caoba', 'Ciudad Endrino',
+    'Meseta Añil',
+    'Cueva Oscura', 'Cueva Unión', 'Monte Mortero', 'Ruta Helada', 'Guarida Dragón', 'Paso Acantilado', 'Cueva Acantilado', 'Monte Plateado',
+    'Encinar', 'Lago de la Furia',
+    'Islas Remolino',
+    'Torre Bellsprout', 'Faro de Olivo',
+    'Ruinas Alfa', 'Túnel Trigal', 'Parque Nacional', 'Zona Safari', 'Senda Dindón', 'Ruinas de Sinjoh'
   ],
   hoenn: [
-    'Pokémon Inicial', 'Ruta 101', 'Ruta 102', 'Ruta 103', 'Ruta 104',
-    'Bosque Petalia', 'Túnel Fervegal', 'Ruta 116', 'Cueva Granito',
-    'Ruta 105', 'Ruta 106', 'Ruta 109', 'Ruta 110', 'Ruta 117',
-    'Ruta 111', 'Ruta 112', 'Senda Ígnea', 'Ruta 113', 'Ruta 114',
-    'Cascada Meteoro', 'Ruta 115', 'Monte Cenizo', 'Desfiladero', 'Ruta 119',
-    'Ruta 120', 'Ruta 121', 'Monte Pírico', 'Guarida Magma/Aqua', 'Ruta 124'
+    'Pokémon Inicial',
+    'Ruta 101', 'Ruta 102', 'Ruta 103', 'Ruta 104', 'Ruta 105', 'Ruta 106', 'Ruta 107', 'Ruta 108', 'Ruta 109', 'Ruta 110',
+    'Ruta 111', 'Ruta 112', 'Ruta 113', 'Ruta 114', 'Ruta 115', 'Ruta 116', 'Ruta 117', 'Ruta 118', 'Ruta 119', 'Ruta 120',
+    'Ruta 121', 'Ruta 122', 'Ruta 123', 'Ruta 124', 'Ruta 125', 'Ruta 126', 'Ruta 127', 'Ruta 128', 'Ruta 129', 'Ruta 130',
+    'Ruta 131', 'Ruta 132', 'Ruta 133', 'Ruta 134',
+    'Villa Raíz', 'Pueblo Escaso', 'Ciudad Petalia', 'Ciudad Férrica', 'Pueblo Azuliza', 'Ciudad Portual', 'Pueblo Verdegal', 'Ciudad Malvalona', 'Pueblo Pardal', 'Pueblo Lavacalda', 'Ciudad Arborada', 'Ciudad Calagua', 'Ciudad Algaria', 'Arrecípolis', 'Pueblo Oromar',
+    'Túnel Fervergal', 'Cueva Insular', 'Cueva Granito', 'Senda Ígnea', 'Desfiladero', 'Tumba Antigua', 'Ruinas del Desierto', 'Monte Cenizo', 'Gruta Desértica', 'Cascada Meteoro', 'Monte Pírico', 'Cueva Cardumen', 'Caverna Abisal', 'Cueva Ancestral', 'Cueva Cambiante', 'Cueva Marina', 'Cueva Terrena', 'Gruta Solar', 'Cueva Taller',
+    'Bosque Petalia', 'Isla Espejismo', 'Isla del Sur', 'Isla Suprema', 'Zona Safari', 'Pilar Celeste', 'Nao Abandonada', 'Malvamar', 'Malvalanova', 'Calle Victoria',
   ],
   sinnoh: [
-    'Pokémon Inicial', 'Ruta 201', 'Ruta 202', 'Ruta 203', 'Puerta Pirita',
-    'Mina Pirita', 'Ruta 204', 'Senda Desolada', 'Valle Eólico', 'Ruta 205',
-    'Bosque Veto', 'Ruta 206', 'Cueva Extravío', 'Ruta 207', 'Monte Corona',
-    'Ruta 208', 'Ruta 209', 'Torre Perdida', 'Ruta 210', 'Ruta 212',
-    'Ruta 213', 'Ruta 214', 'Ruta 215', 'Gran Pantano', 'Ruta 218'
+    'Pokémon Inicial',
+    'Ruta 201', 'Ruta 202', 'Ruta 203', 'Ruta 204', 'Ruta 205', 'Ruta 206', 'Ruta 207', 'Ruta 208', 'Ruta 209', 'Ruta 210',
+    'Ruta 211', 'Ruta 212', 'Ruta 213', 'Ruta 214', 'Ruta 215', 'Ruta 216', 'Ruta 217', 'Ruta 218', 'Ruta 219', 'Ruta 220',
+    'Ruta 221', 'Ruta 222', 'Ruta 223', 'Ruta 224', 'Ruta 225', 'Ruta 226', 'Ruta 227', 'Ruta 228', 'Ruta 229', 'Ruta 230',
+    'Pueblo Hojaverde', 'Pueblo Arena', 'Ciudad Jubileo', 'Ciudad Pirita', 'Pueblo Aromaflor', 'Ciudad Vetusta', 'Pueblo Sosiego', 'Ciudad Corazón', 'Ciudad Rocavelo', 'Ciudad Pradera', 'Ciudad Canal', 'Pueblo Caelestis', 'Ciudad Puntaneva', 'Ciudad Marina',
+    'Templo Puntaneva', 'Torre Perdida', 'Ruinas Sosiego',
+    'Calle Victoria', 'Bahía Gresca',
+    'Isla Hierro',
+    'Gran Pantano', 'Mundo Distorsión'
   ]
 };
 
@@ -43,9 +53,9 @@ export const REGION_BOSSES = {
     { name: 'Sabrina', img: 'sabrina', level: 43, title: 'Líder 6' },
     { name: 'Blaine', img: 'blaine', level: 47, title: 'Líder 7' },
     { name: 'Giovanni', img: 'giovanni', level: 50, title: 'Líder 8' },
-    { name: 'Lorelei', img: 'lorelei', level: 54, title: 'Alto Mando 1' },
+    { name: 'Lorelei', img: 'lorelei-gen3', level: 54, title: 'Alto Mando 1' },
     { name: 'Bruno', img: 'bruno', level: 55, title: 'Alto Mando 2' },
-    { name: 'Agatha', img: 'agatha', level: 58, title: 'Alto Mando 3' },
+    { name: 'Agatha', img: 'agatha-gen3', level: 58, title: 'Alto Mando 3' },
     { name: 'Lance', img: 'lance', level: 60, title: 'Alto Mando 4' },
     { name: 'Blue', img: 'blue', level: 65, title: 'Campeón' }
   ],
@@ -74,9 +84,9 @@ export const REGION_BOSSES = {
     { name: 'Vito y Leti', img: 'tate', level: 42, title: 'Líder 7' },
     { name: 'Galano', img: 'juan', level: 46, title: 'Líder 8' },
     { name: 'Sixto', img: 'sidney', level: 49, title: 'Alto Mando 1' },
-    { name: 'Fátima', img: 'phoebe', level: 51, title: 'Alto Mando 2' },
+    { name: 'Fátima', img: 'phoebe-gen3', level: 51, title: 'Alto Mando 2' },
     { name: 'Nívea', img: 'glacia', level: 53, title: 'Alto Mando 3' },
-    { name: 'Dracón', img: 'drake', level: 55, title: 'Alto Mando 4' },
+    { name: 'Dracón', img: 'drake-gen3', level: 55, title: 'Alto Mando 4' },
     { name: 'Máximo', img: 'steven', level: 58, title: 'Campeón' }
   ],
   sinnoh: [

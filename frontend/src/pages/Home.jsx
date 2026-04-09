@@ -1,17 +1,22 @@
-import { Shield, Skull, Sword, Zap } from 'lucide-react';
+import { Shield, Skull, Sword, Zap, Gamepad2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
   return (
     <div className="container">
       <section className="hero">
-        <h1 className="title-glow">Sobrevive al <span className="gradient-text">Nuzlocke</span></h1>
+        <h1 className="title-glow">Crea tu <span className="gradient-text">Nuzlocke</span></h1>
         <p>
           El desafío definitivo para cualquier entrenador Pokémon. Descubre qué son los Nuzlockes, conoce sus estrictas reglas y prepárate para una aventura donde cada decisión importa.
         </p>
-        <Link to="/pokedex" className="btn btn-primary">
-          <Zap size={20} /> Explorar Pokédex
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link to="/pokedex" className="btn btn-primary">
+            <Zap size={20} /> Explorar Pokédex
+          </Link>
+          <Link to="/mis-partidas" className="btn btn-outline">
+            <Gamepad2 size={20} /> Ver Mis Partidas
+          </Link>
+        </div>
       </section>
 
       <section style={{ marginBottom: '6rem' }}>
