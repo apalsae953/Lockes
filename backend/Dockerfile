@@ -1,5 +1,5 @@
 # Usamos PHP 8.2 con Apache como base
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 # Instalamos dependencias del sistema y extensiones de PHP necesarias para Laravel
 # Se incluye libpq-dev para PostgreSQL (Supabase) y libzip-dev para la extensión zip
