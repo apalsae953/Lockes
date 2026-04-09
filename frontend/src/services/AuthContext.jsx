@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
     const getCsrfCookie = async () => {
         const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
-        await axios.get(`${rootUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        await api.get(`${rootUrl}/sanctum/csrf-cookie`);
     };
 
     const login = async (credentials) => {
