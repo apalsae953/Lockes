@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 // Configuración base de Axios
 const api = axios.create({
-    baseURL: 'http://localhost:8000', // URL de tu backend Laravel
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000', // URL del backend configurada por variable de entorno
     withCredentials: true,
     withXSRFToken: true, // Crucial para versiones modernas de Axios + Sanctum
     xsrfCookieName: 'XSRF-TOKEN',
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const loginWithGoogle = () => {
-        window.location.href = 'http://localhost:8000/auth/google';
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/auth/google`;
     };
 
     return (
