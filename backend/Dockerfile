@@ -2,17 +2,18 @@
 FROM php:8.2-apache
 
 # Instalamos dependencias del sistema y extensiones de PHP necesarias para Laravel
-# Se incluye libpq-dev para el soporte de PostgreSQL
+# Se incluye libpq-dev para PostgreSQL (Supabase) y libzip-dev para la extensión zip
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl \
     libpq-dev \
-    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd filter zip
 
 # Activamos el módulo rewrite de Apache (vital para las rutas de Laravel)
 RUN a2enmod rewrite
@@ -36,6 +37,15 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# CONFIGURACIÓN CRÍTICA: Permitir que el archivo .htaccess de Laravel controle las rutas
+# Esto evita el error 404 en rutas como /auth/google
+RUN echo '<Directory /var/www/html/public/>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel
 
 # Exponemos el puerto 80
 EXPOSE 80
