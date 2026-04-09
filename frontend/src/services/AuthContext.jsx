@@ -35,28 +35,36 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (credentials) => {
-        // En Sanctum, primero obtenemos la cookie CSRF
-        await api.get('/sanctum/csrf-cookie');
+        // CSRF cookie debe pedirse siempre a la raíz, no a /api/
+        const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
+        await axios.get(`${rootUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        
         const response = await api.post('/api/login', credentials);
         setUser(response.data.user);
         return response.data;
     };
 
     const register = async (userData) => {
-        await api.get('/sanctum/csrf-cookie');
+        const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
+        await axios.get(`${rootUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        
         const response = await api.post('/api/register', userData);
         setUser(response.data.user);
         return response.data;
     };
 
     const logout = async () => {
-        await api.get('/sanctum/csrf-cookie');
+        const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
+        await axios.get(`${rootUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        
         await api.post('/api/logout');
         setUser(null);
     };
 
     const updateProfile = async (data) => {
-        await api.get('/sanctum/csrf-cookie');
+        const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
+        await axios.get(`${rootUrl}/sanctum/csrf-cookie`, { withCredentials: true });
+        
         const response = await api.put('/api/profile', data);
         setUser(response.data.user);
         return response.data;
