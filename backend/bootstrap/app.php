@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi(); // Para que las cookies de Sanctum funcionen
+        $middleware->statefulApi(); // Esto permite que la sesión funcione entre dominios distintos
+        $middleware->validateCsrfTokens(except: [
+            'auth/google',
+            'auth/google/callback'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
