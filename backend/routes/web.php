@@ -4,7 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return "Backend de Lockes Funcionando";
+    return "HOLA RENDER, ESTE ES EL CODIGO NUEVO";
 });
 
 // Rutas de Google (Se abren en el navegador, van en web.php)
