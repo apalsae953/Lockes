@@ -21,11 +21,11 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   }, [currentPokemon.id]);
 
   const loadPokemonDetails = async (id) => {
-    
+
     // Si es un cambio interno, podríamos necesitar cargar los stats básicos también 
     // pero como venimos de la lista, ya los tenemos. 
     // PERO si pinchamos en una evolución que no está en la lista actual, necesitamos sus datos completos.
-    
+
     getPokemonSpecies(id).then(text => {
       setDescription(text);
     }).catch(() => {
@@ -43,12 +43,12 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
 
   const handleEvolutionClick = async (id) => {
     if (id === currentPokemon.id.toString()) return;
-    
+
     setIsLoadingNew(true);
     try {
       const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
       const data = res.data;
-      
+
       setCurrentPokemon({
         id: data.id,
         spriteId: data.id.toString().padStart(3, '0'),
@@ -102,19 +102,19 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
         {currentPokemon.stats.map(stat => {
           const statPercentage = Math.min((stat.value / 255) * 100, 100);
           const label = statNames[stat.name] || stat.name;
-          
+
           return (
             <div key={stat.name} className="stat-row">
               <span className="stat-name">{label}</span>
               <span className="stat-value">{stat.value}</span>
               <div className="stat-bar-bg">
-                <div 
-                  className="stat-bar" 
-                  style={{ 
-                    width: `${statPercentage}%`, 
+                <div
+                  className="stat-bar"
+                  style={{
+                    width: `${statPercentage}%`,
                     backgroundColor: primaryColor,
-                    boxShadow: `0 0 10px ${primaryColor}` 
-                  }} 
+                    boxShadow: `0 0 10px ${primaryColor}`
+                  }}
                 />
               </div>
             </div>
@@ -127,9 +127,9 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   const renderPage2 = () => (
     <div className="fade-in">
       <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.5rem', color: primaryColor, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Shield size={18} /> Eficacia Elemental
+        <Shield size={18} /> Debilidades y Resistencias
       </h3>
-      
+
       <div style={{ display: 'grid', gap: '2rem' }}>
         <div>
           <h4 style={{ color: 'var(--primary)', marginBottom: '1rem', borderLeft: '3px solid var(--primary)', paddingLeft: '0.8rem' }}>DÉBIL CONTRA (Recibe x2 o x4)</h4>
@@ -185,24 +185,24 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   const renderPage3 = () => {
     // Para evoluciones ramificadas (Eevee), agrupamos por padre
     const roots = evolutionChain.filter(e => !e.evolvesFromId);
-    
+
     const renderChainNode = (pId, depth = 0) => {
       const node = evolutionChain.find(e => e.id === pId);
       if (!node) return null;
-      
+
       const children = evolutionChain.filter(e => e.evolvesFromId === pId);
-      
+
       return (
         <React.Fragment key={pId}>
-          <div 
+          <div
             onClick={() => handleEvolutionClick(node.id)}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '1.5rem', 
-              background: node.id === currentPokemon.id.toString() ? `${primaryColor}15` : 'rgba(255,255,255,0.03)', 
-              padding: '1rem', 
-              borderRadius: '12px', 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1.5rem',
+              background: node.id === currentPokemon.id.toString() ? `${primaryColor}15` : 'rgba(255,255,255,0.03)',
+              padding: '1rem',
+              borderRadius: '12px',
               border: node.id === currentPokemon.id.toString() ? `2px solid ${primaryColor}` : '1px solid var(--glass-border)',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -214,7 +214,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
             <img src={node.image} alt={node.name} style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 'bold', fontSize: '1.1rem', textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {node.name} 
+                {node.name}
                 {node.id === currentPokemon.id.toString() && <Award size={16} color={primaryColor} />}
               </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>#{node.dexId.padStart(3, '0')}</div>
@@ -237,14 +237,14 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
         <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.5rem', color: primaryColor, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Award size={18} /> Línea Evolutiva
         </h3>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {isEvolutionLoading ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Buscando evolución...</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Buscando evolución...</div>
           ) : roots.map(root => renderChainNode(root.id))}
-          
+
           {evolutionChain.length <= 1 && !isEvolutionLoading && (
-              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Este Pokémon no tiene una línea evolutiva conocida.</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Este Pokémon no tiene una línea evolutiva conocida.</div>
           )}
         </div>
       </div>
@@ -254,16 +254,16 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   return (
     <div className="modal-overlay" onClick={handleOverlayClick} style={{ zIndex: 99999 }}>
       <div className="modal-content glass" style={{ border: `1px solid ${primaryColor}`, height: '650px', display: 'flex', overflow: 'hidden', position: 'relative' }}>
-        
+
         {isLoadingNew && (
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                <Loader2 className="loader" size={48} />
-            </div>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+            <Loader2 className="loader" size={48} />
+          </div>
         )}
 
         <button className="modal-close" onClick={onClose}><X size={24} /></button>
-        
-        <div className="modal-left" style={{ 
+
+        <div className="modal-left" style={{
           background: `radial-gradient(circle at center, ${primaryColor} 0%, transparent 80%)`,
           position: 'relative',
           padding: '2rem',
@@ -276,9 +276,9 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
           <div className="pokemon-id" style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', opacity: 0.6, fontSize: '1.5rem', fontWeight: 900 }}>
             #{currentPokemon.spriteId}
           </div>
-          <img 
-            src={currentPokemon.image} 
-            alt={currentPokemon.name} 
+          <img
+            src={currentPokemon.image}
+            alt={currentPokemon.name}
             style={{ width: '100%', maxWidth: '280px', filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))', zIndex: 2, position: 'relative' }}
           />
           <h2 style={{ fontSize: '2.5rem', textTransform: 'capitalize', marginTop: '1.5rem', textAlign: 'center' }}>
@@ -294,7 +294,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
         </div>
 
         <div className="modal-right" style={{ padding: '2.5rem', flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          
+
           <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
             {currentPage === 1 && renderPage1()}
             {currentPage === 2 && renderPage2()}
@@ -304,13 +304,13 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[1, 2, 3].map(pageNum => (
-                <button 
+                <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  style={{ 
-                    width: '35px', 
-                    height: '8px', 
-                    borderRadius: '4px', 
+                  style={{
+                    width: '35px',
+                    height: '8px',
+                    borderRadius: '4px',
                     background: currentPage === pageNum ? primaryColor : 'rgba(255,255,255,0.1)',
                     border: 'none',
                     cursor: 'pointer',
@@ -320,28 +320,29 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
               ))}
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
-                <button 
-                    className="btn btn-outline" 
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                >
-                    <ChevronLeft size={16} /> Ant.
-                </button>
-                <button 
-                    className="btn btn-outline" 
-                    onClick={() => setCurrentPage(prev => Math.min(3, prev + 1))}
-                    disabled={currentPage === 3}
-                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                >
-                    Sig. <ChevronRight size={16} />
-                </button>
+              <button
+                className="btn btn-outline"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+              >
+                <ChevronLeft size={16} /> Ant.
+              </button>
+              <button
+                className="btn btn-outline"
+                onClick={() => setCurrentPage(prev => Math.min(3, prev + 1))}
+                disabled={currentPage === 3}
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+              >
+                Sig. <ChevronRight size={16} />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .fade-in { animation: fadeInContent 0.4s ease-out; }
         @keyframes fadeInContent {
           from { opacity: 0; transform: translateX(10px); }
