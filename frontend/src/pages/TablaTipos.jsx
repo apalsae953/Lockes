@@ -108,7 +108,7 @@ export default function TablaTipos() {
     <div className="container" style={{ paddingBottom: '6rem', paddingTop: '3rem' }}>
       <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
         <h1 className="title-glow" style={{ fontSize: '4rem', marginBottom: '1rem' }}>
-          Tabla de <span className="gradient-text">Eficacias</span>
+          Tabla de <span className="gradient-text">Tipos</span>
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
           Selecciona hasta <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>2 tipos</span> para ver sus debilidades y resistencias combinadas. Ideal para analizar defensivamente a tu equipo.
