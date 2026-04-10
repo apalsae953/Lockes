@@ -16,6 +16,7 @@ const JUEGOS = [
 
 export default function MisPartidas() {
   const [partidas, setPartidas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -61,7 +62,7 @@ export default function MisPartidas() {
         }
       }
     };
-    fetchPartidas();
+    fetchPartidas().finally(() => setLoading(false));
   }, [user]);
 
   const initCreation = () => {
@@ -210,7 +211,12 @@ export default function MisPartidas() {
         </div>
       )}
 
-      {partidas.length === 0 ? (
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '6rem' }}>
+          <div className="loader"></div>
+          <p style={{ marginTop: '1.5rem', color: 'var(--text-muted)', fontFamily: 'Outfit' }}>Cargando tus aventuras...</p>
+        </div>
+      ) : partidas.length === 0 ? (
         <div className="card glass" style={{ textAlign: 'center', padding: '4rem' }}>
           <Gamepad2 size={64} color="var(--text-muted)" style={{ margin: '0 auto 1rem' }} />
           <h2>Aún no tienes partidas</h2>

@@ -11,21 +11,20 @@ class RunController extends Controller
 {
     public function index()
     {
-        $runs = Auth::user()->runs()->latest()->get();
+        // Solo seleccionamos lo necesario de la BD para no cargar blobs pesados (team, custom_bosses, etc.)
+        // Seguimos trayendo encounters solo para calcular el conteo en servidor
+        $runs = Auth::user()->runs()
+            ->select('id', 'user_id', 'name', 'game_id', 'game_name', 'vidas_max', 'vidas_actuales', 'encounters', 'created_at')
+            ->latest()
+            ->get();
         
         $optimized = $runs->map(function ($run) {
             $runData = $run->toArray();
-            // Calculamos el conteo en el servidor para evitar enviar todo el JSON de encounters
+            // Calculamos el conteo en el servidor para evitar enviar todo el JSON de encounters al cliente
             $runData['captures_count'] = collect($run->encounters ?? [])->where('pokemon', '!=', '')->count();
             
-            // Eliminamos campos pesados que no se necesitan en la vista de lista
-            unset(
-                $runData['encounters'],
-                $runData['team'],
-                $runData['extra_rules'],
-                $runData['custom_bosses'],
-                $runData['defeated_bosses']
-            );
+            // Eliminamos encounters antes de enviar al cliente para reducir el tamaño de la respuesta JSON
+            unset($runData['encounters']);
             
             return $runData;
         });
