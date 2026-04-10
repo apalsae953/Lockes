@@ -1,9 +1,61 @@
-import { Shield, Skull, Sword, Zap, Gamepad2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, Skull, Sword, Zap, Gamepad2, Info, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
+  const [showNotice, setShowNotice] = useState(true);
+
   return (
     <div className="container">
+      {/* AVISO DE SERVIDOR GRATUITO (FLOTANTE) */}
+      {showNotice && (
+        <div className="glass" style={{
+          position: 'fixed',
+          top: '7rem',
+          right: '2rem',
+          zIndex: 1000,
+          maxWidth: '420px',
+          padding: '1.25rem 1.5rem',
+          borderLeft: '4px solid var(--accent)',
+          background: 'rgba(25, 28, 41, 0.95)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          borderRadius: '16px',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+          animation: 'slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}>
+          <div style={{ color: 'var(--accent)', flexShrink: 0 }}><Info size={28} /></div>
+          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5', paddingRight: '1rem' }}>
+            <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '0.2rem', fontSize: '1rem' }}>Aviso del Centro Pokémon:</strong> 
+            Esta web utiliza un servidor gratuito que entra en reposo. Puede tardar hasta un minuto en reaccionar inicialmente y es normal experimentar lentitud puntual. ¡Gracias por tu paciencia!
+          </p>
+          <button 
+            onClick={() => setShowNotice(false)}
+            style={{ 
+              position: 'absolute', 
+              top: '0.75rem', 
+              right: '0.75rem', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: 'none', 
+              color: 'var(--text-muted)', 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.3rem',
+              borderRadius: '8px',
+              transition: 'all 0.3s'
+            }}
+            onMouseEnter={(e) => e.target.style.color = 'var(--primary)'}
+            onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}
+            title="Cerrar aviso"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <section className="hero">
         <h1 className="title-glow">Crea tu <span className="gradient-text">Nuzlocke</span></h1>
         <p>
