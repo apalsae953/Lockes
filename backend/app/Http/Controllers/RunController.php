@@ -11,7 +11,26 @@ class RunController extends Controller
 {
     public function index()
     {
-        return response()->json(Auth::user()->runs()->latest()->get());
+        $runs = Auth::user()->runs()->latest()->get();
+        
+        $optimized = $runs->map(function ($run) {
+            $runData = $run->toArray();
+            // Calculamos el conteo en el servidor para evitar enviar todo el JSON de encounters
+            $runData['captures_count'] = collect($run->encounters ?? [])->where('pokemon', '!=', '')->count();
+            
+            // Eliminamos campos pesados que no se necesitan en la vista de lista
+            unset(
+                $runData['encounters'],
+                $runData['team'],
+                $runData['extra_rules'],
+                $runData['custom_bosses'],
+                $runData['defeated_bosses']
+            );
+            
+            return $runData;
+        });
+
+        return response()->json($optimized);
     }
 
     public function store(Request $request)

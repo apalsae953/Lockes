@@ -19,6 +19,13 @@ class Run extends Model
         ];
     }
 
+    protected $appends = ['captures_count'];
+
+    public function getCapturesCountAttribute()
+    {
+        return collect($this->encounters ?? [])->where('pokemon', '!=', '')->count();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

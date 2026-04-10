@@ -45,7 +45,8 @@ export default function MisPartidas() {
             vidasMax: p.vidas_max,
             vidasActuales: p.vidas_actuales,
             extraRules: p.extra_rules,
-            game: p.game_name
+            game: p.game_name,
+            capturesCount: p.captures_count
           }));
           setPartidas(mapped);
         } catch (error) {
@@ -229,7 +230,7 @@ export default function MisPartidas() {
                 Vidas: {partida.vidasMax === null ? 'Ilimitadas (∞)' : `${partida.vidasActuales} / ${partida.vidasMax}`}
               </div>
               <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
-                Capturas: {partida.encounters?.filter(e => e.pokemon).length || 0}
+                Capturas: {partida.capturesCount ?? (partida.encounters?.filter(e => e.pokemon).length || 0)}
               </p>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
