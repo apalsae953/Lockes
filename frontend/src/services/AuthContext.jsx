@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 // Configuración base de Axios
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://lockes.onrender.com', withCredentials: true,
+    baseURL: import.meta.env.VITE_API_URL || '/', withCredentials: true,
     withXSRFToken: true, // Crucial para versiones modernas de Axios + Sanctum
     xsrfCookieName: 'XSRF-TOKEN',
     xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -35,8 +35,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const getCsrfCookie = async () => {
-        const rootUrl = (import.meta.env.VITE_API_URL || 'https://lockes.onrender.com').replace(/\/api\/?$/, '');
-        await api.get(`${rootUrl}/sanctum/csrf-cookie`);
+        await api.get('/sanctum/csrf-cookie');
     };
 
     const login = async (credentials) => {
@@ -67,11 +66,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const loginWithGoogle = () => {
-        // Obtenemos la URL base (sin el prefijo /api si lo tuviera)
-        const rawUrl = import.meta.env.VITE_API_URL || 'https://lockes.onrender.com';
-        const baseUrl = rawUrl.endsWith('/api') ? rawUrl.slice(0, -4) : rawUrl;
-        
-        window.location.href = `${baseUrl}/auth/google`;
+        window.location.href = "/auth/google";
     };
 
     return (
