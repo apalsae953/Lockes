@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth/google/callback',
             'api/login',
             'api/register',
+            'api/logout',
             'api/forgot-password',
             'api/reset-password'
         ]);

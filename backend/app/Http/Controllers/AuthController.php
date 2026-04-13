@@ -70,9 +70,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user' => $user], 201);
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 201);
     }
 
     public function login(Request $request)
@@ -83,8 +86,13 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return response()->json(['user' => Auth::user()]);
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+            
+            return response()->json([
+                'user' => $user,
+                'token' => $token
+            ]);
         }
 
         return response()->json(['message' => 'Credenciales inválidas'], 401);
@@ -135,9 +143,9 @@ class AuthController extends Controller
                 ]);
             }
 
-            Auth::login($user);
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-            return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login-success');
+            return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login-success?token=' . $token);
         } catch (\Exception $e) {
             \Log::error('Google Auth Error: ' . $e->getMessage());
             return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login?error=auth_failed');

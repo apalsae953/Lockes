@@ -5,14 +5,20 @@ const AuthContext = createContext();
 
 // Configuración base de Axios
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/', withCredentials: true,
-    withXSRFToken: true, // Crucial para versiones modernas de Axios + Sanctum
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
+    baseURL: import.meta.env.VITE_API_URL || '/',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     }
+});
+
+// Interceptor para añadir el Token en cada petición
+api.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
 });
 
 export const AuthProvider = ({ children }) => {
@@ -39,40 +45,46 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = async (credentials) => {
-        await getCsrfCookie();
         const response = await api.post('/api/login', credentials);
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+        }
         setUser(response.data.user);
         return response.data;
     };
 
     const register = async (userData) => {
-        await getCsrfCookie();
         const response = await api.post('/api/register', userData);
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+        }
         setUser(response.data.user);
         return response.data;
     };
 
     const logout = async () => {
-        await getCsrfCookie();
-        await api.post('/api/logout');
-        setUser(null);
+        try {
+            await api.post('/api/logout');
+        } catch (error) {
+            console.error('Error al cerrar sesión en el servidor:', error);
+        } finally {
+            localStorage.removeItem('token');
+            setUser(null);
+        }
     };
 
     const updateProfile = async (data) => {
-        await getCsrfCookie();
         const response = await api.put('/api/profile', data);
         setUser(response.data.user);
         return response.data;
     };
 
     const forgotPassword = async (email) => {
-        await getCsrfCookie();
         const response = await api.post('/api/forgot-password', { email });
         return response.data;
     };
 
     const resetPassword = async (data) => {
-        await getCsrfCookie();
         const response = await api.post('/api/reset-password', data);
         return response.data;
     };

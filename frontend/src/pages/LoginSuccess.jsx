@@ -9,7 +9,15 @@ export default function LoginSuccess() {
 
     useEffect(() => {
         const handleSuccess = async () => {
-            // Refrescar el estado del usuario después de la redirección de Google
+            // Capturar el token de la URL si viene de Google
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+
+            // Refrescar el estado del usuario
             await checkUser();
             navigate('/mis-partidas');
         };
