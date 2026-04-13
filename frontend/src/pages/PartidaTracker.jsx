@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Plus, Download, Trash2, Camera, Heart, HeartCrack, Infinity, ScrollText, Swords, MapPin, GripVertical, UserPlus, X, Edit2, Search, Skull } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { ArrowLeft, Plus, Download, Trash2, Camera, Heart, HeartCrack, Infinity, ScrollText, Swords, MapPin, GripVertical, UserPlus, X, Edit2, Search, Skull, FileSpreadsheet } from 'lucide-react';
 import { UNIVERSAL_RULES, PRESET_VARIANTS } from '../constants/rulesData';
 import { REGION_BOSSES } from '../constants/gameData';
 import { useAuth } from '../services/AuthContext';
@@ -302,19 +303,32 @@ export default function PartidaTracker() {
     setDraggingId(null);
   };
 
-  const exportCSV = () => {
-    const header = ['LUGAR', 'POKEMON', 'MOTE', 'ESTADO'];
-    const rows = partida.encounters.map(e => [e.lugar, e.pokemon, e.mote, e.status]);
-    const csvContent = "data:text/csv;charset=utf-8,"
-      + [header, ...rows].map(e => e.join(",")).join("\n");
+  const exportExcel = () => {
+    // 1. Mapear datos con los nombres de columna que quieres
+    const data = (partida.encounters || []).map(e => ({
+      'DONDE SE OBTUVO': e.lugar || 'Desconocido',
+      'NOMBRE POKÉMON': e.pokemon || '---',
+      'MOTE': e.mote || '---',
+      'ESTADO': e.status || 'Pendiente'
+    }));
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `locke_${partida.name.replace(/ /g, '_')}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // 2. Crear hoja y libro
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Mis Capturas");
+
+    // 3. Ponerlo "Bonito" (Ajustar anchos de columna)
+    const wscols = [
+      { wch: 30 }, // Lugar
+      { wch: 25 }, // Pokémon
+      { wch: 20 }, // Mote
+      { wch: 15 }  // Estado
+    ];
+    worksheet['!cols'] = wscols;
+
+    // 4. Generar archivo y descargar
+    const fileName = `Lockes_${partida.name.replace(/\s+/g, '_')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
   };
 
   if (!partida) return <div className="loader" style={{ margin: '5rem auto', display: 'block' }}></div>;
@@ -598,8 +612,8 @@ export default function PartidaTracker() {
           <button className="btn btn-outline" onClick={addCustomRoute}>
             <Plus size={18} /> Nueva Ruta
           </button>
-          <button className="btn btn-primary" onClick={exportCSV} style={{ backgroundColor: '#22c55e', color: '#000', fontWeight: 'bold' }}>
-            <Download size={18} /> Exportar Excel
+          <button className="btn btn-outline" onClick={exportExcel} style={{ color: '#22c55e', borderColor: 'rgba(34,197,94,0.4)' }}>
+            <FileSpreadsheet size={18} /> Exportar Excel
           </button>
         </div>
       </div>
