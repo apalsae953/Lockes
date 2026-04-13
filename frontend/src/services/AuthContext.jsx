@@ -65,12 +65,28 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
+    const forgotPassword = async (email) => {
+        await getCsrfCookie();
+        const response = await api.post('/api/forgot-password', { email });
+        return response.data;
+    };
+
+    const resetPassword = async (data) => {
+        await getCsrfCookie();
+        const response = await api.post('/api/reset-password', data);
+        return response.data;
+    };
+
     const loginWithGoogle = () => {
-        window.location.href = "/auth/google";
+        // Usamos la URL base de la API para redirigir al backend
+        const backendUrl = import.meta.env.VITE_API_URL || '';
+        // Si backendUrl es relativa (ej: /), se queda igual. 
+        // Si es absoluta (ej: http://localhost:8000), redirige correctamente.
+        window.location.href = `${backendUrl}/auth/google`;
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, loginWithGoogle, checkUser, updateProfile }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, loginWithGoogle, checkUser, updateProfile, forgotPassword, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Ghost, LogIn, User as UserIcon, LogOut } from 'lucide-react';
+import { Gamepad, LogIn, User as UserIcon, LogOut } from 'lucide-react';
 import { useAuth } from '../services/AuthContext';
 
 export default function Navbar() {
@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="container nav-content">
         <div className="nav-main" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1rem' }}>
           <Link to="/" className="nav-logo gradient-text" style={{ marginRight: '1rem' }}>
-            <Ghost size={34} color="#ef4444" />
+            <Gamepad size={34} color="#ef4444" />
             <span>NuzTracker</span>
           </Link>
 
@@ -32,17 +32,20 @@ export default function Navbar() {
             <Link to="/mis-partidas" className={`nav-link ${location.pathname.includes('/mis-partidas') || location.pathname.includes('/tracker') ? 'active' : ''}`}>
               Partidas
             </Link>
+            <Link to="/contacto" className={`nav-link ${location.pathname === '/contacto' ? 'active' : ''}`}>
+              Soporte
+            </Link>
           </div>
 
           <div className="nav-user-section">
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Link to="/perfil" style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem', 
-                  padding: '0.4rem 0.8rem', 
-                  background: 'rgba(255,255,255,0.03)', 
+                <Link to="/perfil" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.4rem 0.8rem',
+                  background: 'rgba(255,255,255,0.03)',
                   borderRadius: '12px',
                   border: '1px solid rgba(255,255,255,0.05)',
                   transition: 'all 0.3s'
@@ -59,13 +62,13 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link to="/login" style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.6rem', 
-                padding: '0.6rem 1.2rem', 
-                borderRadius: '12px', 
-                background: 'rgba(239, 68, 68, 0.1)', 
+              <Link to="/login" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '12px',
+                background: 'rgba(239, 68, 68, 0.1)',
                 color: 'var(--primary)',
                 border: '1px solid rgba(239, 68, 68, 0.2)',
                 fontWeight: 'bold'

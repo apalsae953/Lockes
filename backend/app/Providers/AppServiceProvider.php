@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || str_contains(config('app.url'), 'onrender.com')) {
             \URL::forceScheme('https');
         }
+
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $token . '&email=' . $user->email;
+        });
     }
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../services/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogIn, Mail, Lock, User as UserIcon, Loader2, ArrowRight, X } from 'lucide-react';
+import { LogIn, Mail, Lock, User as UserIcon, Loader2, ArrowRight, X, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
@@ -26,6 +28,11 @@ export default function Login() {
     setError(null);
     try {
       if (isRegister) {
+        if (formData.password !== formData.confirmPassword) {
+          setError('Las contraseñas no coinciden.');
+          setLoading(false);
+          return;
+        }
         await register(formData);
       } else {
         await login({ email: formData.email, password: formData.password });
@@ -109,21 +116,67 @@ export default function Login() {
             </div>
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: isRegister ? '1rem' : '1.5rem' }}>
             <div style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
                 <Lock size={16} />
               </span>
               <input 
-                type="password" 
+                type={showPass ? "text" : "password"}
                 className="input-premium" 
                 placeholder="Contraseña"
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
               />
+              <button 
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', zIndex: 2, display: 'flex' }}
+              >
+                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
+
+          {!isRegister && (
+            <div style={{ textAlign: 'right', marginBottom: '1.5rem', marginTop: '-0.5rem' }}>
+              <button 
+                type="button" 
+                onClick={() => navigate('/forgot-password')}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'none' }}
+                onMouseEnter={(e) => e.target.style.color = 'var(--primary)'}
+                onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.4)'}
+              >
+                ¿Has olvidado tu contraseña?
+              </button>
+            </div>
+          )}
+
+          {isRegister && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+                  <Lock size={16} />
+                </span>
+                <input 
+                  type={showConfirmPass ? "text" : "password"}
+                  className="input-premium" 
+                  placeholder="Repetir Contraseña"
+                  required={isRegister}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowConfirmPass(!showConfirmPass)}
+                  style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', zIndex: 2, display: 'flex' }}
+                >
+                  {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+          )}
 
           <button className="btn btn-primary btn-shine" style={{ width: '100%', padding: '1rem', borderRadius: '12px', fontSize: '1.1rem' }} disabled={loading}>
             {loading ? <Loader2 size={24} className="loader" /> : (
