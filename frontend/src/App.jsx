@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 // import ForgotPassword from './pages/ForgotPassword';
 // import ResetPassword from './pages/ResetPassword';
 
+// Estructura de páginas plana para mejorar compatibilidad con Vercel
 function App() {
   return (
     <Router>
