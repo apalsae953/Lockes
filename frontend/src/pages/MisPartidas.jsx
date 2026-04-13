@@ -11,6 +11,7 @@ const JUEGOS = [
   { id: 'johto', name: 'Johto (Oro/Plata/Cristal/HGSS)' },
   { id: 'hoenn', name: 'Hoenn (Rubí/Zafiro/Esmeralda)' },
   { id: 'sinnoh', name: 'Sinnoh (Diamante/Perla/Platino)' },
+  { id: 'pokemonz', name: 'Pokémon Z (EricLostie)' },
   { id: 'custom', name: 'Fan Game' }
 ];
 
