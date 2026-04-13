@@ -29,8 +29,9 @@ class AppServiceProvider extends ServiceProvider
             ]);
         }
 
-        ResetPassword::createUrlUsing(function ($user, string $token) {
-            return env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $token . '&email=' . $user->email;
-        });
+        // Recuperación de contraseña deshabilitada temporalmente
+        // ResetPassword::createUrlUsing(function ($user, string $token) {
+        //     return env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $token . '&email=' . $user->email;
+        // });
     }
 }

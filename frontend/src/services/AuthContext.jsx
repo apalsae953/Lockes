@@ -77,15 +77,16 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
-    const forgotPassword = async (email) => {
-        const response = await api.post('/api/forgot-password', { email });
-        return response.data;
-    };
+    // Recuperación de contraseña deshabilitada temporalmente
+    // const forgotPassword = async (email) => {
+    //     const response = await api.post('/api/forgot-password', { email });
+    //     return response.data;
+    // };
 
-    const resetPassword = async (data) => {
-        const response = await api.post('/api/reset-password', data);
-        return response.data;
-    };
+    // const resetPassword = async (data) => {
+    //     const response = await api.post('/api/reset-password', data);
+    //     return response.data;
+    // };
 
     const loginWithGoogle = () => {
         // Usamos la URL base de la API para redirigir al backend
@@ -96,7 +97,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, loginWithGoogle, checkUser, updateProfile, forgotPassword, resetPassword }}>
+        <AuthContext.Provider value={{ user, loading, login, register, logout, loginWithGoogle, checkUser, updateProfile }}>
             {children}
         </AuthContext.Provider>
     );

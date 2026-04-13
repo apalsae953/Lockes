@@ -139,6 +139,7 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Recuperación de contraseña deshabilitada temporalmente
           {!isRegister && (
             <div style={{ textAlign: 'right', marginBottom: '1.5rem', marginTop: '-0.5rem' }}>
               <button 
@@ -152,6 +153,7 @@ export default function Login() {
               </button>
             </div>
           )}
+          */}
 
           {isRegister && (
             <div style={{ marginBottom: '1.5rem' }}>
