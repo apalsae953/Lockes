@@ -18,6 +18,7 @@ const JUEGOS = [
 export default function MisPartidas() {
   const [partidas, setPartidas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [creationLoading, setCreationLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -137,6 +138,7 @@ export default function MisPartidas() {
     const gameName = JUEGOS.find(j => j.id === selectedRegion)?.name || 'Desconocido';
 
     if (user) {
+      setCreationLoading(true);
       try {
         const response = await api.post('/api/runs', {
           name: newName,
@@ -161,6 +163,9 @@ export default function MisPartidas() {
         navigate(`/tracker/${created.id}`);
       } catch (error) {
         console.error("Error creando partida en API", error);
+        alert("Error al crear la partida: " + (error.response?.data?.message || error.message));
+      } finally {
+        setCreationLoading(false);
       }
     } else {
       const newPartida = {
@@ -332,8 +337,12 @@ export default function MisPartidas() {
 
             <div style={{ padding: '2rem', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '1rem', background: 'rgba(0,0,0,0.3)' }}>
               <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleCreate}>
-                Iniciar Aventura
+              <button className="btn btn-primary" onClick={handleCreate} disabled={creationLoading}>
+                {creationLoading ? <div className="loader" style={{ width: '20px', height: '20px', borderTopColor: 'black' }}></div> : (
+                  <>
+                    Iniciar Aventura <PlaySquare size={18} />
+                  </>
+                )}
               </button>
             </div>
           </div>
