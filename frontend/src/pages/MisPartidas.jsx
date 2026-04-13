@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PlusCircle, Gamepad2, PlaySquare, X, Trash2 } from 'lucide-react';
 import { PRESET_ROUTES } from '../constants/gameData';
 import { PRESET_VARIANTS } from '../constants/rulesData';
-import { useAuth } from '../services/AuthContext';
-import api from '../services/AuthContext';
+import { useAuth } from '../../services/AuthContext';
+import api from '../../services/AuthContext';
 
 const JUEGOS = [
   { id: 'kanto', name: 'Kanto (Rojo/Azul/Verde/Amarillo)' },

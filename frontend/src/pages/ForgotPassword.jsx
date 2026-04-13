@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../services/AuthContext';
+import { useAuth } from '../../services/AuthContext';
 import { Mail, ArrowLeft, Loader2, CheckCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

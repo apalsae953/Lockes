@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Loader2, ChevronLeft, ChevronRight, X, Filter } from 'lucide-react';
-import { getAllPokemonNames, getPokemonByType } from '../services/pokeApi';
-import PokemonModal from '../components/PokemonModal';
+import { getAllPokemonNames, getPokemonByType } from '../../services/pokeApi';
+import PokemonModal from '../../components/PokemonModal';
 
 const REGIONS = [
   { name: 'Cualquiera', min: 1, max: 30000 },

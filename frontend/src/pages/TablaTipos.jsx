@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { getTypeColor } from '../services/pokeApi';
+import { getTypeColor } from '../../services/pokeApi';
 import { Shield, Sword, X, Zap, Info } from 'lucide-react';
 
 import { TYPE_ES as TIPO_TRADUCCIONES, EFICACIA_DEFENSIVA } from '../constants/typeData';

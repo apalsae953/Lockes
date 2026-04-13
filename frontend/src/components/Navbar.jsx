@@ -33,7 +33,7 @@ export default function Navbar() {
               Partidas
             </Link>
             <Link to="/contacto" className={`nav-link ${location.pathname === '/contacto' ? 'active' : ''}`}>
-              Soporte
+              Sugerencias
             </Link>
           </div>
 

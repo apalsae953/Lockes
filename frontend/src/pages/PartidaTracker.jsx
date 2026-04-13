@@ -4,8 +4,8 @@ import axios from 'axios';
 import { ArrowLeft, Plus, Download, Trash2, Camera, Heart, HeartCrack, Infinity, ScrollText, Swords, MapPin, GripVertical, UserPlus, X, Edit2, Search, Skull } from 'lucide-react';
 import { UNIVERSAL_RULES, PRESET_VARIANTS } from '../constants/rulesData';
 import { REGION_BOSSES } from '../constants/gameData';
-import { useAuth } from '../services/AuthContext';
-import api from '../services/AuthContext';
+import { useAuth } from '../../services/AuthContext';
+import api from '../../services/AuthContext';
 
 export default function PartidaTracker() {
   const { id } = useParams();
