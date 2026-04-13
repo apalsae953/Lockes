@@ -569,7 +569,7 @@ export default function PartidaTracker() {
                     <img src={boss.customImgUrl ? boss.customImgUrl : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`} alt={boss.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }} />
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{boss.title}</div>
-                  <h4 style={{ margin: '0.5rem 0' }}>{boss.name}</h4>
+                  <h4 style={{ margin: '0.5rem 0' }}>{isDefeated && boss.defeatedName ? boss.defeatedName : boss.name}</h4>
                   {boss.level > 0 && <div className="type-badge" style={{ background: isDefeated ? 'var(--text-muted)' : 'var(--primary)', color: 'black' }}>Nvl: {boss.level}</div>}
                 </div>
               );

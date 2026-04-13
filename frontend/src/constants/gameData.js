@@ -40,6 +40,14 @@ export const PRESET_ROUTES = {
     'Calle Victoria', 'Bahía Gresca',
     'Isla Hierro',
     'Gran Pantano', 'Mundo Distorsión'
+  ],
+  pokemonz: [
+    'Pokémon Inicial',
+    'Ruta 1', 'Ruta 2', 'Ruta 3', 'Ruta 4', 'Ruta 5', 'Ruta 6', 'Ruta 7', 'Ruta 8', 'Ruta 9', 'Ruta 10',
+    'Ruta 11', 'Ruta 12', 'Ruta 13', 'Ruta 14', 'Ruta 15', 'Ruta 16', 'Ruta 17', 'Ruta 18', 'Ruta 19', 'Ruta 20',
+    'Ruta 21', 'Ruta 22', 'Ruta 23', 'Ruta 24', 'Ruta 25', 'Ruta 26',
+    'Pueblo Lienzo', 'Pueblo Vinilo', 'Ciudad Grisalla', 'Pueblo Acrílico', 'Pueblo Collage', 'Ciudad Óleo', 'Pueblo Profano', 'Ciudad Novarte', 'Pueblo Bodegon', 'Pueblo Petroglifo', 'Isla Certijo', 'Ciudad Relieve', 'Pueblo Vánitas', 'Ciudad Luminalia', 'Ciudad Batik', 'Ciudad Romantis', 'Isla Montesano', 'Pueblo Fresco', 'Ciudad Fluxus', 'Pueblo Mosaico', 'Ciudad Fractal', 'Pueblo Sanguino', 'Ciudad Yantra', 'Pueblo Cromlech',
+    'Catacumbas Meridionales', 'Cueva Grisalla', 'Bosque Ladera', 'Santuario de los reyes', 'Patio Trasero', 'Antigua biblioteca', 'Cueva Lóbrega', 'Pantano Profano', 'Cueva Refulgente', 'Colina de tormenta', 'Taller Quemado', 'Chateau Lanto', 'Catacumbas Septentrionales', 'Santuario Prosperidad', 'Gruta Tierraunida', 'Viejo Vánitas', 'Huerto Vánitas', 'Criptas de Luminalia', 'Prisión del Olvido', 'Sima Ardiente', 'Catacumbas Orientales', 'Pirineos de Kalos', 'Frontera con Paldea', 'Fábrica de pokeball', 'Cueva de Isla Montesano', 'Gruta Helada', 'Fondo Marino(Pueblo Acrílico)', 'Fondo Marino(Pueblo Petroglifo)', 'Antigua Forja inundada', 'Cueva Desenlace', 'Batalla de Kalos', 'Bosque Errante', 'Villa Pokemon', 'Costa Sanguina', 'Lugar Misterioso', 'Catacumbas Occidentales', 'Torre Maestra', 'Bahía Azul', 'Cueva Talasia', 'Cueva de los Reflejos'
   ]
 };
 
@@ -103,6 +111,25 @@ export const REGION_BOSSES = {
     { name: 'Fausto', img: 'flint', level: 57, title: 'Alto Mando 3' },
     { name: 'Delos', img: 'lucian', level: 59, title: 'Alto Mando 4' },
     { name: 'Cintia', img: 'cynthia', level: 62, title: 'Campeón' }
+  ],
+
+  pokemonz: [
+    { name: 'Canola', img: 'placeholder', level: 0, title: 'Regente 1' },
+    { name: 'Hisopo', img: 'placeholder', level: 0, title: 'Regente 2' },
+    { name: 'F3', img: 'placeholder', level: 0, title: 'Regente 3' },
+    { name: 'Zafra', img: 'placeholder', level: 0, title: 'Regente 4' },
+    { name: 'Clavelina', defeatedName: 'Capitán Loto', img: 'placeholder', level: 0, title: 'Regente 5' },
+    { name: 'Belladona', img: 'placeholder', level: 0, title: 'Regente 6' },
+    { name: 'Hibis', img: 'placeholder', level: 0, title: 'Regente 7' },
+    { name: 'Anturia', img: 'placeholder', level: 0, title: 'Regente 8' },
+    { name: 'Rúpico', img: 'placeholder', level: 0, title: 'Regente 9' },
+    { name: 'Cendera', img: 'placeholder', level: 0, title: 'Regente 10' },
+    { name: 'Arrayán', img: 'placeholder', level: 0, title: 'Regente 11' },
+    { name: 'Siempreviva', img: 'placeholder', level: 0, title: 'Regente 12' },
+    { name: 'Tornasola', img: 'placeholder', level: 0, title: 'Alto Mando 1' },
+    { name: 'Aure', img: 'placeholder', level: 0, title: 'Alto Mando 2' },
+    { name: 'Prímula', img: 'placeholder', level: 0, title: 'Alto Mando 3' },
+    { name: 'Malvo', img: 'placeholder', level: 0, title: 'Alto Mando 4' }
   ]
 };
 
