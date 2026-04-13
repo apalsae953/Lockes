@@ -27,7 +27,7 @@ export default function MisReglas() {
     if (!name.trim() || !description.trim()) return;
 
     if (editingId) {
-      const updated = customRules.map(r => 
+      const updated = customRules.map(r =>
         r.id === editingId ? { ...r, name, description } : r
       );
       saveCustomRules(updated);
@@ -90,16 +90,16 @@ export default function MisReglas() {
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
             <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Nombre de la Regla</label>
-            <input className="input" placeholder="Ej. Regla de POCIONES..." value={name} onChange={e => setName(e.target.value)} />
+            <input className="input" placeholder="Ej. Regla de..." value={name} onChange={e => setName(e.target.value)} />
           </div>
           <div>
             <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Descripción / Explicación Detallada</label>
-            <textarea 
-              className="input" 
-              placeholder="Explica tu norma aquí a fondo..." 
+            <textarea
+              className="input"
+              placeholder="Explica tu norma aquí..."
               style={{ minHeight: '100px', resize: 'vertical' }}
-              value={description} 
-              onChange={e => setDescription(e.target.value)} 
+              value={description}
+              onChange={e => setDescription(e.target.value)}
             />
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -115,7 +115,7 @@ export default function MisReglas() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '2rem' }}>
         <div>
-          <h2 style={{ marginBottom: '1.5rem' }}>Oficiales <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>(Base y Dashboard)</span></h2>
+          <h2 style={{ marginBottom: '1.5rem' }}>Oficiales <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>(Base y Dashboard)</span></h2>
           {UNIVERSAL_RULES.map(r => <RuleCard key={r.id} r={r} locked />)}
           <h3 style={{ marginTop: '2rem', marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '1.25rem' }}>Variantes del Dashboard</h3>
           {PRESET_VARIANTS.map(r => <RuleCard key={r.id} r={r} locked />)}
