@@ -23,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Forzamos la configuración de cookies para que funcione en Render + Vercel
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-            config(['session.secure' => true]);
+            config([
+                'session.secure' => true,
+                'session.same_site' => 'none',
+            ]);
         }
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
