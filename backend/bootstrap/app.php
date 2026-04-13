@@ -13,10 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
-        $middleware->statefulApi(); // Esto permite que la sesión funcione entre dominios distintos
+        $middleware->statefulApi(); // Habilita la sesión para la API
         $middleware->validateCsrfTokens(except: [
             'auth/google',
-            'auth/google/callback'
+            'auth/google/callback',
+            'api/login',
+            'api/register',
+            'api/forgot-password',
+            'api/reset-password'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

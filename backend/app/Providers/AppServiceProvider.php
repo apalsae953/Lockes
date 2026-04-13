@@ -15,13 +15,15 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         if (config('app.env') === 'production' || str_contains(config('app.url'), 'onrender.com')) {
             \URL::forceScheme('https');
+        }
+
+        // Forzamos la configuración de cookies para que funcione en Render + Vercel
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            config(['session.secure' => true]);
         }
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
