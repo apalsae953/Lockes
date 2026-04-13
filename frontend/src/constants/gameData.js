@@ -114,22 +114,22 @@ export const REGION_BOSSES = {
   ],
 
   pokemonz: [
-    { name: 'Canola', img: 'placeholder', level: 0, title: 'Regente 1' },
-    { name: 'Hisopo', img: 'placeholder', level: 0, title: 'Regente 2' },
-    { name: 'F3', img: 'placeholder', level: 0, title: 'Regente 3' },
-    { name: 'Zafra', img: 'placeholder', level: 0, title: 'Regente 4' },
-    { name: 'Clavelina', defeatedName: 'Capitán Loto', img: 'placeholder', level: 0, title: 'Regente 5' },
-    { name: 'Belladona', img: 'placeholder', level: 0, title: 'Regente 6' },
-    { name: 'Hibis', img: 'placeholder', level: 0, title: 'Regente 7' },
-    { name: 'Anturia', img: 'placeholder', level: 0, title: 'Regente 8' },
-    { name: 'Rúpico', img: 'placeholder', level: 0, title: 'Regente 9' },
-    { name: 'Cendera', img: 'placeholder', level: 0, title: 'Regente 10' },
-    { name: 'Arrayán', img: 'placeholder', level: 0, title: 'Regente 11' },
-    { name: 'Siempreviva', img: 'placeholder', level: 0, title: 'Regente 12' },
-    { name: 'Tornasola', img: 'placeholder', level: 0, title: 'Alto Mando 1' },
-    { name: 'Aure', img: 'placeholder', level: 0, title: 'Alto Mando 2' },
-    { name: 'Prímula', img: 'placeholder', level: 0, title: 'Alto Mando 3' },
-    { name: 'Malvo', img: 'placeholder', level: 0, title: 'Alto Mando 4' }
+    { name: 'Canola', img: 'placeholder', level: 15, title: 'Regente 1' },
+    { name: 'Hisopo', img: 'placeholder', level: 24, title: 'Regente 2' },
+    { name: 'F3', img: 'placeholder', level: 34, title: 'Regente 3' },
+    { name: 'Zafra', img: 'placeholder', level: 41, title: 'Regente 4' },
+    { name: 'Clavelina', defeatedName: 'Capitán Loto', img: 'placeholder', level: 46, title: 'Regente 5' },
+    { name: 'Belladona', img: 'placeholder', level: 54, title: 'Regente 6' },
+    { name: 'Hibis', img: 'placeholder', level: 68, title: 'Regente 7' },
+    { name: 'Anturia', img: 'placeholder', level: 72, title: 'Regente 8' },
+    { name: 'Rúpico', img: 'placeholder', level: 78, title: 'Regente 9' },
+    { name: 'Cendera', img: 'placeholder', level: 82, title: 'Regente 10' },
+    { name: 'Arrayán', img: 'placeholder', level: 90, title: 'Regente 11' },
+    { name: 'Siempreviva', img: 'placeholder', level: 90, title: 'Regente 12' },
+    { name: 'Tornasola', img: 'placeholder', level: 100, title: 'Alto Mando 1' },
+    { name: 'Aure', img: 'placeholder', level: 100, title: 'Alto Mando 2' },
+    { name: 'Prímula', img: 'placeholder', level: 100, title: 'Alto Mando 3' },
+    { name: 'Malvo', img: 'placeholder', level: 100, title: 'Alto Mando 4' }
   ]
 };
 
