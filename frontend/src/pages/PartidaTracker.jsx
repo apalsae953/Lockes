@@ -580,7 +580,16 @@ export default function PartidaTracker() {
                     </>
                   )}
                   <div style={{ width: '80px', height: '80px', marginBottom: '1rem', background: 'var(--bg-darker)', borderRadius: '50%', overflow: 'hidden', border: isDefeated ? '2px solid var(--text-muted)' : '2px solid var(--accent)', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
-                    <img src={boss.customImgUrl ? boss.customImgUrl : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`} alt={boss.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }} />
+                    <img 
+                      src={
+                        (isDefeated && boss.defeatedImg) ? boss.defeatedImg :
+                        (boss.customImgUrl ? boss.customImgUrl : 
+                        (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
+                      } 
+                      alt={boss.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }} 
+                    />
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{boss.title}</div>
                   <h4 style={{ margin: '0.5rem 0' }}>{isDefeated && boss.defeatedName ? boss.defeatedName : boss.name}</h4>
