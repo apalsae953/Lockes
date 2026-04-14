@@ -587,7 +587,12 @@ export default function PartidaTracker() {
                         (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
                       } 
                       alt={boss.name} 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: (partida.gameId === 'pokemonz' || boss.customImgUrl) ? 'contain' : 'cover',
+                        padding: (partida.gameId === 'pokemonz' || boss.customImgUrl) ? '5px' : '0'
+                      }} 
                       onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }} 
                     />
                   </div>
