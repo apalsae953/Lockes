@@ -83,7 +83,7 @@ export default function Login() {
           {isRegister && (
             <div style={{ marginBottom: '1rem' }}>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
                   <UserIcon size={16} />
                 </span>
                 <input 
@@ -100,7 +100,7 @@ export default function Login() {
 
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
                 <Mail size={16} />
               </span>
               <input 
@@ -116,7 +116,7 @@ export default function Login() {
 
           <div style={{ marginBottom: isRegister ? '1rem' : '1.5rem' }}>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
                 <Lock size={16} />
               </span>
               <input 
@@ -156,7 +156,7 @@ export default function Login() {
           {isRegister && (
             <div style={{ marginBottom: '1.5rem' }}>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
                   <Lock size={16} />
                 </span>
                 <input 

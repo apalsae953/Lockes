@@ -36,21 +36,20 @@ export default function Profile() {
     }
 
   return (
-    <div className="login-page-container" style={{ 
-      background: 'radial-gradient(circle at 50% -20%, #1a1a2e 0%, #0a0a12 100%)',
-    }}>
+    <div className="login-page-container" style={{ background: 'var(--bg-dark)' }}>
       
       <div className="login-card-premium fade-in" style={{ 
         maxWidth: '500px',
         padding: '2.5rem',
-        background: 'rgba(23, 23, 33, 0.9)',
+        background: 'var(--glass-bg)',
+        border: '1px solid var(--glass-border)'
       }}>
         
         <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
              <Link to="/mis-partidas" style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                 <ArrowLeft size={20} />
              </Link>
-             <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: 'white' }}>Mi Perfil</h1>
+             <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--text-main)' }}>Mi Perfil</h1>
         </div>
 
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -58,7 +57,7 @@ export default function Profile() {
                 {user.avatar ? (
                     <img src={user.avatar} alt={user.name} style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid var(--primary)', padding: '3px' }} />
                 ) : (
-                    <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid var(--primary)' }}>
+                    <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--glass-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid var(--primary)' }}>
                         <User size={48} color="var(--primary)" />
                     </div>
                 )}
@@ -91,7 +90,7 @@ export default function Profile() {
           <div style={{ marginBottom: '1.25rem' }}>
             <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', marginLeft: '0.5rem' }}>NOMBRE DE ENTRENADOR</label>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
+              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
                 <User size={18} />
               </span>
               <input 
@@ -108,7 +107,7 @@ export default function Profile() {
           <div style={{ marginBottom: '2rem' }}>
             <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', marginLeft: '0.5rem' }}>CORREO ELECTRÓNICO (No editable)</label>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.1)', zIndex: 1 }}>
+              <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1, opacity: 0.5 }}>
                 <Mail size={18} />
               </span>
               <input 
