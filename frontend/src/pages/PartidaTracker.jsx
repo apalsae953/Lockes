@@ -582,9 +582,10 @@ export default function PartidaTracker() {
                   <div style={{ width: '80px', height: '80px', marginBottom: '1rem', background: 'var(--bg-darker)', borderRadius: '50%', overflow: 'hidden', border: isDefeated ? '2px solid var(--text-muted)' : '2px solid var(--accent)', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
                     <img 
                       src={
-                        (isDefeated && boss.defeatedImg) ? boss.defeatedImg :
+                        (isDefeated && boss.defeatedImg) ? 
+                          (boss.defeatedImg.startsWith('/') ? boss.defeatedImg : `/${boss.defeatedImg}`) :
                         (boss.customImgUrl ? boss.customImgUrl : 
-                        (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
+                        (boss.img.startsWith('/') || boss.img.startsWith('http') || boss.img.includes('bosses/') ? (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `/${boss.img}`) : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
                       } 
                       alt={boss.name} 
                       style={{ 

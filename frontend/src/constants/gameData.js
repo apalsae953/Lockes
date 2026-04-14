@@ -114,22 +114,22 @@ export const REGION_BOSSES = {
   ],
 
   pokemonz: [
-    { name: 'Canola', img: '/bosses/pokemonz/canola.png', level: 15, title: 'Regente 1' },
-    { name: 'Hisopo', img: '/bosses/pokemonz/hisopo.png', level: 24, title: 'Regente 2' },
-    { name: 'F3', img: '/bosses/pokemonz/f3.png', level: 34, title: 'Regente 3' },
-    { name: 'Zafra', img: '/bosses/pokemonz/zafra.png', level: 41, title: 'Regente 4' },
-    { name: 'Clavelina', defeatedName: 'Capitán Loto', img: '/bosses/pokemonz/clavelina.png', defeatedImg: '/bosses/pokemonz/lanto.png', level: 46, title: 'Regente 5' },
-    { name: 'Belladona', img: '/bosses/pokemonz/belladona.png', level: 54, title: 'Regente 6' },
-    { name: 'Hibis', img: '/bosses/pokemonz/hibis.png', level: 68, title: 'Regente 7' },
-    { name: 'Anturia', img: '/bosses/pokemonz/anturia.png', level: 72, title: 'Regente 8' },
-    { name: 'Rúpico', img: '/bosses/pokemonz/rupico.png', level: 78, title: 'Regente 9' },
-    { name: 'Cendera', img: '/bosses/pokemonz/cendera.png', level: 82, title: 'Regente 10' },
-    { name: 'Arrayán', img: '/bosses/pokemonz/arrayan.png', level: 90, title: 'Regente 11' },
-    { name: 'Siempreviva', img: '/bosses/pokemonz/siempreviva.png', level: 90, title: 'Regente 12' },
-    { name: 'Tornasola', img: '/bosses/pokemonz/tornasola.png', level: 100, title: 'Alto Mando 1' },
-    { name: 'Aure', img: '/bosses/pokemonz/aure.png', level: 100, title: 'Alto Mando 2' },
-    { name: 'Prímula', img: '/bosses/pokemonz/primula.png', level: 100, title: 'Alto Mando 3' },
-    { name: 'Malvo', img: '/bosses/pokemonz/malvo.png', defeatedImg: '/bosses/pokemonz/malvo2.png', level: 100, title: 'Alto Mando 4' }
+    { name: 'Canola', img: 'bosses/pokemonz/canola.png', level: 15, title: 'Regente 1' },
+    { name: 'Hisopo', img: 'bosses/pokemonz/hisopo.png', level: 24, title: 'Regente 2' },
+    { name: 'F3', img: 'bosses/pokemonz/f3.png', level: 34, title: 'Regente 3' },
+    { name: 'Zafra', img: 'bosses/pokemonz/zafra.png', level: 41, title: 'Regente 4' },
+    { name: 'Clavelina', defeatedName: 'Capitán Loto', img: 'bosses/pokemonz/clavelina.png', defeatedImg: 'bosses/pokemonz/lanto.png', level: 46, title: 'Regente 5' },
+    { name: 'Belladona', img: 'bosses/pokemonz/belladona.png', level: 54, title: 'Regente 6' },
+    { name: 'Hibis', img: 'bosses/pokemonz/hibis.png', level: 68, title: 'Regente 7' },
+    { name: 'Anturia', img: 'bosses/pokemonz/anturia.png', level: 72, title: 'Regente 8' },
+    { name: 'Rúpico', img: 'bosses/pokemonz/rupico.png', level: 78, title: 'Regente 9' },
+    { name: 'Cendera', img: 'bosses/pokemonz/cendera.png', level: 82, title: 'Regente 10' },
+    { name: 'Arrayán', img: 'bosses/pokemonz/arrayan.png', level: 90, title: 'Regente 11' },
+    { name: 'Siempreviva', img: 'bosses/pokemonz/siempreviva.png', level: 90, title: 'Regente 12' },
+    { name: 'Tornasola', img: 'bosses/pokemonz/tornasola.png', level: 100, title: 'Alto Mando 1' },
+    { name: 'Aure', img: 'bosses/pokemonz/aure.png', level: 100, title: 'Alto Mando 2' },
+    { name: 'Prímula', img: 'bosses/pokemonz/primula.png', level: 100, title: 'Alto Mando 3' },
+    { name: 'Malvo', img: 'bosses/pokemonz/malvo.png', defeatedImg: 'bosses/pokemonz/malvo2.png', level: 100, title: 'Alto Mando 4' }
   ]
 };
 
