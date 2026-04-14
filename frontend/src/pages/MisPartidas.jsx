@@ -203,16 +203,16 @@ export default function MisPartidas() {
         <div className="glass" style={{
           marginBottom: '2rem',
           padding: '1rem 1.5rem',
-          borderLeft: '4px solid #facc15',
-          background: 'rgba(250, 204, 21, 0.1)',
+          borderLeft: '4px solid var(--warning-border)',
+          background: 'var(--warning-bg)',
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
           borderRadius: '8px'
         }}>
-          <div style={{ backgroundColor: '#facc15', color: '#000', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', flexShrink: 0 }}>!</div>
-          <p style={{ margin: 0, color: '#fef08a', fontSize: '0.95rem' }}>
-            <strong>Atención Entrenador:</strong> Estás usando el almacenamiento local. <Link to="/login" style={{ color: '#facc15', fontWeight: 'bold', textDecoration: 'underline' }}>Inicia sesión</Link> para guardar tus partidas en la nube y no perderlas.
+          <div style={{ backgroundColor: 'var(--warning-border)', color: '#000', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', flexShrink: 0 }}>!</div>
+          <p style={{ margin: 0, color: 'var(--warning-text)', fontSize: '0.95rem' }}>
+            <strong>Atención Entrenador:</strong> Estás usando el almacenamiento local. <Link to="/login" style={{ color: 'var(--warning-border)', fontWeight: 'bold', textDecoration: 'underline' }}>Inicia sesión</Link> para guardar tus partidas en la nube y no perderlas.
           </p>
         </div>
       )}

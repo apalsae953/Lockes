@@ -225,9 +225,9 @@ export default function Pokedex() {
   };
 
   return (
-    <div className="container" style={{ paddingBottom: '4rem' }}>
+    <div className="container" style={{ paddingBottom: '4rem', paddingTop: '2.5rem' }}>
 
-      <div className="card glass" style={{ marginBottom: '1.25rem', padding: '1.25rem', background: 'rgba(15, 17, 26, 0.9)' }}>
+      <div className="card glass" style={{ marginBottom: '1.25rem', padding: '1.25rem', background: 'var(--glass-bg)' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: 'var(--accent)' }}>
           <Filter size={20} /> Filtros de Búsqueda
         </h3>
@@ -332,7 +332,7 @@ export default function Pokedex() {
                   className="pokemon-img"
                   loading="lazy"
                 />
-                <div className="pokemon-info glass" style={{ background: 'rgba(0,0,0,0.4)', borderRadius: '0' }}>
+                <div className="pokemon-info glass" style={{ background: 'var(--bg-card)', borderRadius: '0', backdropFilter: 'blur(10px)' }}>
                   <h3 style={{ textTransform: 'capitalize' }}>{pokemon.name.replace(/-/g, ' ')}</h3>
 
                   <div className="types-container">

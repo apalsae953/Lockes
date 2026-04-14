@@ -38,8 +38,39 @@
   --type-dragon: #6F35FC;
   --type-dark: #705746;
   --type-steel: #B7B7CE;
-  --type-fairy: #D685AD;
+  --fairy-glow: rgba(214, 133, 173, 0.5);
+
+  /* Alert Colors (Dark) */
+  --warning-bg: rgba(250, 204, 21, 0.1);
+  --warning-text: #fef08a;
+  --warning-border: #facc15;
+  --info-bg: rgba(59, 130, 246, 0.1);
+  --info-text: #93c5fd;
+  --info-border: #3b82f6;
 }
+
+.light-mode {
+  --bg-dark: #f0f2f5;
+  --bg-darker: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --text-main: #111827;
+  --text-muted: #4b5563;
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+
+  --bg-input: rgba(0, 0, 0, 0.04);
+
+  /* Alert Colors (Light) */
+  --warning-bg: #fefce8;
+  --warning-text: #854d0e;
+  --warning-border: #eab308;
+  --info-bg: #eff6ff;
+  --info-text: #1e40af;
+  --info-border: #3b82f6;
+}
+
 
 * {
   box-sizing: border-box;
@@ -50,11 +81,22 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-dark);
   background-image:
-    radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, var(--primary-alpha), transparent 50%),
+    radial-gradient(at 100% 100%, var(--accent-alpha), transparent 50%);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+:root {
+  --primary-alpha: rgba(239, 68, 68, 0.15);
+  --accent-alpha: rgba(59, 130, 246, 0.15);
+}
+
+.light-mode {
+  --primary-alpha: rgba(239, 68, 68, 0.08);
+  --accent-alpha: rgba(59, 130, 246, 0.08);
 }
 
 h1,
@@ -144,7 +186,7 @@ ul {
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid var(--glass-border);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-input);
   color: var(--text-main);
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
@@ -259,7 +301,7 @@ select.input option {
   z-index: 50;
   padding: 1.5rem 0;
   border-bottom: 2px solid var(--glass-border);
-  background: rgba(10, 11, 18, 0.92);
+  background: var(--bg-dark); /* Antes era un color fijo, ahora usa la variable */
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   transition: all 0.4s ease;
@@ -505,8 +547,12 @@ select.input option {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.6) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
   z-index: 1;
+}
+
+.light-mode .pokemon-card::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .pokemon-card:hover {
@@ -522,6 +568,10 @@ select.input option {
   color: rgba(255, 255, 255, 0.5);
   font-size: 1.5rem;
   z-index: 2;
+}
+
+.light-mode .pokemon-id {
+  color: rgba(0, 0, 0, 0.25);
 }
 
 .pokemon-img {
@@ -776,16 +826,15 @@ select.input option {
   width: 100%;
   padding: 0.9rem 1rem 0.9rem 3rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
+  background: var(--bg-input) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-main) !important;
   font-size: 0.95rem;
   outline: none;
   transition: all 0.3s ease;
 }
 
 .input-premium:focus {
-  background: rgba(255, 255, 255, 0.06) !important;
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
 }

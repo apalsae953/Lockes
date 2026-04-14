@@ -16,17 +16,17 @@ export default function Home() {
           zIndex: 1000,
           maxWidth: '420px',
           padding: '1.25rem 1.5rem',
-          borderLeft: '4px solid var(--accent)',
-          background: 'rgba(25, 28, 41, 0.95)',
+          borderLeft: '4px solid var(--info-border)',
+          background: 'var(--glass-bg)',
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
           borderRadius: '16px',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+          boxShadow: 'var(--glass-shadow)',
           animation: 'slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         }}>
-          <div style={{ color: 'var(--accent)', flexShrink: 0 }}><Info size={28} /></div>
-          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5', paddingRight: '1rem' }}>
+          <div style={{ color: 'var(--info-border)', flexShrink: 0 }}><Info size={28} /></div>
+          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--info-text)', lineHeight: '1.5', paddingRight: '1rem' }}>
             <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '0.2rem', fontSize: '1rem' }}>Aviso del Centro Pokémon:</strong> 
             Esta web utiliza un servidor gratuito que entra en reposo. Puede tardar hasta un minuto en reaccionar inicialmente y es normal experimentar lentitud puntual. ¡Gracias por tu paciencia!
           </p>

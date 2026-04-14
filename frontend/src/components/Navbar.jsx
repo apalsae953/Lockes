@@ -1,10 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad, LogIn, User as UserIcon, LogOut } from 'lucide-react';
+import { Gamepad, LogIn, User as UserIcon, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../services/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.body.classList.add('light-mode');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.body.classList.remove('light-mode');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [isLightMode]);
 
   return (
     <nav className="navbar">
@@ -15,7 +27,6 @@ export default function Navbar() {
             <span>NuzTracker</span>
           </Link>
 
-          {/* EN PC ESTO SE VE DESPUÉS DEL LOGO, EN MÓVIL SE OCULTA O PASA ABAJO SEGÚN CSS */}
           <div className="nav-links">
             <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
               Reglas
@@ -38,6 +49,30 @@ export default function Navbar() {
           </div>
 
           <div className="nav-user-section">
+            {/* TOGGLE MODO CLARO/OSCURO CON SOLROCK Y LUNATONE */}
+            <button 
+              onClick={() => setIsLightMode(!isLightMode)} 
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                transition: 'all 0.3s'
+              }}
+              className="theme-toggle-btn"
+              title={isLightMode ? "Cambiar a Modo Oscuro (Lunatone)" : "Cambiar a Modo Claro (Solrock)"}
+            >
+              <img 
+                src={isLightMode ? "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/337.png" : "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/338.png"} 
+                alt="Theme switch" 
+                style={{ width: '45px', height: '45px', filter: isLightMode ? 'none' : 'drop-shadow(0 0 8px var(--primary))' }} 
+              />
+            </button>
+
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Link to="/perfil" style={{
@@ -45,15 +80,15 @@ export default function Navbar() {
                   alignItems: 'center',
                   gap: '0.5rem',
                   padding: '0.4rem 0.8rem',
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'rgba(var(--text-main-rgb), 0.03)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: '1px solid var(--glass-border)',
                   transition: 'all 0.3s'
                 }} className="nav-profile-link">
                   {user.avatar ? (
                     <img src={user.avatar} alt={user.name} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--primary)' }} />
                   ) : (
-                    <div style={{ padding: '0.4rem', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex' }}><UserIcon size={16} /></div>
+                    <div style={{ padding: '0.4rem', background: 'var(--glass-border)', borderRadius: '50%', display: 'flex' }}><UserIcon size={16} /></div>
                   )}
                   <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }} className="nav-user-name">{user.name}</span>
                 </Link>
