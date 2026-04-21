@@ -1311,6 +1311,13 @@ select.input option {
   .pokemon-modal-info .types-container {
     margin-top: 0 !important;
     justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Badges de tipo más pequeños en la cabecera del modal */
+  .pokemon-modal-left .type-badge {
+    font-size: 0.72rem !important;
+    padding: 0.2rem 0.55rem !important;
   }
 
   /* Panel de contenido: ocupa el resto del alto */
@@ -1321,6 +1328,33 @@ select.input option {
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
+  }
+
+  /* Área scrollable del contenido: sin desbordamiento horizontal */
+  .pokemon-modal-right > div:first-child {
+    overflow-x: hidden !important;
+  }
+
+  /* Cadena evolutiva: sin indentación en móvil (evita scroll horizontal) */
+  .pokemon-modal-right .evo-item {
+    margin-left: 0 !important;
+    gap: 0.6rem !important;
+    padding: 0.75rem !important;
+  }
+
+  /* Caja de condición de evolución: más compacta en móvil */
+  .pokemon-modal-right .evo-item > div:last-child {
+    max-width: 80px !important;
+    font-size: 0.7rem !important;
+    padding: 0.3rem 0.5rem !important;
+    flex-shrink: 0;
+  }
+
+  /* Imagen de evolución más pequeña */
+  .pokemon-modal-right .evo-item img {
+    width: 48px !important;
+    height: 48px !important;
+    flex-shrink: 0;
   }
 
   /* Botones de navegación de páginas más compactos */
