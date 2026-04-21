@@ -70,7 +70,23 @@ export const getAllPokemonNames = async () => {
     const regionalSuffixes = ['-alola', '-galar', '-hisui', '-paldea'];
     const megaSuffixes = ['-mega', '-primal'];
 
-    const specialForms = new Set(['floette-eternal']);
+    // Formas especiales: mapa de nombre → nombre base para buscar en baseMap
+    const specialForms = new Map([['floette-eternal', 'floette']]);
+
+    const getBaseName = (name) => {
+      let base = name;
+      // Cortar desde el sufijo regional (puede estar en medio: tauros-paldea-combat)
+      for (const suffix of regionalSuffixes) {
+        const idx = base.indexOf(suffix);
+        if (idx !== -1) { base = base.substring(0, idx); break; }
+      }
+      // Cortar desde -mega o -primal en adelante
+      const megaIdx = base.indexOf('-mega');
+      if (megaIdx !== -1) return base.substring(0, megaIdx);
+      const primalIdx = base.indexOf('-primal');
+      if (primalIdx !== -1) return base.substring(0, primalIdx);
+      return base;
+    };
 
     return processedList
       .filter(p => {
@@ -83,20 +99,13 @@ export const getAllPokemonNames = async () => {
       .map(p => {
         let dexId = p.id;
         if (p.id > 1025) {
-          let baseName = regionalSuffixes.reduce((acc, suffix) => acc.replace(suffix, ''), p.name);
-          // Para megas/primales, cortar desde -mega o -primal en adelante
-          const megaIdx = baseName.indexOf('-mega');
-          if (megaIdx !== -1) baseName = baseName.substring(0, megaIdx);
-          const primalIdx = baseName.indexOf('-primal');
-          if (primalIdx !== -1) baseName = baseName.substring(0, primalIdx);
-          dexId = baseMap[baseName] || p.id;
+          if (specialForms.has(p.name)) {
+            dexId = baseMap[specialForms.get(p.name)] || p.id;
+          } else {
+            dexId = baseMap[getBaseName(p.name)] || p.id;
+          }
         }
-
-        return {
-          id: p.id,
-          dexId: dexId,
-          name: p.name
-        };
+        return { id: p.id, dexId, name: p.name };
       });
   } catch (error) {
     return [];
