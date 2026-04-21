@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Loader2, ChevronLeft, ChevronRight, X, Filter } from 'lucide-react';
-import { getAllPokemonNames, getPokemonByType } from '../services/pokeApi';
+import { getAllPokemonNames, getPokemonByType, formatPokemonName } from '../services/pokeApi';
 import PokemonModal from '../components/PokemonModal';
 
 const REGIONS = [
@@ -315,7 +315,7 @@ export default function Pokedex() {
                 onClick={() => setSelectedPokemon({
                   id: pokemon.id,
                   spriteId: pokemon.species.url.split('/').filter(Boolean).pop().padStart(3, '0'),
-                  name: pokemon.name.replace(/-/g, ' '),
+                  name: formatPokemonName(pokemon.name),
                   image: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
                   types: pokemon.types.map(t => t.type.name),
                   stats: pokemon.stats.map(s => ({ name: s.stat.name, value: s.base_stat })),
@@ -333,7 +333,7 @@ export default function Pokedex() {
                   loading="lazy"
                 />
                 <div className="pokemon-info glass" style={{ background: 'var(--bg-card)', borderRadius: '0', backdropFilter: 'blur(10px)' }}>
-                  <h3 style={{ textTransform: 'capitalize' }}>{pokemon.name.replace(/-/g, ' ')}</h3>
+                  <h3 style={{ textTransform: 'capitalize' }}>{formatPokemonName(pokemon.name)}</h3>
 
                   <div className="types-container">
                     {pokemon.types.map(t => {

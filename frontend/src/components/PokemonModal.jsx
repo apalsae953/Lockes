@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { X, Info, Shield, Zap, ChevronRight, ChevronLeft, Award, Loader2, Sparkles } from 'lucide-react';
-import { getPokemonSpecies, getEvolutionChain } from '../services/pokeApi';
+import { getPokemonSpecies, getEvolutionChain, formatPokemonName } from '../services/pokeApi';
 import { TYPE_ES, calculateEffectiveness } from '../constants/typeData';
 
 export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
@@ -70,7 +70,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
       setCurrentPokemon({
         id: data.id,
         spriteId: data.id.toString().padStart(3, '0'),
-        name: data.name.replace(/-/g, ' '),
+        name: formatPokemonName(data.name),
         image: data.sprites.other['official-artwork'].front_default || data.sprites.front_default,
         types: data.types.map(t => t.type.name),
         stats: data.stats.map(s => ({ name: s.stat.name, value: s.base_stat })),

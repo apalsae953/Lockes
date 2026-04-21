@@ -3,6 +3,20 @@ import { TYPE_ES } from '../constants/typeData';
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
+export const formatPokemonName = (name) => {
+  if (name.includes('-mega')) {
+    const parts = name.split('-mega');
+    const base = parts[0].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const suffix = parts[1] ? parts[1].replace(/-/g, ' ').trim().toUpperCase() : '';
+    return suffix ? `Mega ${base} ${suffix}` : `Mega ${base}`;
+  }
+  if (name.includes('-primal')) {
+    const base = name.replace('-primal', '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    return `Primal ${base}`;
+  }
+  return name.replace(/-/g, ' ');
+};
+
 export const getRegions = async () => {
   try {
     const res = await axios.get(`${BASE_URL}/region/`);
@@ -288,7 +302,7 @@ export const getEvolutionChain = async (id) => {
         chain.push({
           id: vId,
           dexId: sData.id.toString(),
-          name: vName.replace(/-/g, ' '),
+          name: formatPokemonName(vName),
           image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${vId}.png`,
           trigger: finalTrigger,
           level: finalCondition,
@@ -307,7 +321,7 @@ export const getEvolutionChain = async (id) => {
             chain.push({
               id: megaId,
               dexId: sData.id.toString(),
-              name: mega.pokemon.name.replace(/-/g, ' '),
+              name: formatPokemonName(mega.pokemon.name),
               image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${megaId}.png`,
               trigger: '',
               level: '',

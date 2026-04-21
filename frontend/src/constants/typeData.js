@@ -35,10 +35,10 @@ export const calculateEffectiveness = (types) => {
     if (!data) return;
 
     data.weakness.forEach(t => {
-      effectiveness[t] = (effectiveness[t] || 1) * 2;
+      effectiveness[t] = (effectiveness[t] ?? 1) * 2;
     });
     data.resistance.forEach(t => {
-      effectiveness[t] = (effectiveness[t] || 1) * 0.5;
+      effectiveness[t] = (effectiveness[t] ?? 1) * 0.5;
     });
     data.immune.forEach(t => {
       effectiveness[t] = 0;
