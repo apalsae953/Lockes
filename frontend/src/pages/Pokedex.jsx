@@ -316,10 +316,10 @@ export default function Pokedex() {
                   id: pokemon.id,
                   spriteId: pokemon.species.url.split('/').filter(Boolean).pop().padStart(3, '0'),
                   name: pokemon.name.replace(/-/g, ' '),
-
                   image: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
                   types: pokemon.types.map(t => t.type.name),
-                  stats: pokemon.stats.map(s => ({ name: s.stat.name, value: s.base_stat }))
+                  stats: pokemon.stats.map(s => ({ name: s.stat.name, value: s.base_stat })),
+                  abilities: pokemon.abilities.map(a => ({ name: a.ability.name, url: a.ability.url, isHidden: a.is_hidden }))
                 })}
                 style={{
                   background: `linear-gradient(135deg, var(--type-${pokemon.types[0].type.name}) 0%, var(--bg-dark) 100%)`

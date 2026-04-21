@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { X, Info, Shield, Zap, ChevronRight, ChevronLeft, Award, Loader2 } from 'lucide-react';
+import { X, Info, Shield, Zap, ChevronRight, ChevronLeft, Award, Loader2, Sparkles } from 'lucide-react';
 import { getPokemonSpecies, getEvolutionChain } from '../services/pokeApi';
 import { TYPE_ES, calculateEffectiveness } from '../constants/typeData';
 
@@ -11,6 +11,8 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEvolutionLoading, setIsEvolutionLoading] = useState(false);
   const [isLoadingNew, setIsLoadingNew] = useState(false);
+  const [abilityModal, setAbilityModal] = useState(null);
+  const [abilityLoading, setAbilityLoading] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -52,17 +54,39 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
       setCurrentPokemon({
         id: data.id,
         spriteId: data.id.toString().padStart(3, '0'),
-        name: data.name.replace('-', ' '),
+        name: data.name.replace(/-/g, ' '),
         image: data.sprites.other['official-artwork'].front_default || data.sprites.front_default,
         types: data.types.map(t => t.type.name),
-        stats: data.stats.map(s => ({ name: s.stat.name, value: s.base_stat }))
+        stats: data.stats.map(s => ({ name: s.stat.name, value: s.base_stat })),
+        abilities: data.abilities.map(a => ({ name: a.ability.name, url: a.ability.url, isHidden: a.is_hidden }))
       });
-      // Volver a la primera página al cambiar de pokemon
       setCurrentPage(1);
     } catch (err) {
       console.error("Error navigating to evolution", err);
     }
     setIsLoadingNew(false);
+  };
+
+  const showAbilityInfo = async (ability) => {
+    setAbilityModal({ name: ability.name, esName: ability.name.replace(/-/g, ' '), description: '' });
+    setAbilityLoading(true);
+    try {
+      const res = await axios.get(ability.url);
+      const esName = res.data.names.find(n => n.language.name === 'es')?.name ||
+                     ability.name.replace(/-/g, ' ');
+      const esEntry = res.data.flavor_text_entries.find(e => e.language.name === 'es') ||
+                      res.data.flavor_text_entries.find(e => e.language.name === 'en');
+      setAbilityModal({
+        name: ability.name,
+        esName,
+        description: esEntry
+          ? esEntry.flavor_text.replace(/­/g, '').replace(/\n/g, ' ')
+          : 'Sin descripción disponible.'
+      });
+    } catch {
+      setAbilityModal({ name: ability.name, esName: ability.name.replace(/-/g, ' '), description: 'Error al cargar la descripción.' });
+    }
+    setAbilityLoading(false);
   };
 
   const primaryColor = `var(--type-${currentPokemon.types[0]})`;
@@ -121,6 +145,33 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
           );
         })}
       </div>
+
+      {currentPokemon.abilities && currentPokemon.abilities.length > 0 && (
+        <>
+          <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.25rem', marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={18} color={primaryColor} /> Habilidades
+          </h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+            {currentPokemon.abilities.map(ability => (
+              <div key={ability.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.45rem 0.8rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ textTransform: 'capitalize', fontSize: '0.9rem' }}>
+                  {ability.name.replace(/-/g, ' ')}
+                </span>
+                {ability.isHidden && (
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '4px', letterSpacing: '0.3px' }}>Oculta</span>
+                )}
+                <button
+                  onClick={() => showAbilityInfo(ability)}
+                  title={`Info sobre ${ability.name}`}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: primaryColor, padding: '0', display: 'flex', alignItems: 'center', opacity: 0.8 }}
+                >
+                  <Info size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -258,6 +309,40 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
         {isLoadingNew && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
             <Loader2 className="loader" size={48} />
+          </div>
+        )}
+
+        {abilityModal && (
+          <div
+            onClick={() => setAbilityModal(null)}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)', borderRadius: 'inherit' }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'var(--bg-card)', border: `1px solid ${primaryColor}55`, borderRadius: '16px', padding: '2rem', maxWidth: '340px', width: '88%', position: 'relative', boxShadow: `0 20px 60px rgba(0,0,0,0.5)` }}
+            >
+              <button
+                onClick={() => setAbilityModal(null)}
+                style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', background: 'rgba(255,255,255,0.08)', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <X size={16} />
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+                <Sparkles size={18} color={primaryColor} />
+                <h3 style={{ margin: 0, textTransform: 'capitalize', color: primaryColor, fontSize: '1.2rem' }}>
+                  {abilityModal.esName}
+                </h3>
+              </div>
+              {abilityLoading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+                  <Loader2 className="loader" size={28} />
+                </div>
+              ) : (
+                <p style={{ margin: 0, color: 'var(--text-main)', lineHeight: 1.65, fontSize: '0.95rem', fontStyle: 'italic' }}>
+                  {abilityModal.description}
+                </p>
+              )}
+            </div>
           </div>
         )}
 

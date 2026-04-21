@@ -54,6 +54,7 @@ export const getAllPokemonNames = async () => {
     });
 
     const regionalSuffixes = ['-alola', '-galar', '-hisui', '-paldea'];
+    const megaSuffixes = ['-mega', '-primal'];
 
     const specialForms = new Set(['floette-eternal']);
 
@@ -61,19 +62,25 @@ export const getAllPokemonNames = async () => {
       .filter(p => {
         if (p.id <= 1025) return true;
         if (specialForms.has(p.name)) return true;
-        return regionalSuffixes.some(key => p.name.includes(key));
+        if (regionalSuffixes.some(key => p.name.includes(key))) return true;
+        if (megaSuffixes.some(key => p.name.includes(key))) return true;
+        return false;
       })
       .map(p => {
-        // Buscamos su ID de la Pokédex Nacional (dexId)
         let dexId = p.id;
         if (p.id > 1025) {
-          const baseName = regionalSuffixes.reduce((acc, suffix) => acc.replace(suffix, ''), p.name);
+          let baseName = regionalSuffixes.reduce((acc, suffix) => acc.replace(suffix, ''), p.name);
+          // Para megas/primales, cortar desde -mega o -primal en adelante
+          const megaIdx = baseName.indexOf('-mega');
+          if (megaIdx !== -1) baseName = baseName.substring(0, megaIdx);
+          const primalIdx = baseName.indexOf('-primal');
+          if (primalIdx !== -1) baseName = baseName.substring(0, primalIdx);
           dexId = baseMap[baseName] || p.id;
         }
-        
+
         return {
-          id: p.id,    // ID de la API (para imágenes y detalles)
-          dexId: dexId, // ID Nacional (para ordenar y agrupar)
+          id: p.id,
+          dexId: dexId,
           name: p.name
         };
       });
@@ -302,7 +309,10 @@ export const getEvolutionChain = async (id) => {
           }
         }
 
-        if (step.evolves_to.length > 0) {
+        // Solo propagar la cadena desde la variedad canónica o la forma regional,
+        // nunca desde formas especiales (eternal, etc.) que no evolucionan
+        const canPropagate = vName === speciesName || regionalSuffixes.some(s => vName.endsWith(s));
+        if (canPropagate && step.evolves_to.length > 0) {
           for (const nextStep of step.evolves_to) {
             await processStep(nextStep, vId, currentVarietySuffix);
           }
