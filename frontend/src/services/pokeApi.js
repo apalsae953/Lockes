@@ -58,12 +58,29 @@ export const getAllPokemonNames = async () => {
     const res = await axios.get(`${BASE_URL}/pokemon?limit=3000`);
     const results = res.data.results;
     
-    // Primero creamos un mapa de Pokémon base (1-1025) para referencia rápida
+    // Sufijos de "forma base" en la API que no son parte del nombre real del Pokémon
+    // (ej: darmanitan-standard → también indexar como darmanitan)
+    const defaultFormSuffixes = [
+      '-standard', '-incarnate', '-altered', '-ordinary',
+      '-land', '-aria', '-red-striped', '-male', '-average',
+      '-solo', '-single-strike', '-full-belly'
+    ];
+
     const baseMap = {};
     const processedList = results.map(p => {
       const parts = p.url.split('/');
       const id = parseInt(parts[parts.length - 2]);
-      if (id <= 1025) baseMap[p.name] = id;
+      if (id <= 1025) {
+        baseMap[p.name] = id;
+        // Añadir también el nombre sin el sufijo de forma por defecto
+        for (const fs of defaultFormSuffixes) {
+          if (p.name.endsWith(fs)) {
+            const stem = p.name.slice(0, -fs.length);
+            if (!baseMap[stem]) baseMap[stem] = id;
+            break;
+          }
+        }
+      }
       return { id, name: p.name };
     });
 
@@ -88,8 +105,13 @@ export const getAllPokemonNames = async () => {
       return base;
     };
 
+    // Patrones a excluir siempre (formas de batalla, totems, etc.)
+    const excludePatterns = ['-totem', '-own-tempo', '-busted', '-hangry',
+      '-noice', '-gulping', '-gorging', '-hero'];
+
     return processedList
       .filter(p => {
+        if (excludePatterns.some(ex => p.name.includes(ex))) return false;
         if (p.id <= 1025) return true;
         if (specialForms.has(p.name)) return true;
         if (regionalSuffixes.some(key => p.name.includes(key))) return true;
