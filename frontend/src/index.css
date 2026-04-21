@@ -38,6 +38,7 @@
   --type-dragon: #6F35FC;
   --type-dark: #705746;
   --type-steel: #B7B7CE;
+  --type-fairy: #D685AD;
   --fairy-glow: rgba(214, 133, 173, 0.5);
 
   /* Alert Colors (Dark) */
@@ -1265,35 +1266,68 @@ select.input option {
     border-radius: 20px !important;
   }
 
+  /* Franja superior compacta: imagen + nombre/tipos en fila */
   .pokemon-modal-left {
     flex: none !important;
-    padding: 1.25rem 1rem !important;
+    padding: 1rem !important;
     flex-direction: row !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
     align-items: center !important;
     justify-content: flex-start !important;
   }
 
-  .pokemon-modal-left img {
-    max-width: 90px !important;
-    width: 90px !important;
+  /* Ocultar el #número flotante (se solapa con la imagen en modo fila) */
+  .pokemon-modal-left .pokemon-id {
+    display: none !important;
+  }
+
+  /* Imagen pequeña a la izquierda */
+  .pokemon-modal-left > img {
+    max-width: 80px !important;
+    width: 80px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) !important;
+  }
+
+  /* Columna derecha: nombre + tipos apilados */
+  .pokemon-modal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 0;
   }
 
   .pokemon-modal-name {
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
     margin-top: 0 !important;
     text-align: left !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  .pokemon-modal-info .types-container {
+    margin-top: 0 !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Panel de contenido: ocupa el resto del alto */
   .pokemon-modal-right {
     flex: 1 !important;
     padding: 1.25rem !important;
     min-height: 0 !important;
-    overflow-y: auto;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  .pokemon-modal-right > div[style] {
-    padding-right: 0 !important;
+  /* Botones de navegación de páginas más compactos */
+  .pokemon-modal-right .btn {
+    padding: 0.4rem 0.65rem !important;
+    font-size: 0.75rem !important;
+    min-height: 36px !important;
   }
 }
 

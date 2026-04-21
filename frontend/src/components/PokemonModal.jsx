@@ -281,15 +281,17 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
             alt={currentPokemon.name}
             style={{ width: '100%', maxWidth: '280px', filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))', zIndex: 2, position: 'relative' }}
           />
-          <h2 className="pokemon-modal-name" style={{ fontSize: '2.5rem', textTransform: 'capitalize', marginTop: '1.5rem', textAlign: 'center' }}>
-            {currentPokemon.name}
-          </h2>
-          <div className="types-container" style={{ marginTop: '1rem', justifyContent: 'center' }}>
-            {currentPokemon.types.map(type => (
-              <span key={type} className="type-badge" style={{ background: `var(--type-${type})`, fontSize: '0.9rem', padding: '0.4rem 1rem', color: '#000', fontWeight: 'bold' }}>
-                {TYPE_ES[type] || type}
-              </span>
-            ))}
+          <div className="pokemon-modal-info">
+            <h2 className="pokemon-modal-name" style={{ fontSize: '2.5rem', textTransform: 'capitalize', marginTop: '1.5rem', textAlign: 'center' }}>
+              {currentPokemon.name}
+            </h2>
+            <div className="types-container" style={{ marginTop: '1rem', justifyContent: 'center' }}>
+              {currentPokemon.types.map(type => (
+                <span key={type} className="type-badge" style={{ background: `var(--type-${type})`, fontSize: '0.9rem', padding: '0.4rem 1rem', color: '#000', fontWeight: 'bold' }}>
+                  {TYPE_ES[type] || type}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
