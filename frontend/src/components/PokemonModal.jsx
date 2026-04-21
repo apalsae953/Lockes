@@ -13,6 +13,22 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   const [isLoadingNew, setIsLoadingNew] = useState(false);
   const [abilityModal, setAbilityModal] = useState(null);
   const [abilityLoading, setAbilityLoading] = useState(false);
+  const [abilityNamesEs, setAbilityNamesEs] = useState({});
+
+  useEffect(() => {
+    if (!currentPokemon.abilities?.length) return;
+    let active = true;
+    Promise.all(
+      currentPokemon.abilities.map(a =>
+        axios.get(a.url)
+          .then(r => ({ name: a.name, esName: r.data.names.find(n => n.language.name === 'es')?.name || a.name.replace(/-/g, ' ') }))
+          .catch(() => ({ name: a.name, esName: a.name.replace(/-/g, ' ') }))
+      )
+    ).then(results => {
+      if (active) setAbilityNamesEs(Object.fromEntries(results.map(r => [r.name, r.esName])));
+    });
+    return () => { active = false; };
+  }, [currentPokemon.abilities]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -68,12 +84,11 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
   };
 
   const showAbilityInfo = async (ability) => {
-    setAbilityModal({ name: ability.name, esName: ability.name.replace(/-/g, ' '), description: '' });
+    const esName = abilityNamesEs[ability.name] || ability.name.replace(/-/g, ' ');
+    setAbilityModal({ name: ability.name, esName, description: '' });
     setAbilityLoading(true);
     try {
       const res = await axios.get(ability.url);
-      const esName = res.data.names.find(n => n.language.name === 'es')?.name ||
-                     ability.name.replace(/-/g, ' ');
       const esEntry = res.data.flavor_text_entries.find(e => e.language.name === 'es') ||
                       res.data.flavor_text_entries.find(e => e.language.name === 'en');
       setAbilityModal({
@@ -84,7 +99,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
           : 'Sin descripción disponible.'
       });
     } catch {
-      setAbilityModal({ name: ability.name, esName: ability.name.replace(/-/g, ' '), description: 'Error al cargar la descripción.' });
+      setAbilityModal({ name: ability.name, esName, description: 'Error al cargar la descripción.' });
     }
     setAbilityLoading(false);
   };
@@ -146,32 +161,6 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
         })}
       </div>
 
-      {currentPokemon.abilities && currentPokemon.abilities.length > 0 && (
-        <>
-          <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.25rem', marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Sparkles size={18} color={primaryColor} /> Habilidades
-          </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-            {currentPokemon.abilities.map(ability => (
-              <div key={ability.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.45rem 0.8rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <span style={{ textTransform: 'capitalize', fontSize: '0.9rem' }}>
-                  {ability.name.replace(/-/g, ' ')}
-                </span>
-                {ability.isHidden && (
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '4px', letterSpacing: '0.3px' }}>Oculta</span>
-                )}
-                <button
-                  onClick={() => showAbilityInfo(ability)}
-                  title={`Info sobre ${ability.name}`}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: primaryColor, padding: '0', display: 'flex', alignItems: 'center', opacity: 0.8 }}
-                >
-                  <Info size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 
@@ -377,6 +366,28 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
                 </span>
               ))}
             </div>
+            {currentPokemon.abilities?.length > 0 && (
+              <div style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.45rem', justifyContent: 'center' }}>
+                {currentPokemon.abilities.map(ability => (
+                  <div key={ability.name} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(0,0,0,0.3)', padding: '0.3rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }}>
+                    <Sparkles size={11} color={primaryColor} />
+                    <span style={{ fontSize: '0.78rem', textTransform: 'capitalize', color: 'var(--text-main)' }}>
+                      {abilityNamesEs[ability.name] || ability.name.replace(/-/g, ' ')}
+                    </span>
+                    {ability.isHidden && (
+                      <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }} title="Habilidad oculta">◆</span>
+                    )}
+                    <button
+                      onClick={() => showAbilityInfo(ability)}
+                      title="Ver descripción"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: primaryColor, padding: '0', display: 'flex', alignItems: 'center' }}
+                    >
+                      <Info size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

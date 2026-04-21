@@ -203,8 +203,15 @@ export const getEvolutionChain = async (id) => {
 
       // Filtrado inteligente según el ancestro
       if (parentSuffix) {
-        // Si venimos de un regional, solo queremos seguir en esa línea regional
-        relevantVarieties = relevantVarieties.filter(v => v.pokemon.name.includes(parentSuffix));
+        const hasRegionalVariety = relevantVarieties.some(v => v.pokemon.name.includes(parentSuffix));
+        if (hasRegionalVariety) {
+          // Este eslabón tiene forma regional: continuar solo en esa línea
+          relevantVarieties = relevantVarieties.filter(v => v.pokemon.name.includes(parentSuffix));
+        } else {
+          // Este eslabón no tiene forma regional (ej: Pichu/Pikachu en cadena Alola):
+          // usar la base y propagar el sufijo al siguiente paso
+          relevantVarieties = relevantVarieties.filter(v => v.pokemon.name === speciesName);
+        }
       } else {
         // Si venimos de un estándar, queremos el base y solo regionales que ramifican de estándar
         relevantVarieties = relevantVarieties.filter(v =>
@@ -310,11 +317,14 @@ export const getEvolutionChain = async (id) => {
         }
 
         // Solo propagar la cadena desde la variedad canónica o la forma regional,
-        // nunca desde formas especiales (eternal, etc.) que no evolucionan
+        // nunca desde formas especiales (eternal, etc.) que no evolucionan.
+        // Propagamos currentVarietySuffix || parentSuffix para mantener el contexto
+        // regional cuando el eslabón actual no tiene forma propia (ej: Pichu en cadena Alola).
         const canPropagate = vName === speciesName || regionalSuffixes.some(s => vName.endsWith(s));
         if (canPropagate && step.evolves_to.length > 0) {
+          const nextSuffix = currentVarietySuffix || parentSuffix;
           for (const nextStep of step.evolves_to) {
-            await processStep(nextStep, vId, currentVarietySuffix);
+            await processStep(nextStep, vId, nextSuffix);
           }
         }
       }
