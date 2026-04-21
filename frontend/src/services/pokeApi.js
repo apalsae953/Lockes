@@ -55,9 +55,12 @@ export const getAllPokemonNames = async () => {
 
     const regionalSuffixes = ['-alola', '-galar', '-hisui', '-paldea'];
 
+    const specialForms = new Set(['floette-eternal']);
+
     return processedList
       .filter(p => {
         if (p.id <= 1025) return true;
+        if (specialForms.has(p.name)) return true;
         return regionalSuffixes.some(key => p.name.includes(key));
       })
       .map(p => {
@@ -183,10 +186,11 @@ export const getEvolutionChain = async (id) => {
         'typhlosion-hisui', 'samurott-hisui', 'kleavor', 'ursaluna'
       ];
 
-      // Obtenemos todas las variedades relevantes (Base + Regionales)
+      // Obtenemos todas las variedades relevantes (Base + Regionales + Eternales)
       let relevantVarieties = sData.varieties.filter(v => {
         const n = v.pokemon.name;
         if (n === speciesName) return true;
+        if (n.endsWith('-eternal')) return true;
         return regionalSuffixes.some(suffix => n.endsWith(suffix));
       });
 
@@ -196,8 +200,9 @@ export const getEvolutionChain = async (id) => {
         relevantVarieties = relevantVarieties.filter(v => v.pokemon.name.includes(parentSuffix));
       } else {
         // Si venimos de un estándar, queremos el base y solo regionales que ramifican de estándar
-        relevantVarieties = relevantVarieties.filter(v => 
-          v.pokemon.name === speciesName || 
+        relevantVarieties = relevantVarieties.filter(v =>
+          v.pokemon.name === speciesName ||
+          v.pokemon.name.endsWith('-eternal') ||
           regionalBranchers.some(b => v.pokemon.name.includes(b))
         );
       }
@@ -276,6 +281,26 @@ export const getEvolutionChain = async (id) => {
           evolvesFromId
         });
 
+        // Añadir Megas/Primales como hijos directos sin condición de evolución
+        if (!vName.includes('-mega') && !vName.includes('-primal')) {
+          const megaForms = sData.varieties.filter(v => {
+            const n = v.pokemon.name;
+            return n.includes('-mega') || n.includes('-primal');
+          });
+          for (const mega of megaForms) {
+            const megaParts = mega.pokemon.url.split('/');
+            const megaId = megaParts[megaParts.length - 2];
+            chain.push({
+              id: megaId,
+              dexId: sData.id.toString(),
+              name: mega.pokemon.name.replace(/-/g, ' '),
+              image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${megaId}.png`,
+              trigger: '',
+              level: '',
+              evolvesFromId: vId
+            });
+          }
+        }
 
         if (step.evolves_to.length > 0) {
           for (const nextStep of step.evolves_to) {
