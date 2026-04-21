@@ -973,3 +973,372 @@ select.input option {
     padding: 0.3rem 0.6rem;
   }
 }
+
+/* ================================================================
+   MOBILE RESPONSIVE OVERHAUL
+   Todas las reglas aquí son SOLO para pantallas pequeñas.
+   El desktop no cambia absolutamente nada.
+   ================================================================ */
+
+/* --- NAVBAR: wrap correcto en móvil --- */
+@media (max-width: 768px) {
+  .nav-main {
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  .nav-links {
+    flex: 0 0 100% !important;
+    order: 10 !important;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+    padding: 0.6rem 0;
+    white-space: nowrap;
+  }
+
+  .theme-toggle-btn img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* --- HERO SECTION --- */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2.5rem 0 2rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* --- BOTONES: targets táctiles mínimos --- */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 44px;
+  }
+}
+
+/* --- CARDS --- */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.25rem;
+  }
+}
+
+/* --- MODALES (todos) --- */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.75rem;
+    align-items: center;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    height: auto !important;
+    overflow-y: auto;
+  }
+
+  .modal-left,
+  .modal-right {
+    padding: 1.5rem !important;
+  }
+}
+
+/* --- HOME: aviso flotante --- */
+@media (max-width: 768px) {
+  .home-notice {
+    top: auto !important;
+    bottom: 1.25rem !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    max-width: none !important;
+    width: auto !important;
+  }
+}
+
+/* --- POKÉDEX: filtros y grid --- */
+@media (max-width: 768px) {
+  .pokedex-filters {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .pokedex-filters-search {
+    grid-column: 1 / -1 !important;
+  }
+
+  .pokedex-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 0 1.5rem !important;
+  }
+
+  .pokemon-info h3 {
+    font-size: 1rem;
+  }
+
+  .pokedex-pagination {
+    gap: 0.75rem !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem !important;
+  }
+}
+
+/* --- TABLA TIPOS --- */
+@media (max-width: 768px) {
+  .tipos-page-header {
+    margin-bottom: 2rem !important;
+  }
+
+  .tipos-page-header h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .tipos-page-header p {
+    font-size: 1rem !important;
+  }
+
+  .tipo-detail-card {
+    padding: 1.5rem !important;
+    margin-top: 2rem !important;
+  }
+
+  .tipo-detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .type-card {
+    padding: 1rem 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .type-card span {
+    font-size: 0.85rem !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+
+/* --- MIS PARTIDAS --- */
+@media (max-width: 768px) {
+  .partidas-page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .partidas-page-header h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .partidas-page-header > .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .partidas-modal-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* --- PARTIDA TRACKER --- */
+@media (max-width: 768px) {
+  .tracker-page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .tracker-page-header > .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tracker-title-input {
+    font-size: 1.6rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .bosses-section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .bosses-section-header > .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bosses-section-header h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .captures-section-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .captures-section-header h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .captures-search-area {
+    margin-left: 0 !important;
+    max-width: none !important;
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  .captures-action-btns {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .captures-action-btns > .btn {
+    flex: 1;
+    min-width: 130px;
+    justify-content: center;
+  }
+
+  /* Tabla de capturas: celdas más compactas */
+  .excel-table th,
+  .excel-table td {
+    padding: 0.5rem 0.35rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .excel-table input.input,
+  .excel-table select.input {
+    font-size: 0.78rem !important;
+    padding: 0.2rem 0.35rem !important;
+  }
+
+  .toast-notification {
+    top: auto !important;
+    bottom: 1.5rem !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    width: auto !important;
+  }
+}
+
+/* --- MIS REGLAS --- */
+@media (max-width: 768px) {
+  .reglas-page-header {
+    font-size: 2.2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .reglas-two-col {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* --- POKÉMON MODAL --- */
+@media (max-width: 768px) {
+  .pokemon-modal-wrapper {
+    height: auto !important;
+    max-height: 92vh !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-radius: 20px !important;
+  }
+
+  .pokemon-modal-left {
+    flex: none !important;
+    padding: 1.25rem 1rem !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  .pokemon-modal-left img {
+    max-width: 90px !important;
+    width: 90px !important;
+  }
+
+  .pokemon-modal-name {
+    font-size: 1.4rem !important;
+    margin-top: 0 !important;
+    text-align: left !important;
+  }
+
+  .pokemon-modal-right {
+    flex: 1 !important;
+    padding: 1.25rem !important;
+    min-height: 0 !important;
+    overflow-y: auto;
+  }
+
+  .pokemon-modal-right > div[style] {
+    padding-right: 0 !important;
+  }
+}
+
+/* --- LOGIN / PERFIL --- */
+@media (max-width: 768px) {
+  .login-page-container {
+    align-items: flex-start !important;
+    padding: 2rem 1rem !important;
+    height: auto !important;
+    min-height: calc(100vh - 90px) !important;
+  }
+
+  .login-card-premium {
+    padding: 1.75rem !important;
+  }
+}
+
+/* --- AJUSTES EXTRA PEQUEÑOS (< 480px) --- */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem !important;
+  }
+
+  .hero h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .login-card-premium {
+    padding: 1.25rem !important;
+    border-radius: 16px !important;
+  }
+
+  .modal-content {
+    border-radius: 16px !important;
+  }
+
+  .pokemon-modal-wrapper {
+    border-radius: 16px !important;
+  }
+
+  .pokedex-filters {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pokedex-filters-search {
+    grid-column: auto !important;
+  }
+}

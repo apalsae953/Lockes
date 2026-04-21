@@ -232,8 +232,8 @@ export default function Pokedex() {
           <Filter size={20} /> Filtros de Búsqueda
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 2fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr)', gap: '1.5rem', alignItems: 'end' }}>
-          <div>
+        <div className="pokedex-filters" style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 2fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr)', gap: '1.5rem', alignItems: 'end' }}>
+          <div className="pokedex-filters-search">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Search size={16} /> Pokémon o número
             </label>
@@ -356,7 +356,7 @@ export default function Pokedex() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '3rem' }}>
+          <div className="pokedex-pagination" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '3rem' }}>
             <button
               className="btn btn-outline"
               onClick={() => setPage(p => Math.max(0, p - 1))}

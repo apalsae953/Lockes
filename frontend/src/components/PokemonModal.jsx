@@ -253,7 +253,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick} style={{ zIndex: 99999 }}>
-      <div className="modal-content glass" style={{ border: `1px solid ${primaryColor}`, height: '650px', display: 'flex', overflow: 'hidden', position: 'relative' }}>
+      <div className="modal-content glass pokemon-modal-wrapper" style={{ border: `1px solid ${primaryColor}`, height: '650px', display: 'flex', overflow: 'hidden', position: 'relative' }}>
 
         {isLoadingNew && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
@@ -263,7 +263,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
 
         <button className="modal-close" onClick={onClose}><X size={24} /></button>
 
-        <div className="modal-left" style={{
+        <div className="modal-left pokemon-modal-left" style={{
           background: `radial-gradient(circle at center, ${primaryColor} 0%, transparent 80%)`,
           position: 'relative',
           padding: '2rem',
@@ -281,7 +281,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
             alt={currentPokemon.name}
             style={{ width: '100%', maxWidth: '280px', filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.6))', zIndex: 2, position: 'relative' }}
           />
-          <h2 style={{ fontSize: '2.5rem', textTransform: 'capitalize', marginTop: '1.5rem', textAlign: 'center' }}>
+          <h2 className="pokemon-modal-name" style={{ fontSize: '2.5rem', textTransform: 'capitalize', marginTop: '1.5rem', textAlign: 'center' }}>
             {currentPokemon.name}
           </h2>
           <div className="types-container" style={{ marginTop: '1rem', justifyContent: 'center' }}>
@@ -293,7 +293,7 @@ export default function PokemonModal({ pokemon: initialPokemon, onClose }) {
           </div>
         </div>
 
-        <div className="modal-right" style={{ padding: '2.5rem', flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+        <div className="modal-right pokemon-modal-right" style={{ padding: '2.5rem', flex: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
 
           <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
             {currentPage === 1 && renderPage1()}

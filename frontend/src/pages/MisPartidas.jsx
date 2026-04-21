@@ -190,7 +190,7 @@ export default function MisPartidas() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem', paddingTop: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+      <div className="partidas-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
         <h1 className="title-glow" style={{ fontSize: '3rem' }}>
           Mis <span className="gradient-text">Partidas</span>
         </h1>
@@ -273,7 +273,7 @@ export default function MisPartidas() {
                 <input className="input" value={newName} onChange={e => setNewName(e.target.value)} />
               </div>
 
-              <div className="form-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem' }}>
+              <div className="form-group partidas-modal-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem' }}>
                 <div>
                   <label className="form-label">Región Principal</label>
                   <select className="input" value={selectedRegion} onChange={e => setSelectedRegion(e.target.value)}>

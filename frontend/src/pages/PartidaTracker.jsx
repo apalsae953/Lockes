@@ -348,7 +348,7 @@ export default function PartidaTracker() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem', paddingTop: '1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="tracker-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <button className="btn btn-outline" onClick={() => navigate('/mis-partidas')}>
           <ArrowLeft size={18} /> Volver a Partidas
         </button>
@@ -361,7 +361,7 @@ export default function PartidaTracker() {
         {/* Lado Izquierdo: Título y Reglas */}
         <div className="glass" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
           <input
-            className="input"
+            className="input tracker-title-input"
             style={{ fontSize: '2.5rem', fontWeight: 800, background: 'transparent', border: 'none', borderBottom: '2px solid var(--glass-border)', borderRadius: 0, padding: '0.5rem 0', width: '100%', marginBottom: '2rem' }}
             value={partida.name}
             onChange={(e) => guardarPartida({ ...partida, name: e.target.value })}
@@ -480,7 +480,7 @@ export default function PartidaTracker() {
 
       {(bosses.length > 0 || partida.gameId === 'custom') && (
         <div style={{ marginBottom: '3rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div className="bosses-section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Swords /> Gimnasios y Alto Mando (Niveles Máximos)
             </h2>
@@ -607,23 +607,23 @@ export default function PartidaTracker() {
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="captures-section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <MapPin /> Tus Capturas
         </h2>
-        <div style={{ display: 'flex', gap: '1rem', flex: 1, maxWidth: '600px', marginLeft: '2rem' }}>
+        <div className="captures-search-area" style={{ display: 'flex', gap: '1rem', flex: 1, maxWidth: '600px', marginLeft: '2rem' }}>
           <div style={{ position: 'relative', flex: 1 }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input 
-              className="input" 
-              placeholder="Buscar ruta o Pokémon..." 
+            <input
+              className="input"
+              placeholder="Buscar ruta o Pokémon..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ paddingLeft: '2.5rem' }}
             />
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="captures-action-btns" style={{ display: 'flex', gap: '1rem' }}>
           <button className="btn btn-outline" onClick={addCustomRoute}>
             <Plus size={18} /> Nueva Ruta
           </button>
@@ -739,7 +739,7 @@ export default function PartidaTracker() {
           position: 'fixed',
           top: '20px',
           right: '20px',
-          padding: '12px 24px',
+          padding: '12px 20px',
           background: 'var(--bg-darker)',
           borderLeft: '4px solid var(--accent)',
           zIndex: 9999,

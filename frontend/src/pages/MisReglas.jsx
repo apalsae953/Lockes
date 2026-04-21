@@ -81,7 +81,7 @@ export default function MisReglas() {
 
   return (
     <div className="container" style={{ paddingBottom: '4rem', paddingTop: '2rem' }}>
-      <h1 className="title-glow" style={{ fontSize: '3rem', marginBottom: '2rem' }}>
+      <h1 className="title-glow reglas-page-header" style={{ fontSize: '3rem', marginBottom: '2rem' }}>
         Mis <span className="gradient-text">Reglas</span>
       </h1>
 
@@ -113,7 +113,7 @@ export default function MisReglas() {
         </form>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '2rem' }}>
+      <div className="reglas-two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '2rem' }}>
         <div>
           <h2 style={{ marginBottom: '1.5rem' }}>Oficiales <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>(Base y Dashboard)</span></h2>
           {UNIVERSAL_RULES.map(r => <RuleCard key={r.id} r={r} locked />)}

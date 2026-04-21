@@ -106,7 +106,7 @@ export default function TablaTipos() {
 
   return (
     <div className="container" style={{ paddingBottom: '6rem', paddingTop: '3rem' }}>
-      <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
+      <header className="tipos-page-header" style={{ textAlign: 'center', marginBottom: '4rem' }}>
         <h1 className="title-glow" style={{ fontSize: '4rem', marginBottom: '1rem' }}>
           Tabla de <span className="gradient-text">Tipos</span>
         </h1>
@@ -165,7 +165,7 @@ export default function TablaTipos() {
       {selectedTypes.length > 0 && (
         <div
           ref={detailRef}
-          className="card glass fade-in"
+          className="card glass fade-in tipo-detail-card"
           style={{
             marginTop: '4rem',
             padding: '3rem',
@@ -209,7 +209,7 @@ export default function TablaTipos() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '3rem' }}>
+          <div className="tipo-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '3rem' }}>
 
             {/* OFENSIVO UNIFICADO */}
             <div className="effect-section">

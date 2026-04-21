@@ -9,7 +9,7 @@ export default function Home() {
     <div className="container">
       {/* AVISO DE SERVIDOR GRATUITO (FLOTANTE) */}
       {showNotice && (
-        <div className="glass" style={{
+        <div className="glass home-notice" style={{
           position: 'fixed',
           top: '7rem',
           right: '2rem',
