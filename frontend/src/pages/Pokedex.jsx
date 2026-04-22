@@ -152,6 +152,8 @@ export default function Pokedex() {
 
       result = result.filter(p => {
         const n = p.name.toLowerCase();
+        const formattedN = formatPokemonName(p.name).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        
         // Si el usuario introduce el ID numérico
         if (p.id.toString() === q) return true;
 
@@ -161,6 +163,11 @@ export default function Pokedex() {
         // Coincidencia flexibilizada (ej: mr mime -> mrmime === mrmime)
         const nNoSpaces = n.replace(/[^a-z0-9]/g, '');
         if (nNoSpaces.includes(qNoSpaces)) return true;
+
+        // Coincidencia en el nombre formateado (ej: dragonite-mega -> Mega Dragonite)
+        if (formattedN.includes(q)) return true;
+        const formattedNNoSpaces = formattedN.replace(/[^a-z0-9]/g, '');
+        if (formattedNNoSpaces.includes(qNoSpaces)) return true;
 
         return false;
       });
