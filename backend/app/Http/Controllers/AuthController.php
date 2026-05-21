@@ -116,13 +116,14 @@ class AuthController extends Controller
     public function redirectToGoogle()
     {
         \Log::info('Redirecting to Google...');
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')->stateless()->redirect();
     }
 
     public function handleGoogleCallback()
     {
         try {
             $googleUser = Socialite::driver('google')
+                ->stateless()
                 ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
                 ->user();
             
