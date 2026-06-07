@@ -183,7 +183,7 @@ export default function PartidaTracker() {
   const toggleBossDefeated = (bossName) => {
     const updated = { ...partida };
     if (!updated.defeatedBosses) updated.defeatedBosses = [];
-    
+
     if (updated.defeatedBosses.includes(bossName)) {
       updated.defeatedBosses = updated.defeatedBosses.filter(b => b !== bossName);
     } else {
@@ -207,7 +207,7 @@ export default function PartidaTracker() {
 
       current[field] = value;
       updatedPartida.encounters[encIndex] = current;
-      
+
       // Si estamos escribiendo texto, usamos DEBOUNCE
       const isText = ['lugar', 'pokemon', 'mote'].includes(field);
       guardarPartida(updatedPartida, isText);
@@ -237,7 +237,7 @@ export default function PartidaTracker() {
     try {
       let cleanName = pokemonName.toLowerCase().trim().replace(/ /g, '-');
       const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${cleanName}`);
-      
+
       const updatedPartida = { ...partida };
       const encIndex = updatedPartida.encounters.findIndex(e => e.id === encId);
       if (encIndex >= 0) {
@@ -390,24 +390,24 @@ export default function PartidaTracker() {
           {/* Contador de Vidas Mini (Ahora con flex 1) */}
           <div className="glass" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', flex: 1, textAlign: 'center' }}>
             <h4 style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>Vidas Restantes</h4>
-            
+
             {/* CORAZÓN DINÁMICO (VIDA VISUAL) */}
             <div style={{ position: 'relative', width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
               <svg width="80" height="80" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 10px rgba(239, 68, 68, 0.5))' }}>
                 <defs>
                   <linearGradient id="heartGradient" x1="0" y1="1" x2="0" y2="0">
-                    <stop 
-                      offset={isInfinite ? "100%" : `${Math.min(100, Math.max(0, (partida.vidasActuales / (partida.vidasMax || 1)) * 100))}%`} 
-                      stopColor="var(--primary)" 
+                    <stop
+                      offset={isInfinite ? "100%" : `${Math.min(100, Math.max(0, (partida.vidasActuales / (partida.vidasMax || 1)) * 100))}%`}
+                      stopColor="var(--primary)"
                     />
-                    <stop 
-                      offset={isInfinite ? "100%" : `${Math.min(100, Math.max(0, (partida.vidasActuales / (partida.vidasMax || 1)) * 100))}%`} 
-                      stopColor="rgba(255,255,255,0.1)" 
+                    <stop
+                      offset={isInfinite ? "100%" : `${Math.min(100, Math.max(0, (partida.vidasActuales / (partida.vidasMax || 1)) * 100))}%`}
+                      stopColor="rgba(255,255,255,0.1)"
                     />
                   </linearGradient>
                 </defs>
-                <path 
-                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                   fill="url(#heartGradient)"
                   stroke="var(--primary)"
                   strokeWidth="0.5"
@@ -441,13 +441,13 @@ export default function PartidaTracker() {
               {team.map((encId, idx) => {
                 const enc = (partida.encounters || []).find(e => e.id === encId);
                 return (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     onClick={() => { setSelectingSlotIdx(idx); setShowTeamModal(true); }}
-                    style={{ 
-                      aspectRatio: '1/1', 
-                      background: 'rgba(0,0,0,0.3)', 
-                      borderRadius: '12px', 
+                    style={{
+                      aspectRatio: '1/1',
+                      background: 'rgba(0,0,0,0.3)',
+                      borderRadius: '12px',
                       border: '1px dashed var(--glass-border)',
                       cursor: 'pointer',
                       display: 'flex',
@@ -494,13 +494,13 @@ export default function PartidaTracker() {
               </button>
             )}
           </div>
-          <div 
+          <div
             ref={scrollRef}
             onMouseDown={startDragging}
-            style={{ 
-              display: 'flex', 
-              gap: '1rem', 
-              overflowX: 'auto', 
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              overflowX: 'auto',
               paddingBottom: '1rem',
               cursor: isScrolling ? 'grabbing' : 'grab',
               userSelect: 'none'
@@ -514,18 +514,18 @@ export default function PartidaTracker() {
             {bosses.map((boss, idx) => {
               const isDefeated = (partida.defeatedBosses || []).includes(boss.name);
               return (
-                <div 
-                  key={idx} 
-                  className="card glass" 
+                <div
+                  key={idx}
+                  className="card glass"
                   onClick={() => toggleBossDefeated(boss.name)}
-                  style={{ 
-                    minWidth: '150px', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    textAlign: 'center', 
-                    padding: '1.5rem 1rem', 
-                    flexShrink: 0, 
+                  style={{
+                    minWidth: '150px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    padding: '1.5rem 1rem',
+                    flexShrink: 0,
                     position: 'relative',
                     cursor: 'pointer',
                     filter: isDefeated ? 'grayscale(0.9) brightness(0.7)' : 'none',
@@ -540,7 +540,7 @@ export default function PartidaTracker() {
                   )}
                   {partida.gameId === 'custom' && (
                     <>
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           let tType = 'Líder';
@@ -550,20 +550,20 @@ export default function PartidaTracker() {
                             else if (boss.title.startsWith('Alto Mando ')) { tType = 'Alto Mando'; tNum = boss.title.replace('Alto Mando ', ''); }
                             else { tType = boss.title; tNum = ''; }
                           }
-                          setNewBoss({ 
-                            name: boss.name, 
-                            titleType: tType, 
-                            titleNum: tNum, 
+                          setNewBoss({
+                            name: boss.name,
+                            titleType: tType,
+                            titleNum: tNum,
                             level: boss.level === 0 ? '' : boss.level.toString(),
                             customImgUrl: boss.customImgUrl || ''
                           });
                           setEditingBossIndex(idx);
                           setShowBossModal(true);
-                        }} 
+                        }}
                         style={{ position: 'absolute', top: '10px', left: '10px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '5px' }}
                         title="Editar Jefe"
                       >
-                        <Edit2 size={16}/>
+                        <Edit2 size={16} />
                       </button>
                       <button
                         onClick={(e) => {
@@ -580,21 +580,21 @@ export default function PartidaTracker() {
                     </>
                   )}
                   <div style={{ width: '80px', height: '80px', marginBottom: '1rem', background: 'var(--bg-darker)', borderRadius: '50%', overflow: 'hidden', border: isDefeated ? '2px solid var(--text-muted)' : '2px solid var(--accent)', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
-                    <img 
+                    <img
                       src={
-                        (isDefeated && boss.defeatedImg) ? 
+                        (isDefeated && boss.defeatedImg) ?
                           (boss.defeatedImg.startsWith('/') ? boss.defeatedImg : `/${boss.defeatedImg}`) :
-                        (boss.customImgUrl ? boss.customImgUrl : 
-                        (boss.img.startsWith('/') || boss.img.startsWith('http') || boss.img.includes('bosses/') ? (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `/${boss.img}`) : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
-                      } 
-                      alt={boss.name} 
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
+                          (boss.customImgUrl ? boss.customImgUrl :
+                            (boss.img.startsWith('/') || boss.img.startsWith('http') || boss.img.includes('bosses/') ? (boss.img.startsWith('/') || boss.img.startsWith('http') ? boss.img : `/${boss.img}`) : `https://play.pokemonshowdown.com/sprites/trainers/${boss.img}.png`))
+                      }
+                      alt={boss.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
                         objectFit: (partida.gameId === 'pokemonz' || boss.customImgUrl) ? 'contain' : 'cover',
                         padding: (partida.gameId === 'pokemonz' || boss.customImgUrl) ? '5px' : '0'
-                      }} 
-                      onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }} 
+                      }}
+                      onError={(e) => { e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; e.target.style.objectFit = 'contain'; e.target.style.padding = '10px'; }}
                     />
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{boss.title}</div>
@@ -647,84 +647,85 @@ export default function PartidaTracker() {
           </thead>
           <tbody>
             {partida.encounters
-              .filter(enc => 
-                enc.lugar.toLowerCase().includes(searchTerm.toLowerCase()) || 
+              .filter(enc =>
+                enc.lugar.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 enc.pokemon.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 enc.mote.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((enc) => (
-              <tr
-                key={enc.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, enc.id)}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, enc.id)}
-                onDragEnd={() => setDraggingId(null)}
-                style={{
-                  opacity: draggingId === enc.id ? 0.4 : 1,
-                  transition: 'opacity 0.2s',
-                  background: draggingId === enc.id ? 'rgba(var(--primary-rgb), 0.1)' : 'transparent'
-                }}
-              >
-                <td style={{ textAlign: 'center', cursor: 'grab', color: 'var(--text-muted)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <GripVertical size={18} />
-                  </div>
-                </td>
-                <td>
-                  <input
-                    className="input"
-                    value={enc.lugar}
-                    onChange={e => handleUpdateEncounter(enc.id, 'lugar', e.target.value)}
-                    style={{ background: 'transparent', border: 'none', padding: '0.25rem 0.5rem' }}
-                  />
-                </td>
-                <td style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {enc.img ? (
-                      <img src={enc.img} alt={enc.pokemon} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                    ) : (
-                      <Camera size={16} opacity={0.3} />
-                    )}
-                  </div>
-                  <input
-                    className="input"
-                    placeholder="Bulbasaur... Enter"
-                    value={enc.pokemon}
-                    onChange={e => handleUpdateEncounter(enc.id, 'pokemon', e.target.value)}
-                    onBlur={(e) => fetchPokemonImage(enc.id, e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && !!enc.pokemon ? fetchPokemonImage(enc.id, e.target.value) : null}
-                    style={{ background: 'transparent', border: '1px solid var(--glass-border)', flex: 1 }}
-                  />
-                </td>
-                <td>
-                  <input
-                    className="input"
-                    placeholder="Apodo..."
-                    value={enc.mote}
-                    onChange={e => handleUpdateEncounter(enc.id, 'mote', e.target.value)}
-                    style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}
-                  />
-                </td>
-                <td>
-                  <select
-                    className={`input status-badge status-${enc.status.toLowerCase().replace(' ', '')}`}
-                    value={enc.status}
-                    onChange={e => handleUpdateEncounter(enc.id, 'status', e.target.value)}
-                    style={{ background: 'rgba(0,0,0,0.3)', width: '100%', padding: '0.5rem' }}
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Vivo">Vivo</option>
-                    <option value="Muerto">Muerto</option>
-                  </select>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  <button onClick={() => deleteEncounter(enc.id)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }} title="Eliminar fila">
-                    <Trash2 size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                <tr
+                  key={enc.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, enc.id)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, enc.id)}
+                  onDragEnd={() => setDraggingId(null)}
+                  style={{
+                    opacity: draggingId === enc.id ? 0.4 : 1,
+                    transition: 'opacity 0.2s',
+                    background: draggingId === enc.id ? 'rgba(var(--primary-rgb), 0.1)' : 'transparent'
+                  }}
+                >
+                  <td style={{ textAlign: 'center', cursor: 'grab', color: 'var(--text-muted)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <GripVertical size={18} />
+                    </div>
+                  </td>
+                  <td>
+                    <input
+                      className="input"
+                      value={enc.lugar}
+                      onChange={e => handleUpdateEncounter(enc.id, 'lugar', e.target.value)}
+                      style={{ background: 'transparent', border: 'none', padding: '0.25rem 0.5rem' }}
+                    />
+                  </td>
+                  <td style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {enc.img ? (
+                        <img src={enc.img} alt={enc.pokemon} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        <Camera size={16} opacity={0.3} />
+                      )}
+                    </div>
+                    <input
+                      className="input"
+                      placeholder="Bulbasaur... Enter"
+                      value={enc.pokemon}
+                      onChange={e => handleUpdateEncounter(enc.id, 'pokemon', e.target.value)}
+                      onBlur={(e) => fetchPokemonImage(enc.id, e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && !!enc.pokemon ? fetchPokemonImage(enc.id, e.target.value) : null}
+                      style={{ background: 'transparent', border: '1px solid var(--glass-border)', flex: 1 }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className="input"
+                      placeholder="Apodo..."
+                      value={enc.mote}
+                      onChange={e => handleUpdateEncounter(enc.id, 'mote', e.target.value)}
+                      style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      className={`input status-badge status-${enc.status.toLowerCase().replace(' ', '')}`}
+                      value={enc.status}
+                      onChange={e => handleUpdateEncounter(enc.id, 'status', e.target.value)}
+                      style={{ background: 'rgba(0,0,0,0.3)', width: '100%', padding: '0.5rem' }}
+                    >
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Vivo">Vivo</option>
+                      <option value="Muerto">Muerto</option>
+                      <option value="No Atrapado">No Atrapado</option>
+                    </select>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <button onClick={() => deleteEncounter(enc.id)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }} title="Eliminar fila">
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         {partida.encounters.length === 0 && (
@@ -790,12 +791,12 @@ export default function PartidaTracker() {
               </div>
 
               <div>
-                <label className="form-label">Nivel Máximo <span style={{color: 'var(--primary)'}}>(Opcional)</span></label>
+                <label className="form-label">Nivel Máximo <span style={{ color: 'var(--primary)' }}>(Opcional)</span></label>
                 <input type="number" className="input" value={newBoss.level} onChange={e => setNewBoss({ ...newBoss, level: e.target.value })} placeholder="Ej. 14 (Déjalo vacío si no hay nivel límite)" />
               </div>
 
               <div>
-                <label className="form-label">URL de Fotografía <span style={{color: 'var(--primary)'}}>(Opcional)</span></label>
+                <label className="form-label">URL de Fotografía <span style={{ color: 'var(--primary)' }}>(Opcional)</span></label>
                 <input type="text" className="input" value={newBoss.customImgUrl} onChange={e => setNewBoss({ ...newBoss, customImgUrl: e.target.value })} placeholder="Pega aquí el enlace a una imagen (.jpg, .png...)" />
               </div>
             </div>
@@ -847,7 +848,7 @@ export default function PartidaTracker() {
               <button className="modal-close" style={{ position: 'relative', top: 0, right: 0 }} onClick={() => setShowTeamModal(false)}><X size={20} /></button>
             </div>
             <div style={{ padding: '1rem', maxHeight: '400px', overflowY: 'auto' }}>
-              <div 
+              <div
                 onClick={() => updateTeamSlot(selectingSlotIdx, null)}
                 style={{ padding: '1rem', borderRadius: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', marginBottom: '0.5rem', textAlign: 'center', color: 'var(--primary)' }}
               >
@@ -855,17 +856,17 @@ export default function PartidaTracker() {
               </div>
               {alivePokemon.length === 0 && <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No tienes Pokémon vivos para añadir.</p>}
               {alivePokemon.map(enc => (
-                <div 
-                  key={enc.id} 
+                <div
+                  key={enc.id}
                   onClick={() => updateTeamSlot(selectingSlotIdx, enc.id)}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '1rem', 
-                    padding: '0.75rem', 
-                    borderRadius: '8px', 
-                    cursor: 'pointer', 
-                    background: 'rgba(255,255,255,0.05)', 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    background: 'rgba(255,255,255,0.05)',
                     marginBottom: '0.5rem',
                     border: team.includes(enc.id) ? '1px solid var(--accent)' : '1px solid transparent'
                   }}
