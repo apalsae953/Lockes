@@ -242,7 +242,10 @@ export default function PartidaTracker() {
       return;
     }
     try {
-      let cleanName = pokemonName.toLowerCase().trim().replace(/ /g, '-');
+      let cleanName = pokemonName.toLowerCase().trim()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/['.:]/g, '')
+        .replace(/[\s-]+/g, '-');
       
       // Coleccionar todas las imágenes de formas disponibles
       let allForms = [];
