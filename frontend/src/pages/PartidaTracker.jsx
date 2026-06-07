@@ -23,6 +23,7 @@ export default function PartidaTracker() {
 
   // Estado de Arrastrar y Soltar (Drag and Drop)
   const [draggingId, setDraggingId] = useState(null);
+  const [isMouseDragging, setIsMouseDragging] = useState(false);
 
   // Estado de Búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,6 +70,56 @@ export default function PartidaTracker() {
       window.removeEventListener('mouseup', handleWindowMouseUp);
     };
   }, [isScrolling, startX, scrollLeft]);
+
+  // Efectos globales para el arrastre personalizado (mouseup, mousemove para auto-scroll y cursor grabbing)
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsMouseDragging(false);
+      setDraggingId(null);
+    };
+
+    if (isMouseDragging) {
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isMouseDragging]);
+
+  useEffect(() => {
+    if (isMouseDragging) {
+      document.body.style.cursor = 'grabbing';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+    return () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isMouseDragging]);
+
+  useEffect(() => {
+    if (!isMouseDragging) return;
+
+    const handleMouseMoveGlobal = (e) => {
+      const threshold = 120; // Píxeles desde los bordes superior/inferior de la pantalla
+      const { clientY } = e;
+      if (clientY < threshold) {
+        const factor = (threshold - clientY) / threshold;
+        window.scrollBy(0, -Math.max(4, Math.round(24 * factor)));
+      } else if (clientY > window.innerHeight - threshold) {
+        const factor = (clientY - (window.innerHeight - threshold)) / threshold;
+        window.scrollBy(0, Math.max(4, Math.round(24 * factor)));
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMoveGlobal);
+    };
+  }, [isMouseDragging]);
 
   useEffect(() => {
     const fetchPartida = async () => {
@@ -371,24 +422,16 @@ export default function PartidaTracker() {
     guardarPartida(updated);
   };
 
-  // Manejadores de Arrastrar y Soltar (Drag and Drop)
-  const handleDragStart = (e, encId) => {
+  // Manejadores de Arrastrar y Soltar con Mouse
+  const handleGripMouseDown = (e, encId) => {
+    if (e.button !== 0) return; // Solo botón izquierdo del ratón
+    setIsMouseDragging(true);
     setDraggingId(encId);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.target);
+    e.preventDefault(); // Evitar selección de texto molesta
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e, targetEncId) => {
-    e.preventDefault();
-    if (draggingId === targetEncId) {
-      setDraggingId(null);
-      return;
-    }
+  const handleRowMouseEnter = (targetEncId) => {
+    if (!isMouseDragging || !draggingId || draggingId === targetEncId) return;
 
     const updatedPartida = { ...partida };
     const encounters = [...updatedPartida.encounters];
@@ -401,7 +444,6 @@ export default function PartidaTracker() {
       updatedPartida.encounters = encounters;
       guardarPartida(updatedPartida);
     }
-    setDraggingId(null);
   };
 
   const exportExcel = () => {
@@ -756,18 +798,17 @@ export default function PartidaTracker() {
               .map((enc) => (
                 <tr
                   key={enc.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, enc.id)}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, enc.id)}
-                  onDragEnd={() => setDraggingId(null)}
+                  onMouseEnter={() => handleRowMouseEnter(enc.id)}
                   style={{
                     opacity: draggingId === enc.id ? 0.4 : 1,
                     transition: 'opacity 0.2s',
                     background: draggingId === enc.id ? 'rgba(var(--primary-rgb), 0.1)' : 'transparent'
                   }}
                 >
-                  <td style={{ textAlign: 'center', cursor: 'grab', color: 'var(--text-muted)' }}>
+                  <td
+                    style={{ textAlign: 'center', cursor: isMouseDragging ? 'grabbing' : 'grab', color: 'var(--text-muted)' }}
+                    onMouseDown={(e) => handleGripMouseDown(e, enc.id)}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <GripVertical size={18} />
                     </div>
