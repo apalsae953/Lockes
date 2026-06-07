@@ -2,25 +2,25 @@ import React, { useState } from 'react';
 import { Mail, Send, CheckCircle, MessageSquare, AlertCircle, PlusCircle, Ghost } from 'lucide-react';
 
 export default function Contact() {
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
+  const [enviado, setEnviado] = useState(false);
+  const [datosFormulario, setDatosFormulario] = useState({
     email: '',
     subject: '',
     message: ''
   });
 
-  const handleSubmit = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     
     // Validación de seguridad para el asunto
-    if (!formData.subject) {
+    if (!datosFormulario.subject) {
       return;
     }
 
     try {
       const response = await fetch("https://formspree.io/f/mdayondz", {
         method: "POST",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(datosFormulario),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -28,8 +28,8 @@ export default function Contact() {
       });
       
       if (response.ok) {
-        setSubmitted(true);
-        setFormData({ email: '', subject: '', message: '' });
+        setEnviado(true);
+        setDatosFormulario({ email: '', subject: '', message: '' });
       } else {
         alert("Hubo un error al enviar el mensaje. Inténtalo de nuevo.");
       }
@@ -38,11 +38,11 @@ export default function Contact() {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const manejarCambio = (e) => {
+    setDatosFormulario({ ...datosFormulario, [e.target.name]: e.target.value });
   };
 
-  if (submitted) {
+  if (enviado) {
     return (
       <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
         <div className="glass" style={{ padding: '4rem', textAlign: 'center', maxWidth: '500px' }}>
@@ -53,7 +53,7 @@ export default function Contact() {
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: '1.6' }}>
             Gracias por contactar. Tu sugerencia o reporte ha sido recibido y lo revisaremos lo antes posible para seguir mejorando NuzTracker.
           </p>
-          <button className="btn btn-primary" onClick={() => setSubmitted(false)}>
+          <button className="btn btn-primary" onClick={() => setEnviado(false)}>
             Enviar otro mensaje
           </button>
         </div>
@@ -91,7 +91,7 @@ export default function Contact() {
 
         {/* Formulario a la derecha */}
         <div className="glass" style={{ padding: '3rem', gridColumn: 'span 2' }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <form onSubmit={manejarEnvio} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div className="form-group">
               <label className="form-label">Tu Correo Electrónico</label>
               <div style={{ position: 'relative' }}>
@@ -103,8 +103,8 @@ export default function Contact() {
                   style={{ paddingLeft: '3rem' }}
                   placeholder="ejemplo@entrenador.com"
                   required
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={datosFormulario.email}
+                  onChange={manejarCambio}
                 />
               </div>
             </div>
@@ -114,8 +114,8 @@ export default function Contact() {
               <select
                 name="subject"
                 className="input"
-                value={formData.subject}
-                onChange={handleChange}
+                value={datosFormulario.subject}
+                onChange={manejarCambio}
                 required
               >
                 <option value="" disabled>Elige una opción</option>
@@ -135,8 +135,8 @@ export default function Contact() {
                 style={{ resize: 'vertical', minHeight: '150px' }}
                 placeholder="Escribe aquí los detalles..."
                 required
-                value={formData.message}
-                onChange={handleChange}
+                value={datosFormulario.message}
+                onChange={manejarCambio}
               ></textarea>
             </div>
 

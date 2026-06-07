@@ -17,28 +17,28 @@ const JUEGOS = [
 
 export default function MisPartidas() {
   const [partidas, setPartidas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [creationLoading, setCreationLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [cargandoCreacion, setCargandoCreacion] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalBorrado, setMostrarModalBorrado] = useState(false);
+  const [idBorrando, setIdBorrando] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   // Estado del Modal de Creación
-  const [newName, setNewName] = useState('Mi Nuzlocke');
-  const [selectedRegion, setSelectedRegion] = useState('kanto');
+  const [nuevoNombre, setNuevoNombre] = useState('Mi Nuzlocke');
+  const [regionSeleccionada, setRegionSeleccionada] = useState('kanto');
   const [vidasIlimitadas, setVidasIlimitadas] = useState(true);
   const [vidas, setVidas] = useState(10);
 
-  const [extraRules, setExtraRules] = useState([]);
-  const [ruleSelect, setRuleSelect] = useState('');
+  const [reglasExtras, setReglasExtras] = useState([]);
+  const [seleccionRegla, setSeleccionRegla] = useState('');
 
   // Reglas personalizadas de la base de datos (localStorage)
-  const [availableCustomRules, setAvailableCustomRules] = useState([]);
+  const [reglasPersonalizadasDisponibles, setReglasPersonalizadasDisponibles] = useState([]);
 
   useEffect(() => {
-    const fetchPartidas = async () => {
+    const obtenerPartidas = async () => {
       if (user) {
         try {
           const response = await api.get('/api/runs');
@@ -47,7 +47,7 @@ export default function MisPartidas() {
             ...p,
             vidasMax: p.vidas_max,
             vidasActuales: p.vidas_actuales,
-            extraRules: p.extra_rules,
+            reglasExtras: p.extra_rules,
             game: p.game_name,
             capturesCount: p.captures_count
           }));
@@ -64,61 +64,61 @@ export default function MisPartidas() {
         }
       }
     };
-    fetchPartidas().finally(() => setLoading(false));
+    obtenerPartidas().finally(() => setCargando(false));
   }, [user]);
 
-  const initCreation = () => {
+  const iniciarCreacion = () => {
     try {
       const custom = JSON.parse(localStorage.getItem('customRules') || '[]');
-      setAvailableCustomRules(custom);
+      setReglasPersonalizadasDisponibles(custom);
     } catch {
-      setAvailableCustomRules([]);
+      setReglasPersonalizadasDisponibles([]);
     }
-    setRuleSelect('seleccionar');
-    setExtraRules([]);
+    setSeleccionRegla('seleccionar');
+    setReglasExtras([]);
     setVidasIlimitadas(true);
     setVidas(10);
-    setNewName('Mi Nuzlocke');
-    setSelectedRegion('kanto');
-    setShowModal(true);
+    setNuevoNombre('Mi Nuzlocke');
+    setRegionSeleccionada('kanto');
+    setMostrarModal(true);
   };
 
-  const removePartida = (id) => {
-    setDeletingId(id);
-    setShowDeleteModal(true);
+  const eliminarPartida = (id) => {
+    setIdBorrando(id);
+    setMostrarModalBorrado(true);
   };
 
-  const confirmDelete = async () => {
-    if (user && !isNaN(deletingId)) {
+  const confirmarEliminacion = async () => {
+    if (user && !isNaN(idBorrando)) {
       try {
-        await api.delete(`/api/runs/${deletingId}`);
-        setPartidas(partidas.filter(p => p.id !== deletingId));
+        await api.delete(`/api/runs/${idBorrando}`);
+        setPartidas(partidas.filter(p => p.id !== idBorrando));
       } catch (error) {
         console.error("Error borrando partida", error);
       }
     } else {
-      const updated = partidas.filter(p => p.id !== deletingId);
+      const updated = partidas.filter(p => p.id !== idBorrando);
       setPartidas(updated);
       localStorage.setItem('lockeRuns', JSON.stringify(updated));
     }
-    setShowDeleteModal(false);
-    setDeletingId(null);
+    setMostrarModalBorrado(false);
+    setIdBorrando(null);
   };
 
   const handleAddRule = (e) => {
     e.preventDefault();
-    if (!ruleSelect || ruleSelect === 'seleccionar') return;
-    if (!extraRules.includes(ruleSelect)) {
-      setExtraRules([...extraRules, ruleSelect]);
+    if (!seleccionRegla || seleccionRegla === 'seleccionar') return;
+    if (!reglasExtras.includes(seleccionRegla)) {
+      setReglasExtras([...reglasExtras, seleccionRegla]);
     }
   };
 
   const handleCreate = async () => {
-    if (!newName.trim() || !selectedRegion) return;
+    if (!nuevoNombre.trim() || !regionSeleccionada) return;
 
     let locations = [];
-    if (selectedRegion !== 'custom') {
-      locations = PRESET_ROUTES[selectedRegion] || [];
+    if (regionSeleccionada !== 'custom') {
+      locations = PRESET_ROUTES[regionSeleccionada] || [];
     }
 
     if (locations.length === 0) {
@@ -135,18 +135,18 @@ export default function MisPartidas() {
     }));
 
     const maxVidasVal = vidasIlimitadas ? null : (parseInt(vidas, 10) || 1);
-    const gameName = JUEGOS.find(j => j.id === selectedRegion)?.name || 'Desconocido';
+    const gameName = JUEGOS.find(j => j.id === regionSeleccionada)?.name || 'Desconocido';
 
     if (user) {
-      setCreationLoading(true);
+      setCargandoCreacion(true);
       try {
         const response = await api.post('/api/runs', {
-          name: newName,
-          game_id: selectedRegion,
+          name: nuevoNombre,
+          game_id: regionSeleccionada,
           game_name: gameName,
           vidas_max: maxVidasVal,
           vidas_actuales: maxVidasVal,
-          extra_rules: extraRules,
+          extra_rules: reglasExtras,
           encounters: encounters
         });
 
@@ -154,35 +154,35 @@ export default function MisPartidas() {
           ...response.data,
           vidasMax: response.data.vidas_max,
           vidasActuales: response.data.vidas_actuales,
-          extraRules: response.data.extra_rules,
+          reglasExtras: response.data.extra_rules,
           game: response.data.game_name
         };
 
         setPartidas([created, ...partidas]);
-        setShowModal(false);
+        setMostrarModal(false);
         navigate(`/tracker/${created.id}`);
       } catch (error) {
         console.error("Error creando partida en API", error);
         alert("Error al crear la partida: " + (error.response?.data?.message || error.message));
       } finally {
-        setCreationLoading(false);
+        setCargandoCreacion(false);
       }
     } else {
       const newPartida = {
         id: Date.now().toString(),
-        name: newName,
-        gameId: selectedRegion,
+        name: nuevoNombre,
+        gameId: regionSeleccionada,
         game: gameName,
         vidasMax: maxVidasVal,
         vidasActuales: maxVidasVal,
-        extraRules: [...extraRules],
+        reglasExtras: [...reglasExtras],
         encounters
       };
 
       const updated = [...partidas, newPartida];
       localStorage.setItem('lockeRuns', JSON.stringify(updated));
       setPartidas(updated);
-      setShowModal(false);
+      setMostrarModal(false);
       navigate(`/tracker/${newPartida.id}`);
     }
   };
@@ -194,7 +194,7 @@ export default function MisPartidas() {
         <h1 className="title-glow" style={{ fontSize: '3rem' }}>
           Mis <span className="gradient-text">Partidas</span>
         </h1>
-        <button className="btn btn-primary" onClick={initCreation}>
+        <button className="btn btn-primary" onClick={iniciarCreacion}>
           <PlusCircle size={20} /> Crear Partida
         </button>
       </div>
@@ -217,7 +217,7 @@ export default function MisPartidas() {
         </div>
       )}
 
-      {loading ? (
+      {cargando ? (
         <div style={{ textAlign: 'center', padding: '6rem' }}>
           <div className="loader"></div>
           <p style={{ marginTop: '1.5rem', color: 'var(--text-muted)', fontFamily: 'Outfit' }}>Cargando tus aventuras...</p>
@@ -249,7 +249,7 @@ export default function MisPartidas() {
                 <Link to={`/tracker/${partida.id}`} className="btn btn-primary" style={{ flex: 1 }}>
                   <PlaySquare size={18} /> Jugar
                 </Link>
-                <button className="btn btn-outline" onClick={() => removePartida(partida.id)}>
+                <button className="btn btn-outline" onClick={() => eliminarPartida(partida.id)}>
                   Borrar
                 </button>
               </div>
@@ -259,24 +259,24 @@ export default function MisPartidas() {
       )}
 
       {/* MODAL DE CREACIÓN DE PARTIDA */}
-      {showModal && (
-        <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setShowModal(false)}>
+      {mostrarModal && (
+        <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setMostrarModal(false)}>
           <div className="modal-content glass" style={{ flexDirection: 'column', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ padding: '2rem', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2>Crear Partida</h2>
-              <button className="modal-close" style={{ position: 'relative', top: 0, right: 0 }} onClick={() => setShowModal(false)}><X size={24} /></button>
+              <button className="modal-close" style={{ position: 'relative', top: 0, right: 0 }} onClick={() => setMostrarModal(false)}><X size={24} /></button>
             </div>
 
             <div style={{ padding: '2rem' }}>
               <div className="form-group">
                 <label className="form-label">Nombre de tu Locke</label>
-                <input className="input" value={newName} onChange={e => setNewName(e.target.value)} />
+                <input className="input" value={nuevoNombre} onChange={e => setNuevoNombre(e.target.value)} />
               </div>
 
               <div className="form-group partidas-modal-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem' }}>
                 <div>
                   <label className="form-label">Región Principal</label>
-                  <select className="input" value={selectedRegion} onChange={e => setSelectedRegion(e.target.value)}>
+                  <select className="input" value={regionSeleccionada} onChange={e => setRegionSeleccionada(e.target.value)}>
                     {JUEGOS.map(r => (
                       <option key={r.id} value={r.id}>{r.name}</option>
                     ))}
@@ -310,10 +310,10 @@ export default function MisPartidas() {
                   {/* Las reglas universales son implícitas, no hace falta saturar la UI. */}
                   <span style={{ padding: '0.4rem 0.8rem', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', fontSize: '0.85rem' }}>Muerte Permanente + Captura Limitada + Motes</span>
 
-                  {extraRules.map((rule, idx) => (
+                  {reglasExtras.map((rule, idx) => (
                     <span key={idx} style={{ padding: '0.4rem 0.8rem', background: 'rgba(0,0,0,0.4)', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--accent)' }}>
                       {rule}
-                      <button type="button" onClick={(e) => { e.preventDefault(); setExtraRules(extraRules.filter((_, i) => i !== idx)); }} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      <button type="button" onClick={(e) => { e.preventDefault(); setReglasExtras(reglasExtras.filter((_, i) => i !== idx)); }} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                         <X size={14} />
                       </button>
                     </span>
@@ -321,13 +321,13 @@ export default function MisPartidas() {
                 </div>
 
                 <form style={{ display: 'flex', gap: '0.5rem' }} onSubmit={handleAddRule}>
-                  <select className="input" value={ruleSelect} onChange={e => setRuleSelect(e.target.value)}>
+                  <select className="input" value={seleccionRegla} onChange={e => setSeleccionRegla(e.target.value)}>
                     <option value="seleccionar">Seleccionar...</option>
                     <optgroup label="Variantes Oficiales">
                       {PRESET_VARIANTS.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
                     </optgroup>
                     <optgroup label="Tus Reglas Privadas">
-                      {availableCustomRules.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
+                      {reglasPersonalizadasDisponibles.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
                     </optgroup>
                   </select>
                   <button className="btn btn-outline" type="submit" style={{ whiteSpace: 'nowrap' }}>Añadir ✓</button>
@@ -336,9 +336,9 @@ export default function MisPartidas() {
             </div>
 
             <div style={{ padding: '2rem', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '1rem', background: 'rgba(0,0,0,0.3)' }}>
-              <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={handleCreate} disabled={creationLoading}>
-                {creationLoading ? <div className="loader" style={{ width: '20px', height: '20px', borderTopColor: 'black' }}></div> : (
+              <button className="btn btn-outline" onClick={() => setMostrarModal(false)}>Cancelar</button>
+              <button className="btn btn-primary" onClick={handleCreate} disabled={cargandoCreacion}>
+                {cargandoCreacion ? <div className="loader" style={{ width: '20px', height: '20px', borderTopColor: 'black' }}></div> : (
                   <>
                     Iniciar Aventura <PlaySquare size={18} />
                   </>
@@ -349,8 +349,8 @@ export default function MisPartidas() {
         </div>
       )}
       {/* MODAL DE CONFIRMACIÓN DE BORRADO */}
-      {showDeleteModal && (
-        <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setShowDeleteModal(false)}>
+      {mostrarModalBorrado && (
+        <div className="modal-overlay" onClick={(e) => e.target.className === 'modal-overlay' && setMostrarModalBorrado(false)}>
           <div className="modal-content glass" style={{ flexDirection: 'column', maxWidth: '400px', textAlign: 'center', padding: '2rem' }}>
             <div style={{ color: 'var(--primary)', marginBottom: '1.5rem' }}>
               <Trash2 size={64} style={{ margin: '0 auto' }} />
@@ -360,10 +360,10 @@ export default function MisPartidas() {
               Esta acción no se puede deshacer. Se perderán todos los datos de capturas y progreso de este Nuzlocke.
             </p>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>
+              <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setMostrarModalBorrado(false)}>
                 Cancelar
               </button>
-              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: 'var(--primary)', color: 'black' }} onClick={confirmDelete}>
+              <button className="btn btn-primary" style={{ flex: 1, backgroundColor: 'var(--primary)', color: 'black' }} onClick={confirmarEliminacion}>
                 Sí, Borrar
               </button>
             </div>

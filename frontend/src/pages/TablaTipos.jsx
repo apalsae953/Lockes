@@ -5,25 +5,25 @@ import { Shield, Sword, X, Zap, Info } from 'lucide-react';
 import { TYPE_ES as TIPO_TRADUCCIONES, EFICACIA_DEFENSIVA } from '../constants/typeData';
 
 export default function TablaTipos() {
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [tiposSeleccionados, setTiposSeleccionados] = useState([]);
   const detailRef = useRef(null);
 
   useEffect(() => {
-    if (selectedTypes.length > 0 && detailRef.current) {
+    if (tiposSeleccionados.length > 0 && detailRef.current) {
       detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [selectedTypes]);
+  }, [tiposSeleccionados]);
 
   const tipos = Object.keys(EFICACIA_DEFENSIVA);
 
-  const handleTypeClick = (tipo) => {
-    if (selectedTypes.includes(tipo)) {
-      setSelectedTypes(selectedTypes.filter(t => t !== tipo));
+  const manejarClicTipo = (tipo) => {
+    if (tiposSeleccionados.includes(tipo)) {
+      setTiposSeleccionados(tiposSeleccionados.filter(t => t !== tipo));
     } else {
-      if (selectedTypes.length < 2) {
-        setSelectedTypes([...selectedTypes, tipo]);
+      if (tiposSeleccionados.length < 2) {
+        setTiposSeleccionados([...tiposSeleccionados, tipo]);
       } else {
-        setSelectedTypes([tipo]);
+        setTiposSeleccionados([tipo]);
       }
     }
   };
@@ -49,7 +49,7 @@ export default function TablaTipos() {
 
   // Calcular eficacia defensiva COMBINADA
   const eficaciaCombinada = useMemo(() => {
-    if (selectedTypes.length === 0) return null;
+    if (tiposSeleccionados.length === 0) return null;
 
     const res = {
       x4: [],
@@ -63,7 +63,7 @@ export default function TablaTipos() {
     tipos.forEach(atacante => {
       let multiplier = 1;
 
-      selectedTypes.forEach(defensor => {
+      tiposSeleccionados.forEach(defensor => {
         const data = EFICACIA_DEFENSIVA[defensor];
         if (data.weakness.includes(atacante)) multiplier *= 2;
         if (data.resistance.includes(atacante)) multiplier *= 0.5;
@@ -79,7 +79,7 @@ export default function TablaTipos() {
     });
 
     return res;
-  }, [selectedTypes, tipos]);
+  }, [tiposSeleccionados, tipos]);
 
   const TypeBadge = ({ type, small = false }) => (
     <div
@@ -119,8 +119,8 @@ export default function TablaTipos() {
         {tipos.map(tipo => (
           <div
             key={tipo}
-            onClick={() => handleTypeClick(tipo)}
-            className={`card glass type-card ${selectedTypes.includes(tipo) ? 'active' : ''}`}
+            onClick={() => manejarClicTipo(tipo)}
+            className={`card glass type-card ${tiposSeleccionados.includes(tipo) ? 'active' : ''}`}
             style={{
               padding: '2rem 1rem',
               cursor: 'pointer',
@@ -130,12 +130,12 @@ export default function TablaTipos() {
               justifyContent: 'center',
               gap: '1rem',
               transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-              border: selectedTypes.includes(tipo) ? `2px solid ${getTypeColor(tipo)}` : '1px solid var(--glass-border)',
-              transform: selectedTypes.includes(tipo) ? 'translateY(-8px) scale(1.05)' : 'none',
-              background: selectedTypes.includes(tipo)
+              border: tiposSeleccionados.includes(tipo) ? `2px solid ${getTypeColor(tipo)}` : '1px solid var(--glass-border)',
+              transform: tiposSeleccionados.includes(tipo) ? 'translateY(-8px) scale(1.05)' : 'none',
+              background: tiposSeleccionados.includes(tipo)
                 ? `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, ${getTypeColor(tipo)}55 100%)`
                 : 'var(--glass-bg)',
-              boxShadow: selectedTypes.includes(tipo)
+              boxShadow: tiposSeleccionados.includes(tipo)
                 ? `0 15px 35px -10px ${getTypeColor(tipo)}88`
                 : 'var(--glass-shadow)'
             }}
@@ -162,24 +162,24 @@ export default function TablaTipos() {
         ))}
       </div>
 
-      {selectedTypes.length > 0 && (
+      {tiposSeleccionados.length > 0 && (
         <div
           ref={detailRef}
           className="card glass fade-in tipo-detail-card"
           style={{
             marginTop: '4rem',
             padding: '3rem',
-            border: `2px solid ${getTypeColor(selectedTypes[0])}33`,
+            border: `2px solid ${getTypeColor(tiposSeleccionados[0])}33`,
             display: 'flex',
             flexDirection: 'column',
             gap: '3rem',
             position: 'relative',
-            background: `linear-gradient(180deg, var(--glass-bg) 0%, ${getTypeColor(selectedTypes[0])}15 100%)`,
+            background: `linear-gradient(180deg, var(--glass-bg) 0%, ${getTypeColor(tiposSeleccionados[0])}15 100%)`,
             overflow: 'hidden'
           }}
         >
           <button
-            onClick={() => setSelectedTypes([])}
+            onClick={() => setTiposSeleccionados([])}
             className="btn-close"
             style={{
               position: 'absolute',
@@ -200,10 +200,10 @@ export default function TablaTipos() {
           {/* CABECERA SELECCIÓN */}
           <div style={{ textAlign: 'center' }}>
             <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-              Perfil de {selectedTypes.map((t, idx) => (
+              Perfil de {tiposSeleccionados.map((t, idx) => (
                 <React.Fragment key={t}>
                   <TypeBadge type={t} />
-                  {idx === 0 && selectedTypes.length > 1 && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>+</span>}
+                  {idx === 0 && tiposSeleccionados.length > 1 && <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>+</span>}
                 </React.Fragment>
               ))}
             </h2>
@@ -225,7 +225,7 @@ export default function TablaTipos() {
                   <div style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '1rem' }}>Super Eficaz contra (x2)</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                     {(() => {
-                      const allSuper = [...new Set(selectedTypes.flatMap(t => eficaciaOfensiva[t].superEffective))];
+                      const allSuper = [...new Set(tiposSeleccionados.flatMap(t => eficaciaOfensiva[t].superEffective))];
                       return allSuper.length > 0 ? (
                         allSuper.map(e => <TypeBadge key={e} type={e} small />)
                       ) : (
@@ -239,7 +239,7 @@ export default function TablaTipos() {
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '1rem' }}>Poco Eficaz / Inmune</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                     {(() => {
-                      const allWeak = [...new Set(selectedTypes.flatMap(t => [...eficaciaOfensiva[t].notVeryEffective, ...eficaciaOfensiva[t].immune]))];
+                      const allWeak = [...new Set(tiposSeleccionados.flatMap(t => [...eficaciaOfensiva[t].notVeryEffective, ...eficaciaOfensiva[t].immune]))];
                       return allWeak.map(e => <TypeBadge key={e} type={e} small />);
                     })()}
                   </div>

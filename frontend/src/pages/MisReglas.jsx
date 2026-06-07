@@ -3,62 +3,62 @@ import { UNIVERSAL_RULES, PRESET_VARIANTS } from '../constants/rulesData';
 import { Trash2, Plus, Edit2, Lock } from 'lucide-react';
 
 export default function MisReglas() {
-  const [customRules, setCustomRules] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [reglasPersonalizadas, setReglasPersonalizadas] = useState([]);
+  const [idEditando, setIdEditando] = useState(null);
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('customRules') || '[]');
-      setCustomRules(saved);
+      const saved = JSON.parse(localStorage.getItem('reglasPersonalizadas') || '[]');
+      setReglasPersonalizadas(saved);
     } catch {
-      setCustomRules([]);
+      setReglasPersonalizadas([]);
     }
   }, []);
 
   const saveCustomRules = (rules) => {
-    localStorage.setItem('customRules', JSON.stringify(rules));
-    setCustomRules(rules);
+    localStorage.setItem('reglasPersonalizadas', JSON.stringify(rules));
+    setReglasPersonalizadas(rules);
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!name.trim() || !description.trim()) return;
+    if (!nombre.trim() || !descripcion.trim()) return;
 
-    if (editingId) {
-      const updated = customRules.map(r =>
-        r.id === editingId ? { ...r, name, description } : r
+    if (idEditando) {
+      const updated = reglasPersonalizadas.map(r =>
+        r.id === idEditando ? { ...r, nombre, descripcion } : r
       );
       saveCustomRules(updated);
-      setEditingId(null);
+      setIdEditando(null);
     } else {
       const newRule = {
         id: 'cus_' + Date.now().toString(),
-        name,
-        description
+        nombre,
+        descripcion
       };
-      saveCustomRules([...customRules, newRule]);
+      saveCustomRules([...reglasPersonalizadas, newRule]);
     }
-    setName('');
-    setDescription('');
+    setNombre('');
+    setDescripcion('');
   };
 
-  const handleEdit = (rule) => {
-    setEditingId(rule.id);
-    setName(rule.name);
-    setDescription(rule.description);
+  const manejarEdicion = (rule) => {
+    setIdEditando(rule.id);
+    setNombre(rule.nombre);
+    setDescripcion(rule.descripcion);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = (id) => {
-    saveCustomRules(customRules.filter(r => r.id !== id));
+  const manejarBorrado = (id) => {
+    saveCustomRules(reglasPersonalizadas.filter(r => r.id !== id));
   };
 
   const cancelEdit = () => {
-    setEditingId(null);
-    setName('');
-    setDescription('');
+    setIdEditando(null);
+    setNombre('');
+    setDescripcion('');
   };
 
   const RuleCard = ({ r, locked }) => (
@@ -66,16 +66,16 @@ export default function MisReglas() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem', marginBottom: '0' }}>
           {locked && <Lock size={16} color="var(--text-muted)" />}
-          {r.name}
+          {r.nombre}
         </h3>
         {!locked && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button onClick={() => handleEdit(r)} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer' }}><Edit2 size={18} /></button>
-            <button onClick={() => handleDelete(r.id)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }}><Trash2 size={18} /></button>
+            <button onClick={() => manejarEdicion(r)} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer' }}><Edit2 size={18} /></button>
+            <button onClick={() => manejarBorrado(r.id)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }}><Trash2 size={18} /></button>
           </div>
         )}
       </div>
-      <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, marginTop: '0.5rem' }}>{r.description}</p>
+      <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, marginTop: '0.5rem' }}>{r.descripcion}</p>
     </div>
   );
 
@@ -86,11 +86,11 @@ export default function MisReglas() {
       </h1>
 
       <div className="glass" style={{ padding: '2rem', marginBottom: '3rem' }}>
-        <h2 style={{ marginBottom: '1.5rem', color: 'var(--accent)' }}>{editingId ? 'Editar Regla' : 'Crear Nueva Regla'}</h2>
+        <h2 style={{ marginBottom: '1.5rem', color: 'var(--accent)' }}>{idEditando ? 'Editar Regla' : 'Crear Nueva Regla'}</h2>
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
             <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Nombre de la Regla</label>
-            <input className="input" placeholder="Ej. Regla de..." value={name} onChange={e => setName(e.target.value)} />
+            <input className="input" placeholder="Ej. Regla de..." value={nombre} onChange={e => setNombre(e.target.value)} />
           </div>
           <div>
             <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Descripción / Explicación Detallada</label>
@@ -98,15 +98,15 @@ export default function MisReglas() {
               className="input"
               placeholder="Explica tu norma aquí..."
               style={{ minHeight: '100px', resize: 'vertical' }}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
             />
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button type="submit" className="btn btn-primary">
-              <Plus size={18} /> {editingId ? 'Guardar Cambios' : 'Añadir a mi Biblioteca'}
+              <Plus size={18} /> {idEditando ? 'Guardar Cambios' : 'Añadir a mi Biblioteca'}
             </button>
-            {editingId && (
+            {idEditando && (
               <button type="button" className="btn btn-outline" onClick={cancelEdit}>Cancelar</button>
             )}
           </div>
@@ -122,12 +122,12 @@ export default function MisReglas() {
         </div>
         <div>
           <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary)' }}>Tus Normas Privadas</h2>
-          {customRules.length === 0 ? (
+          {reglasPersonalizadas.length === 0 ? (
             <div style={{ background: 'rgba(0,0,0,0.2)', padding: '2rem', borderRadius: '12px', textAlign: 'center', border: '1px dashed var(--glass-border)' }}>
               <p style={{ color: 'var(--text-muted)' }}>Todavía no tienes reglas. Empieza a crear arriba.</p>
             </div>
           ) : (
-            customRules.map(r => <RuleCard key={r.id} r={r} />)
+            reglasPersonalizadas.map(r => <RuleCard key={r.id} r={r} />)
           )}
         </div>
       </div>

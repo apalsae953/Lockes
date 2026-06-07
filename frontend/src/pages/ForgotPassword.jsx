@@ -4,25 +4,25 @@ import { Mail, ArrowLeft, Loader2, CheckCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [correo, setCorreo] = useState('');
+  const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
   const [sent, setSent] = useState(false);
   
   const { forgotPassword } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setCargando(true);
     setError(null);
     try {
-      await forgotPassword(email);
+      await forgotPassword(correo);
       setSent(true);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al procesar la solicitud.');
+      setError(err.response?.data?.mensaje || 'Error al procesar la solicitud.');
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
           </div>
           <h2 style={{ color: 'white', marginBottom: '1rem' }}>¡Correo Enviado!</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: '1.6' }}>
-            Si el correo <strong>{email}</strong> está registrado, recibirás un enlace para restablecer tu contraseña en unos minutos.
+            Si el correo <strong>{correo}</strong> está registrado, recibirás un enlace para restablecer tu contraseña en unos minutos.
           </p>
           <button className="btn btn-primary" onClick={() => navigate('/login')} style={{ width: '100%' }}>
             Volver al Inicio
@@ -58,7 +58,7 @@ export default function ForgotPassword() {
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h2 style={{ color: 'white', fontSize: '2rem', marginBottom: '0.5rem' }}>Recuperar Acceso</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Introduce tu email y te enviaremos instrucciones para cambiar tu contraseña.
+            Introduce tu correo y te enviaremos instrucciones para cambiar tu contraseña.
           </p>
         </div>
 
@@ -68,25 +68,25 @@ export default function ForgotPassword() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={manejarEnvio}>
           <div style={{ marginBottom: '2rem' }}>
             <div style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
                 <Mail size={16} />
               </span>
               <input 
-                type="email" 
+                type="correo" 
                 className="input-premium" 
-                placeholder="Tu email de entrenador"
+                placeholder="Tu correo de entrenador"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
               />
             </div>
           </div>
 
-          <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} disabled={loading}>
-            {loading ? <Loader2 size={24} className="loader" /> : 'Enviar Enlace'}
+          <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} disabled={cargando}>
+            {cargando ? <Loader2 size={24} className="loader" /> : 'Enviar Enlace'}
           </button>
         </form>
       </div>

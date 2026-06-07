@@ -35,47 +35,47 @@ const TYPES = [
 const pokemonDetailsCache = {};
 
 export default function Pokedex() {
-  const [masterList, setMasterList] = useState([]);
-  const [typeCache, setTypeCache] = useState({});
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [listaMaestra, setListaMaestra] = useState([]);
+  const [cacheTipos, setCacheTipos] = useState({});
+  const [estaInicializando, setEstaInicializando] = useState(true);
 
   // Estado de Filtros
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState(REGIONS[0]);
-  const [selectedType, setSelectedType] = useState('');
-  const [selectedSecondaryType, setSelectedSecondaryType] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc'); // asc / desc
+  const [consultaBusqueda, setConsultaBusqueda] = useState('');
+  const [busquedaDebounce, setBusquedaDebounce] = useState('');
+  const [regionSeleccionada, setRegionSeleccionada] = useState(REGIONS[0]);
+  const [tipoSeleccionado, setTipoSeleccionado] = useState('');
+  const [tipoSecundarioSeleccionado, setTipoSecundarioSeleccionado] = useState('');
+  const [ordenClasificacion, setOrdenClasificacion] = useState('asc'); // asc / desc
 
   // Estado de Paginación y Visualización
-  const [filteredList, setFilteredList] = useState([]);
-  const [displayedPokemon, setDisplayedPokemon] = useState([]);
-  const [page, setPage] = useState(0);
-  const [inputPage, setInputPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [listaFiltrada, setListaFiltrada] = useState([]);
+  const [pokemonMostrados, setPokemonMostrados] = useState([]);
+  const [pagina, setPagina] = useState(0);
+  const [paginaInput, setPaginaInput] = useState(1);
+  const [estaCargando, setEstaCargando] = useState(false);
+  const [pokemonSeleccionado, setPokemonSeleccionado] = useState(null);
 
   useEffect(() => {
-    setInputPage(page + 1);
-  }, [page]);
+    setPaginaInput(pagina + 1);
+  }, [pagina]);
 
   const handlePageSubmit = () => {
-    let val = parseInt(inputPage);
-    const maxPages = Math.ceil(filteredList.length / 20) || 1;
+    let val = parseInt(paginaInput);
+    const maxPages = Math.ceil(listaFiltrada.length / 20) || 1;
     if (!isNaN(val)) {
-      setPage(Math.max(0, Math.min(val - 1, maxPages - 1)));
+      setPagina(Math.max(0, Math.min(val - 1, maxPages - 1)));
     } else {
-      setInputPage(page + 1);
+      setPaginaInput(pagina + 1);
     }
   };
 
   // Debounce para la entrada de búsqueda (evita peticiones excesivas)
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
+      setBusquedaDebounce(consultaBusqueda);
     }, 300);
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [consultaBusqueda]);
 
   // Carga inicial de todos los nombres (lista maestra)
   useEffect(() => {
@@ -83,8 +83,8 @@ export default function Pokedex() {
     const initApp = async () => {
       const data = await getAllPokemonNames();
       if (active) {
-        setMasterList(data);
-        setIsInitializing(false);
+        setListaMaestra(data);
+        setEstaInicializando(false);
       }
     };
     initApp();
@@ -96,58 +96,58 @@ export default function Pokedex() {
     let active = true;
     const fetchTypes = async () => {
       let updated = false;
-      let newCache = { ...typeCache };
+      let newCache = { ...cacheTipos };
 
-      if (selectedType && !newCache[selectedType]) {
-        setIsLoading(true);
-        newCache[selectedType] = await getPokemonByType(selectedType);
+      if (tipoSeleccionado && !newCache[tipoSeleccionado]) {
+        setEstaCargando(true);
+        newCache[tipoSeleccionado] = await getPokemonByType(tipoSeleccionado);
         updated = true;
       }
-      if (selectedSecondaryType && !newCache[selectedSecondaryType]) {
-        setIsLoading(true);
-        newCache[selectedSecondaryType] = await getPokemonByType(selectedSecondaryType);
+      if (tipoSecundarioSeleccionado && !newCache[tipoSecundarioSeleccionado]) {
+        setEstaCargando(true);
+        newCache[tipoSecundarioSeleccionado] = await getPokemonByType(tipoSecundarioSeleccionado);
         updated = true;
       }
 
       if (updated && active) {
-        setTypeCache(newCache);
-        setIsLoading(false);
+        setCacheTipos(newCache);
+        setEstaCargando(false);
       }
     };
     fetchTypes();
     return () => { active = false; };
-  }, [selectedType, selectedSecondaryType, typeCache]);
+  }, [tipoSeleccionado, tipoSecundarioSeleccionado, cacheTipos]);
 
   // Lógica principal de filtrado y búsqueda
   useEffect(() => {
-    if (isInitializing) return;
-    if (selectedType && !typeCache[selectedType]) return;
-    if (selectedSecondaryType && !typeCache[selectedSecondaryType]) return;
+    if (estaInicializando) return;
+    if (tipoSeleccionado && !cacheTipos[tipoSeleccionado]) return;
+    if (tipoSecundarioSeleccionado && !cacheTipos[tipoSecundarioSeleccionado]) return;
 
-    let result = [...masterList];
+    let result = [...listaMaestra];
 
     // 1. Filtrar Región
-    if (selectedRegion.name !== 'Cualquiera') {
-      result = result.filter(p => p.dexId >= selectedRegion.min && p.dexId <= selectedRegion.max);
+    if (regionSeleccionada.name !== 'Cualquiera') {
+      result = result.filter(p => p.dexId >= regionSeleccionada.min && p.dexId <= regionSeleccionada.max);
     }
 
 
     // 2. Filtrar Tipo Primario
-    if (selectedType && typeCache[selectedType]) {
-      const allowedNames = typeCache[selectedType];
+    if (tipoSeleccionado && cacheTipos[tipoSeleccionado]) {
+      const allowedNames = cacheTipos[tipoSeleccionado];
       result = result.filter(p => allowedNames.includes(p.name));
     }
 
     // 2.5 Filtrar Tipo Secundario
-    if (selectedSecondaryType && typeCache[selectedSecondaryType]) {
-      const allowedNames = typeCache[selectedSecondaryType];
+    if (tipoSecundarioSeleccionado && cacheTipos[tipoSecundarioSeleccionado]) {
+      const allowedNames = cacheTipos[tipoSecundarioSeleccionado];
       result = result.filter(p => allowedNames.includes(p.name));
     }
 
     // 3. Filtrar Búsqueda Inteligente (Soporta múltiples palabras o nombres especiales type: null, mime)
-    if (debouncedSearch.trim()) {
+    if (busquedaDebounce.trim()) {
       // Normalizamos: Quitar acentos, sustituir espacios por guiones o eliminarlos para comparar
-      const q = debouncedSearch.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const q = busquedaDebounce.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const qNoSpaces = q.replace(/[^a-z0-9]/g, ''); // Flabebe, tapukoko, mrmime
 
       result = result.filter(p => {
@@ -176,28 +176,28 @@ export default function Pokedex() {
     // 4. Ordenación final: Agrupamos por dexId (Número nacional)
     result.sort((a, b) => {
       if (a.dexId !== b.dexId) {
-        return sortOrder === 'asc' ? a.dexId - b.dexId : b.dexId - a.dexId;
+        return ordenClasificacion === 'asc' ? a.dexId - b.dexId : b.dexId - a.dexId;
       }
       // Si tienen el mismo dexId, el base (ID más bajo) va primero
       return a.id - b.id;
     });
 
-    setFilteredList(result);
-    setPage(0);
-  }, [masterList, debouncedSearch, selectedRegion, selectedType, selectedSecondaryType, sortOrder, typeCache, isInitializing]);
+    setListaFiltrada(result);
+    setPagina(0);
+  }, [listaMaestra, busquedaDebounce, regionSeleccionada, tipoSeleccionado, tipoSecundarioSeleccionado, ordenClasificacion, cacheTipos, estaInicializando]);
 
   // Renderizado de la página actual (carga de detalles con CACHÉ)
   useEffect(() => {
     let active = true;
     const loadCurrentPage = async () => {
-      if (filteredList.length === 0) {
-        setDisplayedPokemon([]);
+      if (listaFiltrada.length === 0) {
+        setPokemonMostrados([]);
         return;
       }
-      setIsLoading(true);
+      setEstaCargando(true);
 
-      const start = page * 20;
-      const slice = filteredList.slice(start, start + 20);
+      const start = pagina * 20;
+      const slice = listaFiltrada.slice(start, start + 20);
 
       try {
         const promises = slice.map(async (p) => {
@@ -212,23 +212,23 @@ export default function Pokedex() {
         });
         
         const details = await Promise.all(promises);
-        if (active) setDisplayedPokemon(details);
+        if (active) setPokemonMostrados(details);
       } catch (err) {
-        console.error("Error loading page details", err);
+        console.error("Error loading pagina details", err);
       }
-      if (active) setIsLoading(false);
+      if (active) setEstaCargando(false);
     };
 
-    if (!isInitializing) {
+    if (!estaInicializando) {
       loadCurrentPage();
     }
     return () => { active = false; };
-  }, [filteredList, page, isInitializing]);
+  }, [listaFiltrada, pagina, estaInicializando]);
 
   // Manejador del cambio de Región en el desplegable
   const handleRegionChange = (e) => {
     const reg = REGIONS.find(r => r.name === e.target.value);
-    if (reg) setSelectedRegion(reg);
+    if (reg) setRegionSeleccionada(reg);
   };
 
   return (
@@ -249,11 +249,11 @@ export default function Pokedex() {
                 type="text"
                 className="input"
                 placeholder="Ej. Pikachu, 150..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={consultaBusqueda}
+                onChange={(e) => setConsultaBusqueda(e.target.value)}
               />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              {consultaBusqueda && (
+                <button onClick={() => setConsultaBusqueda('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                   <X size={18} />
                 </button>
               )}
@@ -262,21 +262,21 @@ export default function Pokedex() {
 
           <div>
             <label className="form-label">Región Principal</label>
-            <select className="input" value={selectedRegion.name} onChange={handleRegionChange} style={{ cursor: 'pointer' }}>
+            <select className="input" value={regionSeleccionada.name} onChange={handleRegionChange} style={{ cursor: 'pointer' }}>
               {REGIONS.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
             </select>
           </div>
 
           <div>
             <label className="form-label">Tipo 1</label>
-            <select className="input" value={selectedType} onChange={(e) => setSelectedType(e.target.value)} style={{ cursor: 'pointer' }}>
+            <select className="input" value={tipoSeleccionado} onChange={(e) => setTipoSeleccionado(e.target.value)} style={{ cursor: 'pointer' }}>
               {TYPES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </div>
 
           <div>
             <label className="form-label">Tipo 2</label>
-            <select className="input" value={selectedSecondaryType} onChange={(e) => setSelectedSecondaryType(e.target.value)} style={{ cursor: 'pointer' }}>
+            <select className="input" value={tipoSecundarioSeleccionado} onChange={(e) => setTipoSecundarioSeleccionado(e.target.value)} style={{ cursor: 'pointer' }}>
               <option value="">Tipo 2</option>
               {TYPES.slice(1).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
@@ -284,7 +284,7 @@ export default function Pokedex() {
 
           <div>
             <label className="form-label">Ordenación</label>
-            <select className="input" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ cursor: 'pointer' }}>
+            <select className="input" value={ordenClasificacion} onChange={(e) => setOrdenClasificacion(e.target.value)} style={{ cursor: 'pointer' }}>
               <option value="asc">Número (Asc)</option>
               <option value="desc">Número (Desc)</option>
             </select>
@@ -293,33 +293,33 @@ export default function Pokedex() {
         </div>
       </div>
 
-      {isLoading && (
+      {estaCargando && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
           <Loader2 className="loader" size={48} />
         </div>
       )}
 
       {/* Mensaje de resultados vacíos */}
-      {!isLoading && displayedPokemon.length === 0 && !isInitializing && (
+      {!estaCargando && pokemonMostrados.length === 0 && !estaInicializando && (
         <div className="glass" style={{ padding: '4rem', textAlign: 'center' }}>
           <h2 style={{ color: 'var(--text-muted)' }}>No aparecio nada</h2>
           <p>No parece existir ningún Pokémon con la combinación actual de filtros.</p>
         </div>
       )}
 
-      {!isLoading && displayedPokemon.length > 0 && (
+      {!estaCargando && pokemonMostrados.length > 0 && (
         <>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            <span>{filteredList.length} Resultados | Total de Pokédex: <strong>1025</strong></span>
+            <span>{listaFiltrada.length} Resultados | Total de Pokédex: <strong>1025</strong></span>
           </div>
 
 
           <div className="pokedex-grid">
-            {displayedPokemon.map(pokemon => (
+            {pokemonMostrados.map(pokemon => (
               <div
                 key={pokemon.id}
                 className={`pokemon-card bg-type-${pokemon.types[0].type.name}`}
-                onClick={() => setSelectedPokemon({
+                onClick={() => setPokemonSeleccionado({
                   id: pokemon.id,
                   spriteId: pokemon.species.url.split('/').filter(Boolean).pop().padStart(3, '0'),
                   name: formatPokemonName(pokemon.name),
@@ -366,8 +366,8 @@ export default function Pokedex() {
           <div className="pokedex-pagination" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '3rem' }}>
             <button
               className="btn btn-outline"
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
+              onClick={() => setPagina(p => Math.max(0, p - 1))}
+              disabled={pagina === 0}
               style={{ padding: '0.75rem 1.5rem' }}
             >
               <ChevronLeft size={20} /> Ant
@@ -378,22 +378,22 @@ export default function Pokedex() {
               <input
                 type="number"
                 min="1"
-                max={Math.ceil(filteredList.length / 20) || 1}
-                value={inputPage}
-                onChange={(e) => setInputPage(e.target.value)}
+                max={Math.ceil(listaFiltrada.length / 20) || 1}
+                value={paginaInput}
+                onChange={(e) => setPaginaInput(e.target.value)}
                 onBlur={handlePageSubmit}
                 onKeyDown={(e) => e.key === 'Enter' && handlePageSubmit()}
                 className="input"
                 style={{ width: '70px', textAlign: 'center', padding: '0.5rem' }}
               />
-              <span>de {Math.ceil(filteredList.length / 20) || 1}</span>
+              <span>de {Math.ceil(listaFiltrada.length / 20) || 1}</span>
             </div>
 
 
             <button
               className="btn btn-outline"
-              onClick={() => setPage(p => p + 1)}
-              disabled={(page + 1) * 20 >= filteredList.length}
+              onClick={() => setPagina(p => p + 1)}
+              disabled={(pagina + 1) * 20 >= listaFiltrada.length}
               style={{ padding: '0.75rem 1.5rem' }}
             >
               Sig <ChevronRight size={20} />
@@ -402,8 +402,8 @@ export default function Pokedex() {
         </>
       )}
 
-      {selectedPokemon && (
-        <PokemonModal pokemon={selectedPokemon} onClose={() => setSelectedPokemon(null)} />
+      {pokemonSeleccionado && (
+        <PokemonModal pokemon={pokemonSeleccionado} onClose={() => setPokemonSeleccionado(null)} />
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import { useAuth } from '../services/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 export default function LoginSuccess() {
-    const { checkUser } = useAuth();
+    const { comprobarUsuario } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,11 +18,11 @@ export default function LoginSuccess() {
             }
 
             // Refrescar el estado del usuario
-            await checkUser();
+            await comprobarUsuario();
             navigate('/mis-partidas');
         };
         handleSuccess();
-    }, [checkUser, navigate]);
+    }, [comprobarUsuario, navigate]);
 
     return (
         <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>

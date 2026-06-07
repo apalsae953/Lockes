@@ -4,25 +4,25 @@ import { User, Mail, Save, Loader2, CheckCircle, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom';
 
 export default function Profile() {
-    const { user, updateProfile } = useAuth();
-    const [name, setName] = useState(user?.name || '');
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const { user, actualizarPerfil } = useAuth();
+    const [nombre, setNombre] = useState(user?.nombre || '');
+    const [cargando, setCargando] = useState(false);
+    const [exito, setExito] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleSubmit = async (e) => {
+    const manejarEnvio = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setCargando(true);
         setError(null);
-        setSuccess(false);
+        setExito(false);
         try {
-            await updateProfile({ name });
-            setSuccess(true);
-            setTimeout(() => setSuccess(false), 3000);
+            await actualizarPerfil({ nombre });
+            setExito(true);
+            setTimeout(() => setExito(false), 3000);
         } catch (err) {
             setError('No se pudo actualizar el perfil.');
         } finally {
-            setLoading(false);
+            setCargando(false);
         }
     };
 
@@ -55,7 +55,7 @@ export default function Profile() {
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <div style={{ position: 'relative', display: 'inline-block' }}>
                 {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid var(--primary)', padding: '3px' }} />
+                    <img src={user.avatar} alt={user.nombre} style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid var(--primary)', padding: '3px' }} />
                 ) : (
                     <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--glass-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid var(--primary)' }}>
                         <User size={48} color="var(--primary)" />
@@ -65,11 +65,11 @@ export default function Profile() {
                     <CheckCircle size={14} color="white" />
                 </div>
             </div>
-            <p style={{ marginTop: '1rem', color: 'var(--text-main)', fontWeight: 'bold', fontSize: '1.2rem' }}>{user.name}</p>
+            <p style={{ marginTop: '1rem', color: 'var(--text-main)', fontWeight: 'bold', fontSize: '1.2rem' }}>{user.nombre}</p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Entrenador de Nuzlockes</p>
         </div>
 
-        {success && (
+        {exito && (
           <div style={{ 
             marginBottom: '1.5rem', 
             padding: '0.8rem', 
@@ -86,7 +86,7 @@ export default function Profile() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={manejarEnvio}>
           <div style={{ marginBottom: '1.25rem' }}>
             <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.5rem', marginLeft: '0.5rem' }}>NOMBRE DE ENTRENADOR</label>
             <div style={{ position: 'relative' }}>
@@ -98,8 +98,8 @@ export default function Profile() {
                 className="input-premium" 
                 placeholder="Tu nombre"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
               />
             </div>
           </div>
@@ -120,8 +120,8 @@ export default function Profile() {
             </div>
           </div>
 
-          <button className="btn btn-primary btn-shine" style={{ width: '100%', padding: '1rem', borderRadius: '12px', fontWeight: 'bold' }} disabled={loading}>
-            {loading ? <Loader2 size={24} className="loader" /> : (
+          <button className="btn btn-primary btn-shine" style={{ width: '100%', padding: '1rem', borderRadius: '12px', fontWeight: 'bold' }} disabled={cargando}>
+            {cargando ? <Loader2 size={24} className="loader" /> : (
               <>
                 <Save size={20} /> Guardar Cambios
               </>

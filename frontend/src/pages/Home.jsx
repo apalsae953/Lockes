@@ -3,12 +3,12 @@ import { Shield, Skull, Sword, Zap, Gamepad2, Info, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
-  const [showNotice, setShowNotice] = useState(true);
+  const [mostrarAviso, setMostrarAviso] = useState(true);
 
   return (
     <div className="container">
       {/* AVISO DE SERVIDOR GRATUITO (FLOTANTE) */}
-      {showNotice && (
+      {mostrarAviso && (
         <div className="glass home-notice" style={{
           position: 'fixed',
           top: '7rem',
@@ -31,7 +31,7 @@ export default function Home() {
             Esta web utiliza un servidor gratuito que entra en reposo. Puede tardar hasta un minuto en reaccionar inicialmente y es normal experimentar lentitud puntual. ¡Gracias por tu paciencia!
           </p>
           <button 
-            onClick={() => setShowNotice(false)}
+            onClick={() => setMostrarAviso(false)}
             style={{ 
               position: 'absolute', 
               top: '0.75rem', 

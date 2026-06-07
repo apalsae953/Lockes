@@ -231,22 +231,120 @@ export default function PartidaTracker() {
 
   const fetchPokemonImage = async (encId, pokemonName) => {
     if (!pokemonName || !pokemonName.trim()) {
-      handleUpdateEncounter(encId, 'img', null);
+      const updatedPartida = { ...partida };
+      const encIndex = updatedPartida.encounters.findIndex(e => e.id === encId);
+      if (encIndex >= 0) {
+        updatedPartida.encounters[encIndex].img = null;
+        delete updatedPartida.encounters[encIndex].imgForms;
+        delete updatedPartida.encounters[encIndex].imgFormIndex;
+        guardarPartida(updatedPartida);
+      }
       return;
     }
     try {
       let cleanName = pokemonName.toLowerCase().trim().replace(/ /g, '-');
-      const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${cleanName}`);
+      
+      // Coleccionar todas las imágenes de formas disponibles
+      let allForms = [];
+      let mainSprite = null;
+
+      // 1. Intento directo: buscar pokemon por nombre
+      let directFound = false;
+      try {
+        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${cleanName}`);
+        mainSprite = res.data.sprites.front_default;
+        if (mainSprite) allForms.push(mainSprite);
+        // Si tiene sprite femenino diferente, añadirlo como forma alternativa
+        if (res.data.sprites.front_female) {
+          allForms.push(res.data.sprites.front_female);
+        }
+        directFound = true;
+      } catch {
+        // Búsqueda directa falló, continuamos con especie
+      }
+
+      // 2. Si la búsqueda directa falló, intentar via pokemon-species
+      if (!directFound) {
+        let speciesData = null;
+        
+        // Intentar buscar la especie con el nombre tal cual
+        try {
+          const specRes = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${cleanName}`);
+          speciesData = specRes.data;
+        } catch {
+          // Si no funciona, probar con sufijos comunes
+          const suffixes = ['-m', '-f', '-male', '-female', '-normal', '-standard', '-altered', '-land', '-plant', '-average'];
+          for (const suffix of suffixes) {
+            try {
+              const specRes = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${cleanName}${suffix}`);
+              speciesData = specRes.data;
+              break;
+            } catch { /* seguir probando */ }
+          }
+        }
+
+        if (speciesData && speciesData.varieties) {
+          // Obtener sprites de cada variedad
+          for (const variety of speciesData.varieties) {
+            try {
+              const varRes = await axios.get(variety.pokemon.url);
+              if (varRes.data.sprites.front_default) {
+                allForms.push(varRes.data.sprites.front_default);
+              }
+              if (varRes.data.sprites.front_female) {
+                allForms.push(varRes.data.sprites.front_female);
+              }
+            } catch { /* variedad no accesible */ }
+          }
+          mainSprite = allForms[0] || null;
+        }
+
+        // 3. Caso especial Nidoran: macho y hembra son ESPECIES distintas en la API
+        if (cleanName.includes('nidoran')) {
+          const nidoranVariants = ['nidoran-m', 'nidoran-f'];
+          for (const variant of nidoranVariants) {
+            try {
+              const varRes = await axios.get(`https://pokeapi.co/api/v2/pokemon/${variant}`);
+              if (varRes.data.sprites.front_default && !allForms.includes(varRes.data.sprites.front_default)) {
+                allForms.push(varRes.data.sprites.front_default);
+              }
+            } catch { /* seguir */ }
+          }
+          if (!mainSprite) mainSprite = allForms[0] || null;
+        }
+      }
+
+      // Eliminar duplicados
+      allForms = [...new Set(allForms)];
 
       const updatedPartida = { ...partida };
       const encIndex = updatedPartida.encounters.findIndex(e => e.id === encId);
       if (encIndex >= 0) {
-        updatedPartida.encounters[encIndex].img = res.data.sprites.front_default;
-        updatedPartida.encounters[encIndex].status = 'Vivo';
+        updatedPartida.encounters[encIndex].img = mainSprite || allForms[0] || null;
+        updatedPartida.encounters[encIndex].imgForms = allForms.length > 1 ? allForms : undefined;
+        updatedPartida.encounters[encIndex].imgFormIndex = 0;
+        if (mainSprite) {
+          updatedPartida.encounters[encIndex].status = 'Vivo';
+        }
         guardarPartida(updatedPartida);
       }
     } catch {
       handleUpdateEncounter(encId, 'img', null);
+    }
+  };
+
+  // Función para ciclar entre formas de un Pokémon al hacer clic en la imagen
+  const cycleFormImage = (encId) => {
+    const updatedPartida = { ...partida };
+    const encIndex = updatedPartida.encounters.findIndex(e => e.id === encId);
+    if (encIndex >= 0) {
+      const enc = updatedPartida.encounters[encIndex];
+      if (enc.imgForms && enc.imgForms.length > 1) {
+        const nextIndex = ((enc.imgFormIndex || 0) + 1) % enc.imgForms.length;
+        enc.imgFormIndex = nextIndex;
+        enc.img = enc.imgForms[nextIndex];
+        guardarPartida(updatedPartida);
+      }
     }
   };
 
@@ -680,11 +778,48 @@ export default function PartidaTracker() {
                     />
                   </td>
                   <td style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div
+                      onClick={(e) => { e.stopPropagation(); if (enc.imgForms && enc.imgForms.length > 1) cycleFormImage(enc.id); }}
+                      onMouseDown={(e) => { if (enc.imgForms && enc.imgForms.length > 1) e.stopPropagation(); }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        background: 'rgba(255,255,255,0.05)',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: enc.imgForms && enc.imgForms.length > 1 ? 'pointer' : 'default',
+                        border: enc.imgForms && enc.imgForms.length > 1 ? '1px solid var(--accent)' : '1px solid transparent',
+                        transition: 'all 0.2s ease'
+                      }}
+                      title={enc.imgForms && enc.imgForms.length > 1 ? `Clic para cambiar forma (${(enc.imgFormIndex || 0) + 1}/${enc.imgForms.length})` : ''}
+                    >
                       {enc.img ? (
-                        <img src={enc.img} alt={enc.pokemon} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <img src={enc.img} alt={enc.pokemon} style={{ width: '100%', height: '100%', objectFit: 'contain', transition: 'opacity 0.2s ease' }} />
                       ) : (
                         <Camera size={16} opacity={0.3} />
+                      )}
+                      {enc.imgForms && enc.imgForms.length > 1 && (
+                        <div style={{
+                          position: 'absolute',
+                          bottom: '-4px',
+                          right: '-4px',
+                          background: 'var(--accent)',
+                          color: '#000',
+                          fontSize: '0.55rem',
+                          fontWeight: 800,
+                          borderRadius: '50%',
+                          width: '16px',
+                          height: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.4)'
+                        }}>
+                          {enc.imgForms.length}
+                        </div>
                       )}
                     </div>
                     <input

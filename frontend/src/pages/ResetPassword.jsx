@@ -4,12 +4,12 @@ import { Lock, Loader2, CheckCircle, X, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function ResetPassword() {
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
-  const [showPass, setShowPass] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [datosFormulario, setDatosFormulario] = useState({ password: '', confirmPassword: '' });
+  const [mostrarPass, setMostrarPass] = useState(false);
+  const [mostrarConfirmarPass, setMostrarConfirmarPass] = useState(false);
+  const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [exito, setExito] = useState(false);
   
   const { resetPassword } = useAuth();
   const navigate = useNavigate();
@@ -25,31 +25,31 @@ export default function ResetPassword() {
     }
   }, [token, email]);
 
-  const handleSubmit = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    if (datosFormulario.password !== datosFormulario.confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;
     }
 
-    setLoading(true);
+    setCargando(true);
     setError(null);
     try {
       await resetPassword({
         token,
         email,
-        password: formData.password,
-        password_confirmation: formData.confirmPassword
+        password: datosFormulario.password,
+        password_confirmation: datosFormulario.confirmPassword
       });
-      setSuccess(true);
+      setExito(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Error al restablecer la contraseña.');
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
-  if (success) {
+  if (exito) {
     return (
       <div className="login-page-container" style={{ background: 'radial-gradient(circle at 50% -20%, #2a0a0a 0%, #0a0a12 100%)' }}>
         <div className="login-card-premium" style={{ textAlign: 'center' }}>
@@ -84,26 +84,26 @@ export default function ResetPassword() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={manejarEnvio}>
           <div style={{ marginBottom: '1rem' }}>
             <div style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)', zIndex: 1 }}>
                 <Lock size={16} />
               </span>
               <input 
-                type={showPass ? "text" : "password"}
+                type={mostrarPass ? "text" : "password"}
                 className="input-premium" 
                 placeholder="Nueva Contraseña"
                 required
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                value={datosFormulario.password}
+                onChange={(e) => setDatosFormulario({...datosFormulario, password: e.target.value})}
               />
               <button 
                 type="button"
-                onClick={() => setShowPass(!showPass)}
+                onClick={() => setMostrarPass(!mostrarPass)}
                 style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', zIndex: 2, display: 'flex' }}
               >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                {mostrarPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -114,25 +114,25 @@ export default function ResetPassword() {
                 <Lock size={16} />
               </span>
               <input 
-                type={showConfirmPass ? "text" : "password"}
+                type={mostrarConfirmarPass ? "text" : "password"}
                 className="input-premium" 
                 placeholder="Confirmar Nueva Contraseña"
                 required
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                value={datosFormulario.confirmPassword}
+                onChange={(e) => setDatosFormulario({...datosFormulario, confirmPassword: e.target.value})}
               />
               <button 
                 type="button"
-                onClick={() => setShowConfirmPass(!showConfirmPass)}
+                onClick={() => setMostrarConfirmarPass(!mostrarConfirmarPass)}
                 style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', zIndex: 2, display: 'flex' }}
               >
-                {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                {mostrarConfirmarPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} disabled={loading || !token}>
-            {loading ? <Loader2 size={24} className="loader" /> : 'Actualizar Contraseña'}
+          <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }} disabled={cargando || !token}>
+            {cargando ? <Loader2 size={24} className="loader" /> : 'Actualizar Contraseña'}
           </button>
         </form>
       </div>
