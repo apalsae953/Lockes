@@ -26,7 +26,7 @@ export const PRESET_ROUTES = {
     'Ruta 111', 'Ruta 112', 'Ruta 113', 'Ruta 114', 'Ruta 115', 'Ruta 116', 'Ruta 117', 'Ruta 118', 'Ruta 119', 'Ruta 120',
     'Ruta 121', 'Ruta 122', 'Ruta 123', 'Ruta 124', 'Ruta 125', 'Ruta 126', 'Ruta 127', 'Ruta 128', 'Ruta 129', 'Ruta 130',
     'Ruta 131', 'Ruta 132', 'Ruta 133', 'Ruta 134',
-    'Villa Raíz', 'Pueblo Escaso', 'Ciudad Petalia', 'Ciudad Férrica', 'Pueblo Azuliza', 'Ciudad Portual', 'Pueblo Verdegal', 'Ciudad Malvalona', 'Pueblo Pardal', 'Pueblo Lavacalda', 'Ciudad Arborada', 'Ciudad Calagua', 'Ciudad Algaria', 'Arrecípolis', 'Pueblo Oromar',
+    'Villa Raíz', 'Pueblo Escaso', 'Ciudad Petalia', 'Guarida Aqua/Magma', 'Ciudad Férrica', 'Pueblo Azuliza', 'Ciudad Portual', 'Pueblo Verdegal', 'Ciudad Malvalona', 'Pueblo Pardal', 'Pueblo Lavacalda', 'Ciudad Arborada', 'Ciudad Calagua', 'Ciudad Algaria', 'Arrecípolis', 'Pueblo Oromar', 'Ciudad colosalia',
     'Túnel Fervergal', 'Cueva Insular', 'Cueva Granito', 'Senda Ígnea', 'Desfiladero', 'Tumba Antigua', 'Ruinas del Desierto', 'Monte Cenizo', 'Gruta Desértica', 'Cascada Meteoro', 'Monte Pírico', 'Cueva Cardumen', 'Caverna Abisal', 'Cueva Ancestral', 'Cueva Cambiante', 'Cueva Marina', 'Cueva Terrena', 'Gruta Solar', 'Cueva Taller',
     'Bosque Petalia', 'Isla Espejismo', 'Isla del Sur', 'Isla Suprema', 'Zona Safari', 'Pilar Celeste', 'Nao Abandonada', 'Malvamar', 'Malvalanova', 'Calle Victoria',
   ],
