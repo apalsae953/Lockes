@@ -1,7 +1,7 @@
 import { getTypeColor } from '../services/pokeApi';
 
 export default function PokemonCard({ pokemon, onClick }) {
-  // Use primary type for background subtle glow
+  // Usar el tipo primario para el brillo sutil de fondo
   const primaryTypeColor = getTypeColor(pokemon.types[0]);
 
   return (

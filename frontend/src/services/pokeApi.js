@@ -22,7 +22,7 @@ export const getRegions = async () => {
     const res = await axios.get(`${BASE_URL}/region/`);
     return res.data.results;
   } catch (error) {
-    console.error("Error fetching regions:", error);
+    console.error("Error al obtener las regiones:", error);
     return [];
   }
 };
@@ -41,14 +41,14 @@ export const getRegionLocations = async (regionName) => {
       const esName = loc.names.find(n => n.language.name === 'es');
       if (esName) return esName.name;
       
-      // Fallback
+      // Alternativa (Fallback)
       return loc.name
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
     });
   } catch (error) {
-    console.error("Error fetching locations:", error);
+    console.error("Error al obtener los lugares:", error);
     return [];
   }
 };
@@ -161,7 +161,7 @@ export const getPokemonList = async (limit = 20, offset = 0) => {
       hasMore: response.data.next !== null
     };
   } catch (error) {
-    console.error("Error fetching pokemon list:", error);
+    console.error("Error al obtener la lista de Pokémon:", error);
     return { results: [], nextOffset: offset, hasMore: false };
   }
 };
@@ -378,7 +378,7 @@ export const getEvolutionChain = async (id) => {
     await processStep(current, null, activeSuffix);
     return chain;
   } catch (error) {
-    console.error("Error fetching evolution chain:", error);
+    console.error("Error al obtener la cadena de evolución:", error);
     return [];
   }
 };

@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad, LogIn, User as UserIcon, LogOut, Sun, Moon } from 'lucide-react';
+import { Gamepad, LogIn, User as UserIcon, LogOut, ChevronDown, BookOpen, Sparkles } from 'lucide-react';
 import { useAuth } from '../services/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (isLightMode) {
@@ -17,6 +19,24 @@ export default function Navbar() {
       localStorage.setItem('theme', 'dark');
     }
   }, [isLightMode]);
+
+  // Cerrar el dropdown al hacer clic fuera de él (móvil)
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Cerrar el dropdown cuando cambie la ruta
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [location.pathname]);
+
+  const isDexActive = location.pathname === '/pokedex' || location.pathname === '/habilidex';
 
   return (
     <nav className="navbar">
@@ -31,9 +51,50 @@ export default function Navbar() {
             <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
               Reglas
             </Link>
-            <Link to="/pokedex" className={`nav-link ${location.pathname === '/pokedex' ? 'active' : ''}`}>
-              Pokédex
-            </Link>
+
+            {/* Dropdown Pokédex / Habilidex */}
+            <div
+              ref={dropdownRef}
+              className={`nav-dropdown-wrapper ${dropdownOpen ? 'dropdown-open' : ''}`}
+              style={{ display: 'flex', alignItems: 'center' }}
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+            >
+              <Link
+                to="/pokedex"
+                className={`nav-link ${isDexActive ? 'active' : ''}`}
+              >
+                Pokédex
+              </Link>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen(prev => !prev)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0.5rem 0.2rem',
+                  color: isDexActive || dropdownOpen ? 'var(--text-main)' : 'var(--text-muted)',
+                  transition: 'color 0.3s ease'
+                }}
+              >
+                <ChevronDown size={14} style={{ transition: 'transform 0.25s', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+              </button>
+
+              <div className="nav-dropdown-menu">
+                <Link to="/pokedex" className={`nav-dropdown-item ${location.pathname === '/pokedex' ? 'active' : ''}`}>
+                  <BookOpen size={16} />
+                  Pokédex
+                </Link>
+                <Link to="/habilidex" className={`nav-dropdown-item ${location.pathname === '/habilidex' ? 'active' : ''}`}>
+                  <Sparkles size={16} />
+                  Habilidex
+                </Link>
+              </div>
+            </div>
+
             <Link to="/tipos" className={`nav-link ${location.pathname === '/tipos' ? 'active' : ''}`}>
               Tipos
             </Link>

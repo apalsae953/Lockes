@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800;900&display=swap');
 
 :root {
-  /* Color Palette */
+  /* Paleta de colores */
   --bg-dark: #0f111a;
   --bg-darker: #090a0f;
   --bg-card: rgba(25, 28, 41, 0.7);
@@ -9,18 +9,18 @@
   --text-muted: #a1a1aa;
 
   --primary: #ef4444;
-  /* Pokeball Red */
+  /* Rojo Pokéball */
   --primary-hover: #dc2626;
   --accent: #3b82f6;
-  /* Blue */
+  /* Azul */
   --accent-glow: rgba(59, 130, 246, 0.5);
 
-  /* Glassmorphism */
+  /* Glassmorphism / Efecto Cristal */
   --glass-bg: rgba(23, 25, 35, 0.82);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
-  /* Type Colors */
+  /* Colores de tipo */
   --type-normal: #A8A77A;
   --type-fire: #EE8130;
   --type-water: #6390F0;
@@ -41,7 +41,7 @@
   --type-fairy: #D685AD;
   --fairy-glow: rgba(214, 133, 173, 0.5);
 
-  /* Alert Colors (Dark) */
+  /* Colores de alerta (Oscuro) */
   --warning-bg: rgba(250, 204, 21, 0.1);
   --warning-text: #fef08a;
   --warning-border: #facc15;
@@ -63,7 +63,7 @@
 
   --bg-input: rgba(0, 0, 0, 0.04);
 
-  /* Alert Colors (Light) */
+  /* Colores de alerta (Claro) */
   --warning-bg: #fefce8;
   --warning-text: #854d0e;
   --warning-border: #eab308;
@@ -122,7 +122,7 @@ ul {
   margin: 0;
 }
 
-/* Utilities */
+/* Utilidades */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
@@ -142,7 +142,7 @@ ul {
   -webkit-text-fill-color: transparent;
 }
 
-/* Buttons */
+/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -181,7 +181,7 @@ ul {
   transform: translateY(-2px);
 }
 
-/* Form Controls */
+/* Controles de formulario */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -226,7 +226,7 @@ select.input option {
   color: var(--text-muted);
 }
 
-/* Excel-like Table View */
+/* Vista de tabla estilo Excel */
 .table-container {
   overflow-x: auto;
   border-radius: 12px;
@@ -261,7 +261,7 @@ select.input option {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* Status Badges */
+/* Etiquetas de estado */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -289,7 +289,7 @@ select.input option {
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-/* Layout */
+/* Diseño / Layout */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -393,7 +393,7 @@ select.input option {
 }
 
 
-/* Custom Webkit Scrollbar */
+/* Barra de desplazamiento personalizada para Webkit */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -473,7 +473,7 @@ select.input option {
   }
 }
 
-/* Hero Section */
+/* Sección Hero */
 .hero {
   padding: 6rem 0;
   text-align: center;
@@ -493,7 +493,7 @@ select.input option {
   line-height: 1.6;
 }
 
-/* Features/Rules Grid */
+/* Cuadrícula de características/reglas */
 .grid {
   display: grid;
   gap: 2rem;
@@ -525,7 +525,7 @@ select.input option {
   line-height: 1.6;
 }
 
-/* Pokedex Grid */
+/* Cuadrícula de la Pokédex */
 .pokedex-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -619,7 +619,7 @@ select.input option {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Modal for Pokemon Details */
+/* Modal para Detalles de Pokémon */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -724,7 +724,7 @@ select.input option {
   transition: width 1s ease-out;
 }
 
-/* Loading animations */
+/* Animaciones de carga */
 .loader {
   display: inline-block;
   width: 50px;
@@ -735,7 +735,7 @@ select.input option {
   animation: spin 1s ease-in-out infinite;
 }
 
-/* Animations */
+/* Animaciones */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -755,7 +755,7 @@ select.input option {
   }
 }
 
-/* Responsive */
+/* Diseño adaptativo / Responsive */
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 2.5rem;
@@ -783,7 +783,7 @@ select.input option {
   }
 }
 
-/* Login Page Styles */
+/* Estilos de la página de Login */
 .login-page-container {
   height: calc(100vh - 90px);
   display: flex;
@@ -888,7 +888,7 @@ select.input option {
   left: 100%;
 }
 
-/* Animations for Lives */
+/* Animaciones para las Vidas */
 @keyframes heart-crack {
   0% {
     transform: scale(1) rotate(0deg);
@@ -920,7 +920,7 @@ select.input option {
   animation: heart-crack 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* Responsive Tracker Layout */
+/* Diseño adaptativo para el Tracker / Layout Tracker Responsive */
 .tracker-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 350px;
@@ -976,9 +976,9 @@ select.input option {
 }
 
 /* ================================================================
-   MOBILE RESPONSIVE OVERHAUL
+   REDISEÑO RESPONSIVO PARA MÓVILES
    Todas las reglas aquí son SOLO para pantallas pequeñas.
-   El desktop no cambia absolutamente nada.
+   El diseño de escritorio no cambia en absoluto.
    ================================================================ */
 
 /* --- NAVBAR: wrap correcto en móvil --- */
@@ -1433,5 +1433,359 @@ select.input option {
 
   .pokedex-filters-search {
     grid-column: auto !important;
+  }
+}
+
+/* ================================================================
+   DESPLEGABLE DE LA NAVBAR
+   ================================================================ */
+.nav-dropdown-wrapper {
+  position: relative;
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  min-width: 180px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  padding: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 200;
+}
+
+.nav-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: var(--glass-bg);
+  border-left: 1px solid var(--glass-border);
+  border-top: 1px solid var(--glass-border);
+}
+
+.nav-dropdown-menu::after {
+  content: '';
+  position: absolute;
+  top: -1rem;
+  left: 0;
+  right: 0;
+  height: 1rem;
+  background: transparent;
+}
+
+.nav-dropdown-wrapper.dropdown-open .nav-dropdown-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+}
+
+.nav-dropdown-item.active {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--primary);
+}
+
+.nav-dropdown-item svg {
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   DEX DE HABILIDADES — CUADRÍCULA Y TARJETAS
+   ================================================================ */
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem 0 2rem;
+}
+
+.ability-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+.ability-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ability-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.ability-card:hover::before {
+  opacity: 1;
+}
+
+.ability-card-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: capitalize;
+  margin-bottom: 0.35rem;
+}
+
+.ability-card-subname {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+  font-style: italic;
+}
+
+.ability-card-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: var(--primary);
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.ability-card:hover .ability-card-icon {
+  opacity: 0.8;
+}
+
+/* ================================================================
+   MODAL DE HABILIDADES
+   ================================================================ */
+.ability-modal-wrapper {
+  max-width: 820px;
+}
+
+.ability-modal-left {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ability-modal-left::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.15;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ability-modal-icon-wrap {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(59, 130, 246, 0.15));
+  border: 2px solid rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ability-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  text-transform: capitalize;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ability-modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+}
+
+.ability-modal-right {
+  flex: 1;
+  padding: 2.5rem;
+  background: var(--bg-darker);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ability-pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.ability-pokemon-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.6rem 0.4rem;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.ability-pokemon-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.ability-pokemon-chip img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.ability-pokemon-chip span {
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--text-muted);
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.ability-hidden-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  color: var(--primary);
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* --- DEX DE HABILIDADES RESPONSIVE / ADAPTATIVO --- */
+@media (max-width: 768px) {
+  .nav-dropdown-menu {
+    left: 0;
+    transform: translateX(0) translateY(4px);
+  }
+
+  .nav-dropdown-menu::before {
+    left: 30px;
+    transform: translateX(0) rotate(45deg);
+  }
+
+  .nav-dropdown-wrapper.dropdown-open .nav-dropdown-menu {
+    transform: translateX(0) translateY(0);
+  }
+
+  .ability-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .ability-modal-wrapper {
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: 92vh !important;
+  }
+
+  .ability-modal-left {
+    flex: none !important;
+    flex-direction: row !important;
+    padding: 1rem !important;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .ability-modal-left::before {
+    display: none;
+  }
+
+  .ability-modal-icon-wrap {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .ability-modal-title {
+    font-size: 1.3rem;
+  }
+
+  .ability-modal-right {
+    padding: 1.25rem !important;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ability-pokemon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ability-grid {
+    grid-template-columns: 1fr !important;
   }
 }

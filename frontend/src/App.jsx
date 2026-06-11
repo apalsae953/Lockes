@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Pokedex from './pages/Pokedex';
+import AbilityDex from './pages/AbilityDex';
 import MisPartidas from './pages/MisPartidas';
 import PartidaTracker from './pages/PartidaTracker';
 import TablaTipos from './pages/TablaTipos';
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login-success" element={<LoginSuccess />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/pokedex" element={<Pokedex />} />
+        <Route path="/habilidex" element={<AbilityDex />} />
         <Route path="/tipos" element={<TablaTipos />} />
         <Route path="/mis-reglas" element={<MisReglas />} />
         <Route path="/mis-partidas" element={<MisPartidas />} />
