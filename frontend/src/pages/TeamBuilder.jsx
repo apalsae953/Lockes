@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Plus, Trash2, Edit3, Check, X, Search, Loader2, Shield, ShieldAlert, Users, ChevronRight, Swords } from 'lucide-react';
 import { TYPE_ES, EFICACIA_DEFENSIVA } from '../constants/typeData';
-import { formatPokemonName } from '../services/pokeApi';
+import { formatPokemonName, getAllPokemonNames } from '../services/pokeApi';
 import api, { useAuth } from '../services/AuthContext';
 
 const STORAGE_KEY = 'nuztracker_teams';
@@ -152,8 +152,7 @@ function PokemonSearchModal({ onSelect, onClose, existingIds }) {
 
         // Cache the full list so we only fetch it once
         if (!pokemonListCache.current) {
-          const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=1025`);
-          pokemonListCache.current = res.data.results;
+          pokemonListCache.current = await getAllPokemonNames();
         }
         const allNames = pokemonListCache.current;
 
@@ -161,13 +160,13 @@ function PokemonSearchModal({ onSelect, onClose, existingIds }) {
         const qNoSpecial = q.replace(/[^a-z0-9]/g, '');
 
         let matches = allNames.filter(p => {
-          const parts = p.url.split('/');
-          const id = parseInt(parts[parts.length - 2]);
-          if (id > 1025) return false;
-
+          const id = p.id;
           const n = p.name.toLowerCase();
+          const formattedN = formatPokemonName(p.name).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
           if (n.includes(qNorm)) return true;
           if (n.replace(/[^a-z0-9]/g, '').includes(qNoSpecial)) return true;
+          if (formattedN.includes(qNorm)) return true;
           if (id.toString() === q) return true;
           return false;
         }).slice(0, 12);
@@ -176,7 +175,7 @@ function PokemonSearchModal({ onSelect, onClose, existingIds }) {
         const details = await Promise.all(
           matches.map(async (m) => {
             try {
-              const det = await axios.get(m.url);
+              const det = await axios.get(`https://pokeapi.co/api/v2/pokemon/${m.id}`);
               return {
                 id: det.data.id,
                 name: det.data.name,
