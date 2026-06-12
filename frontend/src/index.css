@@ -1789,3 +1789,430 @@ select.input option {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ================================================================
+   CREADOR DE EQUIPOS — TEAM BUILDER
+   ================================================================ */
+
+.team-builder-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.team-list-sidebar {
+  padding: 1.5rem;
+  position: sticky;
+  top: 100px;
+}
+
+.team-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.team-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.team-list-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+}
+
+.team-list-item.active {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.team-list-item .team-delete-btn {
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.team-list-item:hover .team-delete-btn {
+  opacity: 1;
+}
+
+.team-list-item .team-delete-btn:hover {
+  color: var(--primary) !important;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.team-confirm-delete {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-darker);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Main panel ── */
+.team-main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Team header card ── */
+.team-header-card {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.team-edit-name-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-main) !important;
+}
+
+/* ── 6 Pokémon slots ── */
+.team-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.team-slot {
+  position: relative;
+  border-radius: 16px;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+.team-slot.empty {
+  cursor: pointer;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.team-slot.empty:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.05);
+  transform: translateY(-3px);
+}
+
+.team-slot.empty:hover .team-slot-plus {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.team-slot.filled {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.team-slot.filled:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.team-slot-remove {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.team-slot:hover .team-slot-remove {
+  opacity: 1;
+}
+
+.team-slot-remove:hover {
+  background: var(--primary);
+}
+
+.team-slot-img {
+  width: 80%;
+  max-width: 100px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.team-slot:hover .team-slot-img {
+  transform: scale(1.08);
+}
+
+.team-slot-info {
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+.team-slot-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  display: block;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.team-slot-empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.team-slot-plus {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+/* ── Stats card ── */
+.team-stats-card {
+  padding: 1.75rem;
+}
+
+/* ── Type chart card ── */
+.team-type-chart-card {
+  padding: 1.75rem;
+}
+
+.team-type-badges-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.team-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.team-type-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.team-type-badge-name {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+}
+
+.team-type-badge-value {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+/* ── Search modal ── */
+.team-search-modal {
+  width: 95%;
+  max-width: 560px;
+  max-height: 80vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 20px;
+  animation: slideUp 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.team-search-results {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 50vh;
+}
+
+.team-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.team-search-result-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+}
+
+.team-search-result-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.team-search-result-item.disabled:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* ================================================================
+   TEAM BUILDER RESPONSIVE
+   ================================================================ */
+@media (max-width: 1024px) {
+  .team-builder-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .team-list-sidebar {
+    position: static;
+  }
+
+  .team-list-items {
+    max-height: none;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .team-list-item {
+    flex-shrink: 0;
+    min-width: 180px;
+  }
+
+  .team-list-item .team-delete-btn {
+    opacity: 1;
+  }
+
+  .team-slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .team-slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+  }
+
+  .team-slot {
+    min-height: 140px;
+    padding: 0.75rem 0.35rem;
+  }
+
+  .team-slot-img {
+    max-width: 70px;
+  }
+
+  .team-slot-name {
+    font-size: 0.7rem;
+    max-width: 90px;
+  }
+
+  .team-slot-plus {
+    width: 40px;
+    height: 40px;
+  }
+
+  .team-slot-remove {
+    opacity: 1;
+    width: 20px;
+    height: 20px;
+  }
+
+  .team-stats-card,
+  .team-type-chart-card {
+    padding: 1.25rem;
+  }
+
+  .team-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .team-type-badge {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  .team-type-badge-name {
+    font-size: 0.7rem;
+  }
+
+  .team-type-badge-value {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-list-item {
+    min-width: 160px;
+  }
+
+  .team-search-modal {
+    padding: 1.25rem;
+  }
+}

@@ -790,11 +790,15 @@ export default function PartidaTracker() {
           </thead>
           <tbody>
             {partida.encounters
-              .filter(enc =>
-                enc.lugar.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                enc.pokemon.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                enc.mote.toLowerCase().includes(searchTerm.toLowerCase())
-              )
+              .filter(enc => {
+                const lugar = enc.lugar || '';
+                const pokemon = enc.pokemon || '';
+                const mote = enc.mote || '';
+                const term = searchTerm.toLowerCase();
+                return lugar.toLowerCase().includes(term) ||
+                       pokemon.toLowerCase().includes(term) ||
+                       mote.toLowerCase().includes(term);
+              })
               .map((enc) => (
                 <tr
                   key={enc.id}
@@ -887,7 +891,7 @@ export default function PartidaTracker() {
                   </td>
                   <td>
                     <select
-                      className={`input status-badge status-${enc.status.toLowerCase().replace(' ', '')}`}
+                      className={`input status-badge status-${(enc.status || 'Pendiente').toLowerCase().replace(' ', '')}`}
                       value={enc.status}
                       onChange={e => handleUpdateEncounter(enc.id, 'status', e.target.value)}
                       style={{ background: 'rgba(0,0,0,0.3)', width: '100%', padding: '0.5rem' }}

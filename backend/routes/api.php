@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RunController;
+use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de Formulario (React las busca en /api/...)
@@ -17,4 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::apiResource('runs', RunController::class);
+    Route::post('/teams/sync', [TeamController::class, 'sync']);
+    Route::apiResource('teams', TeamController::class)->except(['show']);
 });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad, LogIn, User as UserIcon, LogOut, ChevronDown, BookOpen, Sparkles } from 'lucide-react';
+import { Gamepad, LogIn, User as UserIcon, LogOut, ChevronDown, BookOpen, Sparkles, Users } from 'lucide-react';
 import { useAuth } from '../services/AuthContext';
 
 export default function Navbar() {
@@ -104,8 +104,11 @@ export default function Navbar() {
             <Link to="/mis-partidas" className={`nav-link ${location.pathname.includes('/mis-partidas') || location.pathname.includes('/tracker') ? 'active' : ''}`}>
               Partidas
             </Link>
-            <Link to="/contacto" className={`nav-link ${location.pathname === '/contacto' ? 'active' : ''}`}>
+            {/* <Link to="/contacto" className={`nav-link ${location.pathname === '/contacto' ? 'active' : ''}`}>
               Sugerencias
+            </Link> */}
+            <Link to="/equipos" className={`nav-link ${location.pathname === '/equipos' ? 'active' : ''}`}>
+              Equipos
             </Link>
           </div>
 

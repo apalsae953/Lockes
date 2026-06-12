@@ -10,7 +10,8 @@ import MisReglas from './pages/MisReglas';
 import Login from './pages/Login';
 import LoginSuccess from './pages/LoginSuccess';
 import Profile from './pages/Profile';
-import Contact from './pages/Contact';
+// import Contact from './pages/Contact';
+import TeamBuilder from './pages/TeamBuilder';
 // import ForgotPassword from './pages/ForgotPassword';
 // import ResetPassword from './pages/ResetPassword';
 
@@ -30,7 +31,8 @@ function App() {
         <Route path="/mis-reglas" element={<MisReglas />} />
         <Route path="/mis-partidas" element={<MisPartidas />} />
         <Route path="/tracker/:id" element={<PartidaTracker />} />
-        <Route path="/contacto" element={<Contact />} />
+        {/* <Route path="/contacto" element={<Contact />} /> */}
+        <Route path="/equipos" element={<TeamBuilder />} />
         {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
         {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
       </Routes>
