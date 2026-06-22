@@ -22,12 +22,12 @@ function App() {
   useEffect(() => {
     if (!window.Capacitor) return;
 
-    const handleAppUrl = CapApp.addListener('appUrlOpen', (data) => {
+    const handleUrl = (rawUrl) => {
       try {
-        // data.url is "lockes://login-success?token=..."
-        const cleanUrl = data.url.replace('lockes://', 'http://');
+        // rawUrl is "lockes://login-success?token=..."
+        const cleanUrl = rawUrl.replace('lockes://', 'http://');
         const url = new URL(cleanUrl);
-        if (url.pathname === '/login-success' || data.url.includes('login-success')) {
+        if (url.pathname === '/login-success' || rawUrl.includes('login-success')) {
           const token = url.searchParams.get('token');
           if (token) {
             localStorage.setItem('token', token);
@@ -36,7 +36,19 @@ function App() {
           }
         }
       } catch (e) {
-        console.error('Error al procesar deep link:', e);
+        console.error('Error al procesar URL de la app:', e);
+      }
+    };
+
+    // 1. Escuchar cuando la app ya está abierta en segundo plano
+    const handleAppUrl = CapApp.addListener('appUrlOpen', (data) => {
+      handleUrl(data.url);
+    });
+
+    // 2. Comprobar si la app fue abierta desde cero por el enlace
+    CapApp.getLaunchUrl().then((launchUrlObj) => {
+      if (launchUrlObj && launchUrlObj.url) {
+        handleUrl(launchUrlObj.url);
       }
     });
 

@@ -9,9 +9,18 @@ export default function LoginSuccess() {
 
     useEffect(() => {
         const handleSuccess = async () => {
-            // Capturar el token de la URL si viene de Google
+            // Capturar el token de la URL (tanto de search como de hash)
             const params = new URLSearchParams(window.location.search);
-            const token = params.get('token');
+            let token = params.get('token');
+            
+            if (!token) {
+                // Probar parseando desde el hash
+                const hashParts = window.location.hash.split('?');
+                if (hashParts.length > 1) {
+                    const hashParams = new URLSearchParams(hashParts[1]);
+                    token = hashParams.get('token');
+                }
+            }
             
             if (token) {
                 localStorage.setItem('token', token);
