@@ -25,6 +25,7 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:40',
             'pokemon' => 'nullable|array',
+            'folder' => 'nullable|string|max:50',
         ]);
 
         $team = Auth::user()->teams()->create($validated);
@@ -44,6 +45,7 @@ class TeamController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:40',
             'pokemon' => 'sometimes|nullable|array',
+            'folder' => 'sometimes|nullable|string|max:50',
         ]);
 
         $team->update($validated);
@@ -75,6 +77,7 @@ class TeamController extends Controller
             'teams' => 'required|array',
             'teams.*.name' => 'required|string|max:40',
             'teams.*.pokemon' => 'nullable|array',
+            'teams.*.folder' => 'nullable|string|max:50',
         ]);
 
         $user = Auth::user();
@@ -93,6 +96,7 @@ class TeamController extends Controller
             $created[] = $user->teams()->create([
                 'name' => $teamData['name'],
                 'pokemon' => $teamData['pokemon'] ?? [null, null, null, null, null, null],
+                'folder' => $teamData['folder'] ?? null,
             ]);
         }
 

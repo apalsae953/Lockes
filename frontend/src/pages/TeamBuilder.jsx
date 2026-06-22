@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Edit3, Check, X, Search, Loader2, Shield, ShieldAlert, Users, ChevronRight, Swords } from 'lucide-react';
+import { Plus, Trash2, Edit3, Check, X, Search, Loader2, Shield, ShieldAlert, Users, ChevronRight, ChevronDown, Swords, Folder, FolderOpen } from 'lucide-react';
 import { TYPE_ES, EFICACIA_DEFENSIVA } from '../constants/typeData';
 import { formatPokemonName, getAllPokemonNames } from '../services/pokeApi';
 import api, { useAuth } from '../services/AuthContext';
@@ -298,6 +298,10 @@ export default function TeamBuilder() {
   const [searchSlot, setSearchSlot] = useState(null); // slot index to fill
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [loadingTeams, setLoadingTeams] = useState(false);
+  const [collapsedFolders, setCollapsedFolders] = useState({});
+  const [localItems, setLocalItems] = useState({});
+  const [folderModalOpen, setFolderModalOpen] = useState(false);
+  const [itemSearchSlot, setItemSearchSlot] = useState(null);
   const nameInputRef = useRef(null);
 
   // Load teams on mount/auth change
@@ -340,6 +344,17 @@ export default function TeamBuilder() {
 
   const selectedTeam = teams.find(t => t.id === selectedTeamId) || null;
 
+  // Sync localItems state when team changes
+  useEffect(() => {
+    if (selectedTeam) {
+      const items = {};
+      selectedTeam.pokemon.forEach((p, idx) => {
+        if (p) items[idx] = p.item || '';
+      });
+      setLocalItems(items);
+    }
+  }, [selectedTeamId, selectedTeam]);
+
   // ── Team CRUD ──
   const createTeam = async () => {
     const tempName = `Equipo ${teams.length + 1}`;
@@ -349,7 +364,8 @@ export default function TeamBuilder() {
       try {
         const response = await api.post('/api/teams', {
           name: tempName,
-          pokemon: defaultPokemon
+          pokemon: defaultPokemon,
+          folder: null
         });
         const newTeam = response.data;
         setTeams(prev => [...prev, newTeam]);
@@ -361,7 +377,8 @@ export default function TeamBuilder() {
       const newTeam = {
         id: generateId(),
         name: tempName,
-        pokemon: defaultPokemon
+        pokemon: defaultPokemon,
+        folder: null
       };
       setTeams(prev => {
         const updated = [...prev, newTeam];
@@ -425,13 +442,45 @@ export default function TeamBuilder() {
     setTimeout(() => nameInputRef.current?.focus(), 50);
   };
 
+  const changeTeamFolder = async (folderName) => {
+    if (!selectedTeamId) return;
+
+    if (user) {
+      try {
+        setTeams(prev => prev.map(t => t.id === selectedTeamId ? { ...t, folder: folderName } : t));
+        await api.put(`/api/teams/${selectedTeamId}`, { folder: folderName });
+      } catch (err) {
+        console.error('Error changing team folder:', err);
+      }
+    } else {
+      setTeams(prev => {
+        const updated = prev.map(t => t.id === selectedTeamId ? { ...t, folder: folderName } : t);
+        saveTeams(updated);
+        return updated;
+      });
+    }
+  };
+
+  const handleFolderChange = (e) => {
+    const val = e.target.value;
+    if (val === '__new__') {
+      const name = prompt('Nombre de la nueva carpeta:');
+      if (name && name.trim()) {
+        changeTeamFolder(name.trim());
+      }
+    } else {
+      changeTeamFolder(val || null);
+    }
+  };
+
   // ── Pokémon slot management ──
   const addPokemon = async (slotIndex, pokemon) => {
     const targetTeam = teams.find(t => t.id === selectedTeamId);
     if (!targetTeam) return;
 
     const newPokemon = [...targetTeam.pokemon];
-    newPokemon[slotIndex] = pokemon;
+    // Preserve item if it already existed in slot (optional, usually null for new)
+    newPokemon[slotIndex] = { ...pokemon, item: '' };
 
     if (user) {
       try {
@@ -486,7 +535,45 @@ export default function TeamBuilder() {
     }
   };
 
+  const savePokemonItem = async (slotIndex, itemVal) => {
+    const targetTeam = teams.find(t => t.id === selectedTeamId);
+    if (!targetTeam) return;
+
+    const currentItem = targetTeam.pokemon[slotIndex]?.item || null;
+    
+    // Comparación segura
+    const currentName = currentItem ? (typeof currentItem === 'object' ? currentItem.name : currentItem) : '';
+    const newName = itemVal ? (typeof itemVal === 'object' ? itemVal.name : itemVal) : '';
+    
+    if (currentName === newName) return;
+
+    const newPokemon = [...targetTeam.pokemon];
+    if (newPokemon[slotIndex]) {
+      newPokemon[slotIndex] = {
+        ...newPokemon[slotIndex],
+        item: itemVal
+      };
+    }
+
+    if (user) {
+      try {
+        setTeams(prev => prev.map(t => t.id === selectedTeamId ? { ...t, pokemon: newPokemon } : t));
+        await api.put(`/api/teams/${selectedTeamId}`, { pokemon: newPokemon });
+      } catch (err) {
+        console.error('Error saving pokemon item:', err);
+      }
+    } else {
+      setTeams(prev => {
+        const updated = prev.map(t => t.id === selectedTeamId ? { ...t, pokemon: newPokemon } : t);
+        saveTeams(updated);
+        return updated;
+      });
+    }
+  };
+
   // Derived data
+  const folders = [...new Set(teams.map(t => t.folder).filter(Boolean))];
+  const uncategorizedTeams = teams.filter(t => !t.folder);
   const teamPokemon = selectedTeam?.pokemon || [null, null, null, null, null, null];
   const validPokemon = teamPokemon.filter(Boolean);
   const existingIds = validPokemon.map(p => p.id);
@@ -529,45 +616,123 @@ export default function TeamBuilder() {
               <p style={{ fontSize: '0.9rem' }}>Aún no tienes equipos.<br />¡Crea tu primer equipo!</p>
             </div>
           ) : (
-            <div className="team-list-items">
-              {teams.map(team => (
-                <div
-                  key={team.id}
-                  className={`team-list-item ${selectedTeamId === team.id ? 'active' : ''}`}
-                  onClick={() => setSelectedTeamId(team.id)}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.35rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {team.name}
+            <div className="team-list-items" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {/* Renderizar carpetas y sus equipos */}
+              {folders.map(folder => {
+                const folderTeams = teams.filter(t => t.folder === folder);
+                const isCollapsed = collapsedFolders[folder];
+                return (
+                  <div key={folder} className="team-folder-group" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div
+                      className="team-folder-header"
+                      onClick={() => setCollapsedFolders(prev => ({ ...prev, [folder]: !prev[folder] }))}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.5rem', cursor: 'pointer', fontWeight: 'bold', color: 'var(--accent)', borderBottom: '1px solid var(--glass-border)', fontSize: '0.9rem' }}
+                    >
+                      {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                      {isCollapsed ? <Folder size={16} /> : <FolderOpen size={16} />}
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{folder}</span>
+                      <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({folderTeams.length})</span>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.15rem' }}>
-                      {team.pokemon.map((p, i) => (
-                        <div key={i} style={{ width: '24px', height: '24px', borderRadius: '50%', background: p ? 'transparent' : 'rgba(255,255,255,0.06)', border: p ? 'none' : '1px dashed rgba(255,255,255,0.15)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {p && <img src={p.sprite || p.image} alt="" style={{ width: '24px', height: '24px', imageRendering: 'pixelated' }} />}
-                        </div>
-                      ))}
-                    </div>
+
+                    {!isCollapsed && (
+                      <div className="team-folder-teams" style={{ paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.35rem' }}>
+                        {folderTeams.map(team => (
+                          <div
+                            key={team.id}
+                            className={`team-list-item ${selectedTeamId === team.id ? 'active' : ''}`}
+                            onClick={() => setSelectedTeamId(team.id)}
+                            style={{ padding: '0.5rem' }}
+                          >
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {team.name}
+                              </div>
+                              <div style={{ display: 'flex', gap: '0.15rem' }}>
+                                {team.pokemon.map((p, idx) => (
+                                  <div key={idx} style={{ width: '20px', height: '20px', borderRadius: '50%', background: p ? 'transparent' : 'rgba(255,255,255,0.06)', border: p ? 'none' : '1px dashed rgba(255,255,255,0.15)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    {p && <img src={p.sprite || p.image} alt="" style={{ width: '20px', height: '20px', imageRendering: 'pixelated' }} />}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={e => { e.stopPropagation(); setConfirmDelete(team.id); }}
+                              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.3rem', borderRadius: '6px', transition: 'all 0.2s' }}
+                              className="team-delete-btn"
+                              title="Eliminar equipo"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+
+                            {confirmDelete === team.id && (
+                              <div className="team-confirm-delete" onClick={e => e.stopPropagation()}>
+                                <span style={{ fontSize: '0.75rem' }}>¿Eliminar?</span>
+                                <button onClick={(e) => { e.stopPropagation(); deleteTeam(team.id); }} style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.2rem 0.5rem', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600 }}>Sí</button>
+                                <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(null); }} style={{ background: 'var(--glass-border)', color: 'var(--text-main)', border: 'none', borderRadius: '6px', padding: '0.2rem 0.5rem', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600 }}>No</button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                );
+              })}
 
-                  <button
-                    onClick={e => { e.stopPropagation(); setConfirmDelete(team.id); }}
-                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.3rem', borderRadius: '6px', transition: 'all 0.2s' }}
-                    className="team-delete-btn"
-                    title="Eliminar equipo"
+              {/* Equipos sin carpeta */}
+              {uncategorizedTeams.length > 0 && (
+                <div className="team-folder-group" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div
+                    className="team-folder-header"
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.5rem', fontWeight: 'bold', opacity: 0.8, fontSize: '0.9rem' }}
                   >
-                    <Trash2 size={15} />
-                  </button>
+                    <Folder size={16} style={{ color: 'var(--text-muted)' }} />
+                    <span>Sin carpeta</span>
+                    <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>({uncategorizedTeams.length})</span>
+                  </div>
+                  <div className="team-folder-teams" style={{ paddingLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.35rem' }}>
+                    {uncategorizedTeams.map(team => (
+                      <div
+                        key={team.id}
+                        className={`team-list-item ${selectedTeamId === team.id ? 'active' : ''}`}
+                        onClick={() => setSelectedTeamId(team.id)}
+                        style={{ padding: '0.5rem' }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {team.name}
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.15rem' }}>
+                            {team.pokemon.map((p, idx) => (
+                              <div key={idx} style={{ width: '20px', height: '20px', borderRadius: '50%', background: p ? 'transparent' : 'rgba(255,255,255,0.06)', border: p ? 'none' : '1px dashed rgba(255,255,255,0.15)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {p && <img src={p.sprite || p.image} alt="" style={{ width: '20px', height: '20px', imageRendering: 'pixelated' }} />}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
-                  {/* Confirm Delete */}
-                  {confirmDelete === team.id && (
-                    <div className="team-confirm-delete" onClick={e => e.stopPropagation()}>
-                      <span style={{ fontSize: '0.8rem' }}>¿Eliminar?</span>
-                      <button onClick={(e) => { e.stopPropagation(); deleteTeam(team.id); }} style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.25rem 0.6rem', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600 }}>Sí</button>
-                      <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(null); }} style={{ background: 'var(--glass-border)', color: 'var(--text-main)', border: 'none', borderRadius: '6px', padding: '0.25rem 0.6rem', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600 }}>No</button>
-                    </div>
-                  )}
+                        <button
+                          onClick={e => { e.stopPropagation(); setConfirmDelete(team.id); }}
+                          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.3rem', borderRadius: '6px', transition: 'all 0.2s' }}
+                          className="team-delete-btn"
+                          title="Eliminar equipo"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+
+                        {confirmDelete === team.id && (
+                          <div className="team-confirm-delete" onClick={e => e.stopPropagation()}>
+                            <span style={{ fontSize: '0.75rem' }}>¿Eliminar?</span>
+                            <button onClick={(e) => { e.stopPropagation(); deleteTeam(team.id); }} style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.2rem 0.5rem', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600 }}>Sí</button>
+                            <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(null); }} style={{ background: 'var(--glass-border)', color: 'var(--text-main)', border: 'none', borderRadius: '6px', padding: '0.2rem 0.5rem', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600 }}>No</button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -590,79 +755,147 @@ export default function TeamBuilder() {
           ) : (
             <>
               {/* ── Team Name ── */}
-              <div className="glass team-header-card">
-                {editingName ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                    <input
-                      ref={nameInputRef}
-                      type="text"
+              <div className="glass team-header-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '0.75rem' }}>
+                  {editingName ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                      <input
+                        ref={nameInputRef}
+                        type="text"
+                        className="input"
+                        value={nameInput}
+                        onChange={e => setNameInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && renameTeam()}
+                        style={{ fontSize: '1.4rem', fontFamily: "'Outfit', sans-serif", fontWeight: 800, padding: '0.5rem 1rem', flex: 1 }}
+                        maxLength={40}
+                      />
+                      <button onClick={renameTeam} style={{ background: 'rgba(34,197,94,0.15)', border: 'none', color: '#22c55e', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex' }}>
+                        <Check size={22} />
+                      </button>
+                      <button onClick={() => setEditingName(false)} style={{ background: 'rgba(239,68,68,0.15)', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex' }}>
+                        <X size={22} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                      <h2 style={{ fontSize: '1.6rem', flex: 1 }}>{selectedTeam.name}</h2>
+                      <button onClick={startEditing} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex', transition: 'all 0.2s' }} className="team-edit-name-btn">
+                        <Edit3 size={18} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '0.75rem' }}>
+                  {/* Selector de Carpeta */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>Carpeta:</span>
+                    <select
+                      value={selectedTeam.folder || ''}
+                      onChange={handleFolderChange}
                       className="input"
-                      value={nameInput}
-                      onChange={e => setNameInput(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && renameTeam()}
-                      style={{ fontSize: '1.4rem', fontFamily: "'Outfit', sans-serif", fontWeight: 800, padding: '0.5rem 1rem', flex: 1 }}
-                      maxLength={40}
-                    />
-                    <button onClick={renameTeam} style={{ background: 'rgba(34,197,94,0.15)', border: 'none', color: '#22c55e', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex' }}>
-                      <Check size={22} />
-                    </button>
-                    <button onClick={() => setEditingName(false)} style={{ background: 'rgba(239,68,68,0.15)', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex' }}>
-                      <X size={22} />
-                    </button>
+                      style={{ fontSize: '0.85rem', padding: '0.25rem 0.5rem', height: '32px', width: '160px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-dark)' }}
+                    >
+                      <option value="">Sin carpeta</option>
+                      {folders.map(f => (
+                        <option key={f} value={f}>{f}</option>
+                      ))}
+                      <option value="__new__" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>+ Nueva carpeta...</option>
+                    </select>
                   </div>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                    <h2 style={{ fontSize: '1.6rem', flex: 1 }}>{selectedTeam.name}</h2>
-                    <button onClick={startEditing} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.5rem', borderRadius: '8px', display: 'flex', transition: 'all 0.2s' }} className="team-edit-name-btn">
-                      <Edit3 size={18} />
-                    </button>
-                  </div>
-                )}
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  {validPokemon.length}/6 Pokémon
-                </span>
+
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                    {validPokemon.length}/6 Pokémon
+                  </span>
+                </div>
               </div>
 
               {/* ── 6 Pokémon Slots ── */}
               <div className="team-slots-grid">
-                {teamPokemon.map((poke, i) => (
-                  <div
-                    key={i}
-                    className={`team-slot glass ${poke ? 'filled' : 'empty'}`}
-                    onClick={() => { if (!poke) setSearchSlot(i); }}
-                    style={poke ? { background: `linear-gradient(135deg, var(--type-${poke.types[0]}) 0%, var(--bg-dark) 120%)` } : {}}
-                  >
-                    {poke ? (
-                      <>
-                        <button
-                          className="team-slot-remove"
-                          onClick={e => { e.stopPropagation(); removePokemon(i); }}
-                          title="Quitar del equipo"
-                        >
-                          <X size={14} />
-                        </button>
-                        <img src={poke.image} alt={poke.name} className="team-slot-img" />
-                        <div className="team-slot-info">
-                          <span className="team-slot-name">{formatPokemonName(poke.name)}</span>
-                          <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                            {poke.types.map(t => (
-                              <span key={t} className="type-badge" style={{ background: `var(--type-${t})`, color: '#000', fontSize: '0.6rem', padding: '0.1rem 0.4rem' }}>
-                                {TYPE_ES[t] || t}
-                              </span>
-                            ))}
+                {teamPokemon.map((poke, i) => {
+                  const activeItem = poke && poke.item ? (
+                    typeof poke.item === 'object'
+                      ? poke.item
+                      : {
+                          name: poke.item,
+                          displayName: COMMON_ITEMS.find(ci => ci.name === poke.item)?.es || poke.item.replace(/-/g, ' '),
+                          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${poke.item}.png`
+                        }
+                  ) : null;
+                  return (
+                    <div
+                      key={i}
+                      className={`team-slot glass ${poke ? 'filled' : 'empty'}`}
+                      onClick={() => { if (!poke) setSearchSlot(i); }}
+                      style={poke ? { background: `linear-gradient(135deg, var(--type-${poke.types[0]}) 0%, var(--bg-dark) 120%)` } : {}}
+                    >
+                      {poke ? (
+                        <>
+                          <button
+                            className="team-slot-remove"
+                            onClick={e => { e.stopPropagation(); removePokemon(i); }}
+                            title="Quitar del equipo"
+                          >
+                            <X size={14} />
+                          </button>
+                          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', width: '100%' }}>
+                            <img src={poke.image} alt={poke.name} className="team-slot-img" />
+                            {activeItem && activeItem.sprite && (
+                              <div
+                                title={activeItem.displayName}
+                                className="team-slot-item-floating"
+                              >
+                                <img src={activeItem.sprite} alt="" />
+                              </div>
+                            )}
                           </div>
+                          <div className="team-slot-info">
+                            <span className="team-slot-name">{formatPokemonName(poke.name)}</span>
+                            <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '0.75rem' }}>
+                              {poke.types.map(t => (
+                                <span key={t} className="type-badge" style={{ background: `var(--type-${t})`, color: '#000', fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>
+                                  {TYPE_ES[t] || t}
+                                </span>
+                              ))}
+                            </div>
+
+                            {/* Seccion de objeto */}
+                            <div className="pokemon-item-container" onClick={e => e.stopPropagation()}>
+                              {activeItem && activeItem.name ? (
+                                <div className="equipped-item-badge" onClick={() => setItemSearchSlot(i)}>
+                                  <img src={activeItem.sprite} alt="" className="equipped-item-sprite" />
+                                  <span className="equipped-item-name">{activeItem.displayName}</span>
+                                  <button
+                                    onClick={e => { e.stopPropagation(); savePokemonItem(i, null); }}
+                                    className="equipped-item-remove-btn"
+                                    title="Quitar objeto"
+                                  >
+                                    <X size={12} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setItemSearchSlot(i)}
+                                  className="empty-item-badge"
+                                >
+                                  <Plus size={12} />
+                                  <span>Objeto</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="team-slot-empty-content">
+                          <div className="team-slot-plus">
+                            <Plus size={28} />
+                          </div>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Añadir</span>
                         </div>
-                      </>
-                    ) : (
-                      <div className="team-slot-empty-content">
-                        <div className="team-slot-plus">
-                          <Plus size={28} />
-                        </div>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Añadir</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* ── Average Stats ── */}
@@ -780,6 +1013,282 @@ export default function TeamBuilder() {
           onClose={() => setSearchSlot(null)}
         />
       )}
+
+      {/* ── Item Search Modal ── */}
+      {itemSearchSlot !== null && (
+        <ItemSearchModal
+          onSelect={(item) => savePokemonItem(itemSearchSlot, item)}
+          onClose={() => setItemSearchSlot(null)}
+        />
+      )}
+
+      {/* ── Folder Creation Modal ── */}
+      <FolderModal
+        isOpen={folderModalOpen}
+        onClose={() => setFolderModalOpen(false)}
+        onCreate={(folderName) => changeTeamFolder(folderName)}
+      />
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════
+// ── Folder Creation Modal Component ──
+// ══════════════════════════════════════════════════
+function FolderModal({ isOpen, onClose, onCreate }) {
+  const [folderName, setFolderName] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFolderName('');
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 300 }}>
+      <div className="glass" onClick={e => e.stopPropagation()} style={{ padding: '2rem', width: '320px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+        <button className="modal-close" onClick={onClose} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          <X size={18} />
+        </button>
+        <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.25rem', color: 'var(--accent)', margin: 0 }}>Nueva Carpeta</h3>
+        <input
+          ref={inputRef}
+          type="text"
+          className="input"
+          placeholder="Nombre de la carpeta..."
+          value={folderName}
+          onChange={e => setFolderName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && folderName.trim() && (onCreate(folderName.trim()), onClose())}
+        />
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+          <button
+            className="btn btn-outline"
+            onClick={onClose}
+            style={{ flex: 1, padding: '0.5rem' }}
+          >
+            Cancelar
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => { if (folderName.trim()) { onCreate(folderName.trim()); onClose(); } }}
+            disabled={!folderName.trim()}
+            style={{ flex: 1, padding: '0.5rem' }}
+          >
+            Crear
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Common Nuzlocke held items list with Spanish/English names for translation ──
+const COMMON_ITEMS = [
+  // Objetos competitivos comunes
+  { name: 'leftovers', es: 'Restos', desc: 'Recupera 1/16 de los PS máximos al final de cada turno.' },
+  { name: 'life-orb', es: 'Vidaesfera', desc: 'Potencia los movimientos un 30% a costa de perder un 10% de PS máximos.' },
+  { name: 'choice-band', es: 'Cinta Elección', desc: 'Aumenta el Ataque un 50% pero solo permite usar un movimiento.' },
+  { name: 'choice-specs', es: 'Gafas Elección', desc: 'Aumenta el Ataque Especial un 50% pero solo permite usar un movimiento.' },
+  { name: 'choice-scarf', es: 'Pañuelo Elección', desc: 'Aumenta la Velocidad un 50% pero solo permite usar un movimiento.' },
+  { name: 'eviolite', es: 'Mineral Evolutivo', desc: 'Aumenta un 50% la Defensa y Def. Especial de un Pokémon que pueda evolucionar.' },
+  { name: 'rocky-helmet', es: 'Casco Dentado', desc: 'Resta 1/6 de los PS máximos al rival que le golpee con un ataque de contacto.' },
+  { name: 'focus-sash', es: 'Banda Focus', desc: 'Evita el debilitamiento fulminante dejando 1 PS si el portador tiene el 100% de PS.' },
+  { name: 'black-sludge', es: 'Lodo Negro', desc: 'Restaura 1/16 de PS al tipo Veneno. Daña a otros tipos.' },
+  { name: 'expert-belt', es: 'Cinturón Experto', desc: 'Potencia los movimientos súper efectivos un 20%.' },
+  { name: 'assault-vest', es: 'Chaleco Asalto', desc: 'Aumenta la Defensa Especial un 50% pero impide usar movimientos de estado.' },
+  { name: 'light-clay', es: 'Refleluz', desc: 'Prolonga la duración de Reflejo y Pantalla de Luz a 8 turnos.' },
+  { name: 'heavy-duty-boots', es: 'Botas de Suela', desc: 'Evita los daños y efectos de las trampa de entrada (Trampa Rocas, Red Viscosa, etc.).' },
+  { name: 'air-balloon', es: 'Globo Helio', desc: 'Otorga inmunidad a movimientos de tipo Tierra. Estalla al recibir un golpe.' },
+  { name: 'weakness-policy', es: 'Seguro Debilidad', desc: 'Aumenta mucho el Ataque y At. Especial al recibir un golpe súper efectivo.' },
+  { name: 'shell-bell', es: 'Campana Concha', desc: 'El portador recupera un 1/8 del daño infligido al oponente.' },
+  { name: 'quick-claw', es: 'Garra Rápida', desc: 'Otorga un 20% de probabilidad de atacar en primer lugar dentro de la prioridad.' },
+  { name: 'bright-powder', es: 'Polvo Brillo', desc: 'Reduce un 10% la precisión de los movimientos del rival.' },
+  { name: 'scope-lens', es: 'Periscopio', desc: 'Aumenta la probabilidad de asestar golpes críticos en un nivel.' },
+  { name: 'wide-lens', es: 'Lupa', desc: 'Aumenta un 10% la precisión de los movimientos del portador.' },
+  { name: 'zoom-lens', es: 'Telescopio', desc: 'Aumenta la precisión un 20% si el portador ataca después del objetivo.' },
+  { name: 'muscle-band', es: 'Cinta Forte', desc: 'Aumenta la potencia de los movimientos físicos un 10%.' },
+  { name: 'wise-glasses', es: 'Gafas Especiales', desc: 'Aumenta la potencia de los movimientos especiales un 10%.' },
+  { name: 'flame-orb', es: 'Llamasfera', desc: 'Induce quemadura al portador al final del turno.' },
+  { name: 'toxic-orb', es: 'Toxisfera', desc: 'Induce envenenamiento grave al portador al final del turno.' },
+  { name: 'focus-band', es: 'Cinta Focus', desc: 'Tiene un 10% de probabilidad de evitar el debilitamiento dejando al portador con 1 PS.' },
+  { name: 'soothe-bell', es: 'Campana Alivio', desc: 'El portador gana más amistad de lo habitual.' },
+  { name: 'amulet-coin', es: 'Moneda Amuleto', desc: 'Duplica las ganancias de dinero en los combates.' },
+  { name: 'lucky-egg', es: 'Huevo Suerte', desc: 'Aumenta la experiencia ganada en combate un 50%.' },
+  { name: 'exp-share', es: 'Repartir Exp.', desc: 'Comparte parte de la experiencia ganada con el portador.' },
+
+  // Bayas
+  { name: 'oran-berry', es: 'Baya Aranja', desc: 'Restaura 10 PS si los PS bajan del 50%.' },
+  { name: 'sitrus-berry', es: 'Baya Cidra', desc: 'Restaura un 25% de los PS máximos si los PS bajan del 50%.' },
+  { name: 'lum-berry', es: 'Baya Ziula', desc: 'Cura cualquier estado alterado o la confusión en combate.' },
+  { name: 'pecha-berry', es: 'Baya Meloc', desc: 'Cura el envenenamiento en combate.' },
+  { name: 'cheri-berry', es: 'Baya Zreza', desc: 'Cura la parálisis en combate.' },
+  { name: 'chesto-berry', es: 'Baya Atania', desc: 'Despierta al portador del sueño en combate.' },
+  { name: 'rawst-berry', es: 'Baya Aspe', desc: 'Cura las quemaduras en combate.' },
+  { name: 'aspear-berry', es: 'Baya Perasi', desc: 'Cura la congelación en combate.' },
+  { name: 'leppa-berry', es: 'Baya Zanama', desc: 'Restaura 10 PP de un movimiento cuyo PP llegue a 0.' },
+  { name: 'persim-berry', es: 'Baya Caqui', desc: 'Cura la confusión en combate.' },
+  { name: 'yache-berry', es: 'Baya Pasio', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Hielo.' },
+  { name: 'chilan-berry', es: 'Baya Tamar', desc: 'Reduce a la mitad el daño de un ataque de tipo Normal.' },
+  { name: 'babiri-berry', es: 'Baya Caoba', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Acero.' },
+  { name: 'colbur-berry', es: 'Baya Choca', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Siniestro.' },
+  { name: 'payapa-berry', es: 'Baya Payapa', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Psíquico.' },
+  { name: 'shuca-berry', es: 'Baya Shuca', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Tierra.' },
+  { name: 'coba-berry', es: 'Baya Coba', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Volador.' },
+  { name: 'tanga-berry', es: 'Baya Tanga', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Bicho.' },
+  { name: 'haban-berry', es: 'Baya Haban', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Dragón.' },
+  { name: 'roseli-berry', es: 'Baya Roseli', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Hada.' },
+  { name: 'chople-berry', es: 'Baya Pomar', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Lucha.' },
+  { name: 'kebia-berry', es: 'Baya Kebia', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Veneno.' },
+  { name: 'kasib-berry', es: 'Baya Almeja', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Fantasma.' },
+  { name: 'rindo-berry', es: 'Baya Alsem', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Planta.' },
+  { name: 'occa-berry', es: 'Baya Oca', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Fuego.' },
+  { name: 'passho-berry', es: 'Baya Pasana', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Agua.' },
+  { name: 'wacan-berry', es: 'Baya Wacan', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Eléctrico.' },
+  { name: 'charti-berry', es: 'Baya Aslac', desc: 'Reduce a la mitad el daño de un ataque súper efectivo de tipo Roca.' },
+
+  // Objetos potenciadores de tipo
+  { name: 'charcoal', es: 'Carbón', desc: 'Aumenta la potencia de los movimientos de tipo Fuego un 20%.' },
+  { name: 'mystic-water', es: 'Agua Mística', desc: 'Aumenta la potencia de los movimientos de tipo Agua un 20%.' },
+  { name: 'miracle-seed', es: 'Semilla Milagro', desc: 'Aumenta la potencia de los movimientos de tipo Planta un 20%.' },
+  { name: 'magnet', es: 'Imán', desc: 'Aumenta la potencia de los movimientos de tipo Eléctrico un 20%.' },
+  { name: 'never-melt-ice', es: 'Antiderretidor', desc: 'Aumenta la potencia de los movimientos de tipo Hielo un 20%.' },
+  { name: 'sharp-beak', es: 'Pico Afilado', desc: 'Aumenta la potencia de los movimientos de tipo Volador un 20%.' },
+  { name: 'poison-barb', es: 'Flecha Venenosa', desc: 'Aumenta la potencia de los movimientos de tipo Veneno un 20%.' },
+  { name: 'soft-sand', es: 'Arena Fina', desc: 'Aumenta la potencia de los movimientos de tipo Tierra un 20%.' },
+  { name: 'spell-tag', es: 'Hechizo', desc: 'Aumenta la potencia de los movimientos de tipo Fantasma un 20%.' },
+  { name: 'twisted-spoon', es: 'Cuchara Torcida', desc: 'Aumenta la potencia de los movimientos de tipo Psíquico un 20%.' },
+  { name: 'silk-scarf', es: 'Pañuelo Seda', desc: 'Aumenta la potencia de los movimientos de tipo Normal un 20%.' },
+  { name: 'silver-powder', es: 'Polvo Plata', desc: 'Aumenta la potencia de los movimientos de tipo Bicho un 20%.' },
+  { name: 'dragon-fang', es: 'Colmillo Dragón', desc: 'Aumenta la potencia de los movimientos de tipo Dragón un 20%.' },
+  { name: 'black-belt', es: 'Cinturón Negro', desc: 'Aumenta la potencia de los movimientos de tipo Lucha un 20%.' },
+  { name: 'black-glasses', es: 'Gafas de Sol', desc: 'Aumenta la potencia de los movimientos de tipo Siniestro un 20%.' },
+  { name: 'hard-stone', es: 'Piedra Dura', desc: 'Aumenta la potencia de los movimientos de tipo Roca un 20%.' },
+  { name: 'metal-coat', es: 'Revestimiento Metálico', desc: 'Aumenta la potencia de los movimientos de tipo Acero un 20%.' },
+
+  // Piedras y evolutivos comunes
+  { name: 'fire-stone', es: 'Piedra Fuego', desc: 'Piedra evolutiva para ciertos Pokémon de tipo Fuego.' },
+  { name: 'water-stone', es: 'Piedra Agua', desc: 'Piedra evolutiva para ciertos Pokémon de tipo Agua.' },
+  { name: 'thunder-stone', es: 'Piedra Trueno', desc: 'Piedra evolutiva para ciertos Pokémon de tipo Eléctrico.' },
+  { name: 'leaf-stone', es: 'Piedra Hoja', desc: 'Piedra evolutiva para ciertos Pokémon de tipo Planta.' },
+  { name: 'moon-stone', es: 'Piedra Luna', desc: 'Piedra evolutiva para ciertos Pokémon.' },
+  { name: 'sun-stone', es: 'Piedra Solar', desc: 'Piedra evolutiva para ciertos Pokémon.' },
+  { name: 'shiny-stone', es: 'Piedra Día', desc: 'Piedra evolutiva para ciertos Pokémon.' },
+  { name: 'dusk-stone', es: 'Piedra Noche', desc: 'Piedra evolutiva para ciertos Pokémon.' },
+  { name: 'dawn-stone', es: 'Piedra Alba', desc: 'Piedra evolutiva para ciertos Pokémon de género específico.' },
+  { name: 'ice-stone', es: 'Piedra Hielo', desc: 'Piedra evolutiva para ciertos Pokémon de tipo Hielo.' },
+  { name: 'everstone', es: 'Piedraeterna', desc: 'Evita que el Pokémon portador evolucione.' }
+];
+
+// ══════════════════════════════════════════════════
+// ── Item Search Modal Component ──
+// ══════════════════════════════════════════════════
+function ItemSearchModal({ onSelect, onClose }) {
+  const [query, setQuery] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
+
+  // Filtrar objetos locales instantáneamente en función del query
+  const getFilteredItems = () => {
+    const qNorm = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    
+    if (!qNorm) {
+      // Por defecto, devolver los 20 objetos más populares para Nuzlockes
+      const popularSlugs = [
+        'leftovers', 'life-orb', 'eviolite', 'choice-band', 'choice-specs', 'choice-scarf',
+        'rocky-helmet', 'focus-sash', 'assault-vest', 'black-sludge', 'expert-belt',
+        'oran-berry', 'sitrus-berry', 'lum-berry', 'chesto-berry', 'quick-claw',
+        'lucky-egg', 'amulet-coin', 'exp-share', 'heavy-duty-boots'
+      ];
+      return COMMON_ITEMS.filter(item => popularSlugs.includes(item.name));
+    }
+
+    return COMMON_ITEMS.filter(item => {
+      const nameNorm = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const esNorm = item.es.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return nameNorm.includes(qNorm) || esNorm.includes(qNorm);
+    });
+  };
+
+  const filteredResults = getFilteredItems();
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 200 }}>
+      <div className="glass team-search-modal" onClick={e => e.stopPropagation()} style={{ width: '480px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+        <button className="modal-close" onClick={onClose}>
+          <X size={20} />
+        </button>
+
+        <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.6rem', marginBottom: '1.25rem' }}>
+          Buscar Objeto
+        </h2>
+
+        <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
+          <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <input
+            ref={inputRef}
+            type="text"
+            className="input"
+            style={{ paddingLeft: '3rem' }}
+            placeholder="Nombre en español o inglés (ej: restos, life orb...)"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
+          {query && (
+            <button onClick={() => setQuery('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <X size={18} />
+            </button>
+          )}
+        </div>
+
+        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {filteredResults.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+              No se encontraron objetos.
+            </p>
+          ) : (
+            filteredResults.map(item => {
+              const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${item.name}.png`;
+              return (
+                <div
+                  key={item.name}
+                  className="team-search-result-item"
+                  onClick={() => {
+                    onSelect({
+                      name: item.name,
+                      displayName: item.es,
+                      sprite: spriteUrl,
+                      effect: item.desc || ''
+                    });
+                    onClose();
+                  }}
+                  style={{ cursor: 'pointer', padding: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderRadius: '12px', transition: 'background 0.3s' }}
+                >
+                  <img
+                    src={spriteUrl}
+                    alt={item.es}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = 'none';
+                    }}
+                    style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+                  />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <span style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{item.es}</span>
+                    {item.desc && <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.desc}</span>}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
     </div>
   );
 }

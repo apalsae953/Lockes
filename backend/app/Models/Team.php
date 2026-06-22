@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['name', 'pokemon'])]
+#[Fillable(['name', 'pokemon', 'folder'])]
 class Team extends Model
 {
     protected function casts(): array

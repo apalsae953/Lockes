@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad, LogIn, User as UserIcon, LogOut, ChevronDown, BookOpen, Sparkles, Users } from 'lucide-react';
+import { Gamepad, LogIn, User as UserIcon, LogOut, ChevronDown, BookOpen, Sparkles, Users, Menu, X } from 'lucide-react';
 import { useAuth } from '../services/AuthContext';
 
 export default function Navbar() {
@@ -8,6 +8,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -31,9 +32,10 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Cerrar el dropdown cuando cambie la ruta
+  // Cerrar el dropdown y menú móvil cuando cambie la ruta
   useEffect(() => {
     setDropdownOpen(false);
+    setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const isDexActive = location.pathname === '/pokedex' || location.pathname === '/habilidex';
@@ -41,13 +43,13 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="container nav-content">
-        <div className="nav-main" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1rem' }}>
+        <div className="nav-main" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1rem', justifyContent: 'space-between' }}>
           <Link to="/" className="nav-logo gradient-text" style={{ marginRight: '1rem' }}>
             <Gamepad size={34} color="#ef4444" />
             <span>NuzTracker</span>
           </Link>
 
-          <div className="nav-links">
+          <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
             <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
               Reglas
             </Link>
@@ -57,31 +59,35 @@ export default function Navbar() {
               ref={dropdownRef}
               className={`nav-dropdown-wrapper ${dropdownOpen ? 'dropdown-open' : ''}`}
               style={{ display: 'flex', alignItems: 'center' }}
-              onMouseEnter={() => setDropdownOpen(true)}
-              onMouseLeave={() => setDropdownOpen(false)}
+              onMouseEnter={() => window.innerWidth > 768 && setDropdownOpen(true)}
+              onMouseLeave={() => window.innerWidth > 768 && setDropdownOpen(false)}
             >
-              <Link
-                to="/pokedex"
-                className={`nav-link ${isDexActive ? 'active' : ''}`}
-              >
-                Pokédex
-              </Link>
-              <button
-                type="button"
-                onClick={() => setDropdownOpen(prev => !prev)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.5rem 0.2rem',
-                  color: isDexActive || dropdownOpen ? 'var(--text-main)' : 'var(--text-muted)',
-                  transition: 'color 0.3s ease'
-                }}
-              >
-                <ChevronDown size={14} style={{ transition: 'transform 0.25s', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-              </button>
+              <div className="nav-dropdown-trigger-row" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', width: '100%' }}>
+                <Link
+                  to="/pokedex"
+                  className={`nav-link ${isDexActive ? 'active' : ''}`}
+                  style={{ borderBottom: 'none' }}
+                >
+                  Pokédex
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(prev => !prev)}
+                  className="nav-dropdown-toggle"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.5rem 0.2rem',
+                    color: isDexActive || dropdownOpen ? 'var(--text-main)' : 'var(--text-muted)',
+                    transition: 'color 0.3s ease'
+                  }}
+                >
+                  <ChevronDown size={14} style={{ transition: 'transform 0.25s', transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </button>
+              </div>
 
               <div className="nav-dropdown-menu">
                 <Link to="/pokedex" className={`nav-dropdown-item ${location.pathname === '/pokedex' ? 'active' : ''}`}>
@@ -104,15 +110,12 @@ export default function Navbar() {
             <Link to="/mis-partidas" className={`nav-link ${location.pathname.includes('/mis-partidas') || location.pathname.includes('/tracker') ? 'active' : ''}`}>
               Partidas
             </Link>
-            {/* <Link to="/contacto" className={`nav-link ${location.pathname === '/contacto' ? 'active' : ''}`}>
-              Sugerencias
-            </Link> */}
             <Link to="/equipos" className={`nav-link ${location.pathname === '/equipos' ? 'active' : ''}`}>
               Equipos
             </Link>
           </div>
 
-          <div className="nav-user-section">
+          <div className="nav-user-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {/* TOGGLE MODO CLARO/OSCURO CON SOLROCK Y LUNATONE */}
             <button 
               onClick={() => setIsLightMode(!isLightMode)} 
@@ -171,14 +174,22 @@ export default function Navbar() {
                 color: 'var(--primary)',
                 border: '1px solid rgba(239, 68, 68, 0.2)',
                 fontWeight: 'bold'
-              }}>
+              }} className="login-nav-btn">
                 <LogIn size={18} /> <span className="nav-user-name">Iniciar sesión</span>
               </Link>
             )}
+
+            {/* Botón menú hamburguesa para móvil */}
+            <button 
+              className="mobile-menu-btn" 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
           </div>
         </div>
       </div>
     </nav>
-
   );
 }

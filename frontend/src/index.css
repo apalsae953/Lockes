@@ -326,16 +326,21 @@ select.input option {
   flex-shrink: 0;
 }
 
+.mobile-menu-btn {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem 0 0.5rem;
+    padding: 0.75rem 0;
   }
 
   .nav-content {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
   }
 
   .nav-main {
@@ -345,22 +350,48 @@ select.input option {
     width: 100%;
   }
 
-  /* Los enlaces pasan abajo en movil */
+  /* Los enlaces se vuelven menú vertical desplegable */
   .nav-links {
-    order: 2;
-    width: 100%;
-    margin: 0;
-    gap: 1.5rem !important;
-    overflow-x: auto;
-    padding: 0.5rem 0;
-    justify-content: flex-start !important;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    right: 0;
+    background: var(--bg-dark);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--glass-border);
     border-top: 1px solid var(--glass-border);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    padding: 1.5rem;
+    gap: 1rem !important;
+    z-index: 100;
+    order: unset;
+    width: auto;
+    overflow-x: visible;
   }
 
-  .nav-links::-webkit-scrollbar {
-    display: none;
+  .nav-links.mobile-open {
+    display: flex;
+    animation: slideDownNav 0.25s ease-out forwards;
+  }
+
+  @keyframes slideDownNav {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .nav-link {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    width: 100%;
   }
 
   .nav-logo {
@@ -371,7 +402,70 @@ select.input option {
     width: 28px;
     height: 28px;
   }
+
+  /* Estilos del desplegable de Pokédex como acordeón en móvil */
+  .nav-dropdown-wrapper {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .nav-dropdown-wrapper > .nav-link {
+    border-bottom: none;
+  }
+
+  .nav-dropdown-toggle {
+    margin-left: auto;
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .nav-dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    margin-top: 0.25rem;
+    display: none;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    padding: 0.25rem !important;
+  }
+
+  .nav-dropdown-menu::before, .nav-dropdown-menu::after {
+    display: none !important;
+  }
+
+  .nav-dropdown-wrapper.dropdown-open .nav-dropdown-menu {
+    display: block !important;
+  }
+
+  .nav-dropdown-item {
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Botón hamburguesa móvil */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 12px;
+    transition: all 0.3s;
+    border: 1px solid var(--glass-border);
+  }
+
+  .mobile-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
+
 
 .nav-user-section {
   display: flex;
@@ -413,12 +507,6 @@ select.input option {
   background: var(--primary);
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-}
-
 .nav-link {
   font-weight: 600;
   font-size: 1.05rem;
@@ -433,22 +521,30 @@ select.input option {
   color: var(--text-main);
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: var(--primary);
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-  box-shadow: 0 0 10px var(--primary);
-}
+@media (min-width: 769px) {
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
 
-.nav-link:hover::after,
-.nav-link.active::after {
-  width: 100%;
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px var(--primary);
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    width: 100%;
+  }
 }
 
 @keyframes heart-crack {
@@ -983,16 +1079,6 @@ select.input option {
 
 /* --- NAVBAR: wrap correcto en móvil --- */
 @media (max-width: 768px) {
-  .nav-main {
-    flex-wrap: wrap !important;
-    align-items: center !important;
-  }
-
-  .nav-links {
-    flex: 0 0 100% !important;
-    order: 10 !important;
-  }
-
   .nav-link {
     font-size: 0.9rem;
     padding: 0.6rem 0;
@@ -1894,19 +1980,19 @@ select.input option {
 /* ── 6 Pokémon slots ── */
 .team-slots-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
 }
 
 .team-slot {
   position: relative;
-  border-radius: 16px;
-  padding: 1rem 0.5rem;
+  border-radius: 20px;
+  padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 180px;
+  min-height: 220px;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   overflow: hidden;
 }
@@ -1940,13 +2026,13 @@ select.input option {
 
 .team-slot-remove {
   position: absolute;
-  top: 0.4rem;
-  right: 0.4rem;
+  top: 0.5rem;
+  right: 0.5rem;
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: white;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -1966,11 +2052,11 @@ select.input option {
 }
 
 .team-slot-img {
-  width: 80%;
-  max-width: 100px;
+  width: 100%;
+  max-width: 145px;
   aspect-ratio: 1;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
   transition: transform 0.3s ease;
 }
 
@@ -1978,22 +2064,55 @@ select.input option {
   transform: scale(1.08);
 }
 
+.team-slot-item-floating {
+  position: absolute;
+  bottom: 0px;
+  right: 12%;
+  background: linear-gradient(135deg, rgba(25, 28, 41, 0.95), rgba(9, 10, 15, 0.95));
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.team-slot:hover .team-slot-item-floating {
+  transform: scale(1.1) translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+
+.team-slot-item-floating img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
 .team-slot-info {
   text-align: center;
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .team-slot-name {
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 1rem;
   text-transform: capitalize;
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 180px;
 }
 
 .team-slot-empty-content {
@@ -2002,6 +2121,101 @@ select.input option {
   align-items: center;
   gap: 0.5rem;
 }
+
+.pokemon-item-container {
+  width: 100%;
+  padding: 0.25rem 0.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.equipped-item-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 0.35rem 0.75rem;
+  width: 100%;
+  max-width: 170px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.equipped-item-badge:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.equipped-item-sprite {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.equipped-item-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  text-align: left;
+}
+
+.equipped-item-remove-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border: none;
+  color: #f87171;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.equipped-item-remove-btn:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.3);
+  color: #ff8787;
+  transform: scale(1.1);
+}
+
+.empty-item-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 0.35rem 0.75rem;
+  width: 100%;
+  max-width: 170px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.empty-item-badge:hover {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
 
 .team-slot-plus {
   width: 52px;
@@ -2155,11 +2369,11 @@ select.input option {
 
   .team-slot {
     min-height: 140px;
-    padding: 0.75rem 0.35rem;
+    padding: 0.6rem 0.35rem;
   }
 
   .team-slot-img {
-    max-width: 70px;
+    max-width: 110px;
   }
 
   .team-slot-name {
@@ -2206,6 +2420,10 @@ select.input option {
 @media (max-width: 480px) {
   .team-slots-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-slot-img {
+    max-width: 120px;
   }
 
   .team-list-item {
