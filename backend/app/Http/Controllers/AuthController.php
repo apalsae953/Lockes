@@ -156,10 +156,10 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             if ($platform === 'mobile') {
-                return redirect('lockes://login-success?token=' . $token);
+                return redirect('lockes://login-success?token=' . urlencode($token));
             }
 
-            return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login-success?token=' . $token);
+            return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login-success?token=' . urlencode($token));
         } catch (\Exception $e) {
             \Log::error('Google Auth Error: ' . $e->getMessage());
             
