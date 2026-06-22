@@ -11,7 +11,7 @@ export default function Login() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
   
-  const { login, register, iniciarSesionConGoogle } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -192,7 +192,7 @@ export default function Login() {
           <span style={{ position: 'relative', zIndex: 1, background: 'var(--bg-darker)', padding: '0 1rem', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 'bold' }}>Ó</span>
         </div>
 
-        <button onClick={iniciarSesionConGoogle} className="google-btn-premium" type="button" style={{ fontSize: '1rem', background: 'var(--text-main)', color: 'var(--bg-dark)' }}>
+        <button onClick={loginWithGoogle} className="google-btn-premium" type="button" style={{ fontSize: '1rem', background: 'var(--text-main)', color: 'var(--bg-dark)' }}>
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" alt="Google" />
           Continuar con Google
         </button>
