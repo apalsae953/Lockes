@@ -93,7 +93,8 @@ export const AuthProvider = ({ children }) => {
         const backendUrl = import.meta.env.VITE_API_URL || '';
         // Si backendUrl es relativa (ej: /), se queda igual. 
         // Si es absoluta (ej: http://localhost:8000), redirige correctamente.
-        const isMobile = !!window.Capacitor;
+        // Comprobar si estamos realmente en la APK nativa (Android/iOS)
+        const isMobile = window.Capacitor && window.Capacitor.isNativePlatform ? window.Capacitor.isNativePlatform() : false;
         window.location.href = `${backendUrl}/auth/google?platform=${isMobile ? 'mobile' : 'web'}`;
     };
 
