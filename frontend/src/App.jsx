@@ -1,4 +1,6 @@
+import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { App as CapApp } from '@capacitor/app';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Pokedex from './pages/Pokedex';
@@ -17,6 +19,32 @@ import TeamBuilder from './pages/TeamBuilder';
 
 // Estructura de páginas plana para mejorar compatibilidad con Vercel
 function App() {
+  useEffect(() => {
+    if (!window.Capacitor) return;
+
+    const handleAppUrl = CapApp.addListener('appUrlOpen', (data) => {
+      try {
+        // data.url is "lockes://login-success?token=..."
+        const cleanUrl = data.url.replace('lockes://', 'http://');
+        const url = new URL(cleanUrl);
+        if (url.pathname === '/login-success' || data.url.includes('login-success')) {
+          const token = url.searchParams.get('token');
+          if (token) {
+            localStorage.setItem('token', token);
+            window.location.hash = `/login-success?token=${token}`;
+            window.location.reload();
+          }
+        }
+      } catch (e) {
+        console.error('Error al procesar deep link:', e);
+      }
+    });
+
+    return () => {
+      handleAppUrl.then(listener => listener.remove());
+    };
+  }, []);
+
   return (
     <Router>
       <Navbar />

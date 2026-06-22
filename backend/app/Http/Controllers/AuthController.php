@@ -113,15 +113,23 @@ class AuthController extends Controller
     }
 
     // --- Google OAuth ---
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
         \Log::info('Redirecting to Google...');
-        return Socialite::driver('google')->stateless()->redirect();
+        $platform = $request->query('platform', 'web');
+        return Socialite::driver('google')
+            ->stateless()
+            ->with(['state' => 'platform=' . $platform])
+            ->redirect();
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         try {
+            $state = $request->query('state');
+            parse_str($state, $stateParams);
+            $platform = $stateParams['platform'] ?? 'web';
+
             $googleUser = Socialite::driver('google')
                 ->stateless()
                 ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
@@ -147,9 +155,22 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            if ($platform === 'mobile') {
+                return redirect('lockes://login-success?token=' . $token);
+            }
+
             return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login-success?token=' . $token);
         } catch (\Exception $e) {
             \Log::error('Google Auth Error: ' . $e->getMessage());
+            
+            $state = $request->query('state');
+            parse_str($state, $stateParams);
+            $platform = $stateParams['platform'] ?? 'web';
+
+            if ($platform === 'mobile') {
+                return redirect('lockes://login?error=auth_failed');
+            }
+
             return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/login?error=auth_failed');
         }
     }

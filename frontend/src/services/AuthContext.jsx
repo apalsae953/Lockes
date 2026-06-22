@@ -93,7 +93,8 @@ export const AuthProvider = ({ children }) => {
         const backendUrl = import.meta.env.VITE_API_URL || '';
         // Si backendUrl es relativa (ej: /), se queda igual. 
         // Si es absoluta (ej: http://localhost:8000), redirige correctamente.
-        window.location.href = `${backendUrl}/auth/google`;
+        const isMobile = !!window.Capacitor;
+        window.location.href = `${backendUrl}/auth/google?platform=${isMobile ? 'mobile' : 'web'}`;
     };
 
     return (
