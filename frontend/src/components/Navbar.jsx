@@ -153,7 +153,7 @@ export default function Navbar() {
                   transition: 'all 0.3s'
                 }} className="nav-profile-link">
                   {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--primary)' }} />
+                    <img src={user.avatar} referrerPolicy="no-referrer" alt={user.name} style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--primary)' }} />
                   ) : (
                     <div style={{ padding: '0.4rem', background: 'var(--glass-border)', borderRadius: '50%', display: 'flex' }}><UserIcon size={16} /></div>
                   )}

@@ -55,7 +55,7 @@ export default function Profile() {
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <div style={{ position: 'relative', display: 'inline-block' }}>
                 {user.avatar ? (
-                    <img src={user.avatar} alt={user.nombre} style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid var(--primary)', padding: '3px' }} />
+                    <img src={user.avatar} referrerPolicy="no-referrer" alt={user.nombre} style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid var(--primary)', padding: '3px' }} />
                 ) : (
                     <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--glass-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid var(--primary)' }}>
                         <User size={48} color="var(--primary)" />
