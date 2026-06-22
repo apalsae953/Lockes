@@ -31,8 +31,7 @@ function App() {
           const token = url.searchParams.get('token');
           if (token) {
             localStorage.setItem('token', token);
-            window.location.hash = `/login-success?token=${token}`;
-            window.location.reload();
+            window.location.href = window.location.pathname + `#/login-success?token=${encodeURIComponent(token)}`;
           }
         }
       } catch (e) {
