@@ -3,7 +3,22 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RunController;
 use App\Http\Controllers\TeamController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+// Keep-alive: un cron externo llama aquí para que Render no se duerma
+// y Supabase no pause la BD por inactividad (hace una consulta real).
+Route::get('/health', function () {
+    try {
+        DB::table('users')->limit(1)->get(['id']);
+
+        return response()->json(['status' => 'ok']);
+    } catch (\Throwable $e) {
+        report($e);
+
+        return response()->json(['status' => 'db_error'], 503);
+    }
+});
 
 // Rutas de Formulario (React las busca en /api/...)
 Route::post('/register', [AuthController::class, 'register']);
