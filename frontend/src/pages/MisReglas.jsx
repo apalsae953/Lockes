@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { UNIVERSAL_RULES, PRESET_VARIANTS } from '../constants/rulesData';
+import { loadCustomRules, saveCustomRules as persistCustomRules } from '../services/customRules';
 import { Trash2, Plus, Edit2, Lock } from 'lucide-react';
 
 export default function MisReglas() {
-  const [reglasPersonalizadas, setReglasPersonalizadas] = useState([]);
+  const [reglasPersonalizadas, setReglasPersonalizadas] = useState(loadCustomRules);
   const [idEditando, setIdEditando] = useState(null);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
 
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('reglasPersonalizadas') || '[]');
-      setReglasPersonalizadas(saved);
-    } catch {
-      setReglasPersonalizadas([]);
-    }
-  }, []);
-
   const saveCustomRules = (rules) => {
-    localStorage.setItem('reglasPersonalizadas', JSON.stringify(rules));
+    persistCustomRules(rules);
     setReglasPersonalizadas(rules);
   };
 
@@ -28,15 +20,15 @@ export default function MisReglas() {
 
     if (idEditando) {
       const updated = reglasPersonalizadas.map(r =>
-        r.id === idEditando ? { ...r, nombre, descripcion } : r
+        r.id === idEditando ? { ...r, name: nombre, description: descripcion } : r
       );
       saveCustomRules(updated);
       setIdEditando(null);
     } else {
       const newRule = {
         id: 'cus_' + Date.now().toString(),
-        nombre,
-        descripcion
+        name: nombre,
+        description: descripcion
       };
       saveCustomRules([...reglasPersonalizadas, newRule]);
     }
@@ -46,8 +38,8 @@ export default function MisReglas() {
 
   const manejarEdicion = (rule) => {
     setIdEditando(rule.id);
-    setNombre(rule.nombre);
-    setDescripcion(rule.descripcion);
+    setNombre(rule.name);
+    setDescripcion(rule.description);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -66,7 +58,7 @@ export default function MisReglas() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem', marginBottom: '0' }}>
           {locked && <Lock size={16} color="var(--text-muted)" />}
-          {r.nombre}
+          {r.name}
         </h3>
         {!locked && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -75,7 +67,7 @@ export default function MisReglas() {
           </div>
         )}
       </div>
-      <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, marginTop: '0.5rem' }}>{r.descripcion}</p>
+      <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, marginTop: '0.5rem' }}>{r.description}</p>
     </div>
   );
 

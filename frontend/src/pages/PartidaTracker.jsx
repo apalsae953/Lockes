@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { ArrowLeft, Plus, Download, Trash2, Camera, Heart, HeartCrack, Infinity, ScrollText, Swords, MapPin, GripVertical, UserPlus, X, Edit2, Search, Skull, FileSpreadsheet } from 'lucide-react';
 import { UNIVERSAL_RULES, PRESET_VARIANTS } from '../constants/rulesData';
+import { loadCustomRules } from '../services/customRules';
 import { REGION_BOSSES } from '../constants/gameData';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/AuthContext';
@@ -157,10 +158,7 @@ export default function PartidaTracker() {
       }
     };
 
-    try {
-      const savedCustom = JSON.parse(localStorage.getItem('customRules') || '[]');
-      setAvailableCustomRules(savedCustom);
-    } catch { }
+    setAvailableCustomRules(loadCustomRules());
 
     fetchPartida();
   }, [id, navigate, user]);

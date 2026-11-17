@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PlusCircle, Gamepad2, PlaySquare, X, Trash2 } from 'lucide-react';
 import { PRESET_ROUTES } from '../constants/gameData';
 import { PRESET_VARIANTS } from '../constants/rulesData';
+import { loadCustomRules } from '../services/customRules';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/AuthContext';
 
@@ -68,12 +69,7 @@ export default function MisPartidas() {
   }, [user]);
 
   const iniciarCreacion = () => {
-    try {
-      const custom = JSON.parse(localStorage.getItem('customRules') || '[]');
-      setReglasPersonalizadasDisponibles(custom);
-    } catch {
-      setReglasPersonalizadasDisponibles([]);
-    }
+    setReglasPersonalizadasDisponibles(loadCustomRules());
     setSeleccionRegla('seleccionar');
     setReglasExtras([]);
     setVidasIlimitadas(true);
